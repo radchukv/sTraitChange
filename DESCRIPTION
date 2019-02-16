@@ -20,5 +20,8 @@ Depends:
 Imports:
    climwin,
    dplyr,
-   tibble
+   tibble,
+   sp,
+   lubridate,
+   raster
 RoxygenNote: 6.1.1

@@ -19,27 +19,32 @@
 #' @export
 #'
 #' @return A tibble with five columns if randwin is set to FALSE
-#' and six columns if randwin is set TRUE. The columns are:
-#' 'ID' - study id, 'Species' - study species, 'climwin_output' -
+#' and six columns if randwin is set TRUE. The columns are: 'ID'
+#' - study id, 'Species' - study species, 'climwin_output' -
 #' a list returned by slidingwin(), 'randwin_output' - a list
 #' returned by randwin (if set to TRUE), 'clim_data' - a
 #' data frame with climate values, 'biol_data' - a data frmae with
 #' traits, demographic rates and population size.
 #'
+#' biol <- read.csv('./data-raw/test_Ahola.csv')
+#'  meanT <- raster::stack('./data-raw/tg_ens_mean_0.1deg_reg_v18.0e.nc')
+#'
+
 climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
                          seednum = 1302, repeats = 20,
                          plot_check = FALSE, RefMon = 6){
 
   # add Date to biol data (for slidingwin)
-  biol_data$Date <- as.Date(paste("01", "06", biol_data$Year, sep = "/"), format = '%d/%m/%Y')
+  biol_data$Date <- as.Date(paste('01', '06', biol_data$Year,
+                                  sep = '/'), format = '%d/%m/%Y')
 
   # exclude missing values of trait - cannot work otherwise (another possibility would be
   # to fill in the missing values...)
   biol_data <- biol_data[! is.na(biol_data$Trait_mean), ]
 
-  location_spatial <-  SpatialPointsDataFrame(coords = biol_data[1, c('Longitude', 'Latitude')],
+  location_spatial <-  sp::SpatialPointsDataFrame(coords = biol_data[1, c('Longitude', 'Latitude')],
                                               data = data.frame(ID = biol_data$ID[1]),
-                                              proj4string = CRS(as.character("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")))
+                                              proj4string = sp::CRS(as.character('+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0')))
 
   ##  for a visual check
   if (plot_check){
@@ -50,7 +55,7 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
   ####                          Extract temperature data                  ####
   # Determine date data for each layer of the raster (allows us to sort by each year).
   temp_dates <- data.frame(Date = as.Date(names(clim_data),
-                                          format = "X%Y.%m.%d"))
+                                          format = 'X%Y.%m.%d'))
   temp_dates$Year <- lubridate::year(temp_dates$Date)
 
   ## extract data from Euro weather for all the necessary dates for the site
@@ -63,14 +68,15 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
 
   ptstart <- proc.time()
   Clim$Temp <- ifelse(is.na(Clim$Temp),
-                      as.numeric(extract(clim_data[[which(temp_dates$Date %in%
+                      as.numeric(raster::extract(clim_data[[which(temp_dates$Date %in%
                                                             Clim$Date)]], location_spatial)),
                       NA)
   ptfinish <- proc.time() - ptstart
   cat('When extracting weather data from the raster the time elapsed is ',
       ptfinish[3], ';\n', 'time spend for ',
       names(ptfinish)[1], ' is ', ptfinish[1], ';\n',
-      'for ', names(ptfinish)[2], ' is ', ptfinish[2], '\n', sep = '')
+      'for ', names(ptfinish)[2], ' is ', ptfinish[2], '\n',
+      sep = '')
 
   # Check that data extracted properly!!
   if(all(is.na(Clim$Temp))){
@@ -85,7 +91,8 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
 
   # browser()
   ptstart <- proc.time()
-  climwin_output <- slidingwin(xvar = list(Temp = Clim$Temp), cdate = Clim$Date,
+  climwin_output <- climwin::slidingwin(xvar = list(Temp = Clim$Temp),
+                                        cdate = Clim$Date,
                                bdate = biol_data$Date,
                                baseline = lm(Trait_mean ~ 1, data = biol_data,
                                              weights = W),
@@ -97,13 +104,14 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
   cat('When fitting slidingwin() the time elapsed is ',
       ptfinish[3], ';\n', 'time spend for ',
       names(ptfinish)[1], ' is ', ptfinish[1], ';\n',
-      'for ', names(ptfinish)[2], ' is ', ptfinish[2], '\n', sep = '')
+      'for ', names(ptfinish)[2], ' is ', ptfinish[2],
+      '\n', sep = '')
 
 
   if(randwin){
 
     ptstart <- proc.time()
-    randwin_output <- randwin(repeats = repeats,
+    randwin_output <- climwin::randwin(repeats = repeats,
                               xvar = list(Temp = Clim$Temp),
                               cdate = Clim$Date,
                               bdate = biol_data$Date,
@@ -112,16 +120,18 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
                               range = c(365, 0),
                               stat = 'mean', func = 'lin',
                               type = 'absolute', refday = c(1, RefMon),
-                              cmissing = 'method2', cinterval = 'day')
+                              cmissing = 'method2',
+                              cinterval = 'day')
     ptfinish <- proc.time() - ptstart
     cat('When running randwin() with ', repeats,
         'number of repeats, the time elapsed is ',
         ptfinish[3], ';\n', 'time spend for ',
         names(ptfinish)[1], ' is ', ptfinish[1], ';\n',
-        'for ', names(ptfinish)[2], ' is ', ptfinish[2], '\n', sep = '')
+        'for ', names(ptfinish)[2], ' is ', ptfinish[2],
+        '\n', sep = '')
 
     # create a tibble to save all output together
-    clim_out <- tibble(ID = biol_data$ID[1],
+    clim_out <- tibble::tibble(ID = biol_data$ID[1],
                        Species = biol_data$Species[1],
                        climwin_output = list(climwin_output[[1]]),
                        randwin_output = list(randwin_output[[1]]),
@@ -133,7 +143,7 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
 
   } else {
     # create a tibble to save all output together
-    clim_out <- tibble(ID = biol_data$ID[1],
+    clim_out <- tibble::tibble(ID = biol_data$ID[1],
                        Species = biol_data$Species[1],
                        climwin_output = list(climwin_output[[1]]),
                        clim_data = list(Clim),
