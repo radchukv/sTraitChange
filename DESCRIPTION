@@ -1,0 +1,24 @@
+Package: sTraitChange
+Type: Package
+Title: Assesses the effect of climate on population dynamics mediated by traits
+Version: 0.0.0.900
+Author: person('Radchuk', 'Viktoriia', 
+    email = 'radchuk.victoria@gmail.com', 
+    role = c('aut', 'cre'),
+    comment = c(ORCID = "0000-0003-3072-0095"))
+Description: Runs climate window analyses to detect the best 
+    climatic windows for traits in consideration. Next, runs 
+    structural equation models to assess the pathways from 
+    climate to population growth (via traits and demographic
+    rates). And, lastly, performs meta-analysis on the extracted
+    path coefficients
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 3.5)
+Imports:
+   climwin,
+   dplyr,
+   tibble
+RoxygenNote: 6.1.1
