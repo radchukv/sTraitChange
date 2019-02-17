@@ -15,25 +15,35 @@
 #' of climatic data together with the study location.
 #' @param RefMon Numeric specifying the month for the refday()
 #' (see slidingwin() for more information)
+#' @param out_dir Character specifying the library on the path where
+#' to save the results
 #'
 #' @export
 #'
 #' @return A tibble with five columns if randwin is set to FALSE
-#' and six columns if randwin is set TRUE. The columns are: 'ID'
-#' - study id, 'Species' - study species, 'climwin_output' -
-#' a list returned by slidingwin(), 'randwin_output' - a list
-#' returned by randwin (if set to TRUE), 'clim_data' - a
-#' data frame with climate values, 'biol_data' - a data frmae with
+#' and six columns if randwin is set TRUE. The columns are: "ID"
+#' - study id, "Species" - study species, "climwin_output" -
+#' a list returned by slidingwin(), "randwin_output" - a list
+#' returned by randwin (if set to TRUE), "clim_data" - a
+#' data frame with climate values, "biol_data" - a data frame with
 #' traits, demographic rates and population size.
 #'
+#' @examples
 #' biol <- read.csv('./data-raw/test_Ahola.csv')
-#'  meanT <- raster::stack('./data-raw/tg_ens_mean_0.1deg_reg_v18.0e.nc')
+#' meanT <- raster::stack('./data-raw/tg_ens_mean_0.1deg_reg_v18.0e.nc')
+#' test_rand <- climwin_proc(biol_data = biol,
+#' clim_data = meanT, ID = 1,
+#' randwin = FALSE, seednum = 1302,
+#' repeats = 30, plot_check = FALSE,
+#' RefMon = 6, out_dir = './output_climwin/')
 #'
-
-climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
+climwin_proc <- function(biol_data, clim_data,
+                         ID, randwin = FALSE,
                          seednum = 1302, repeats = 20,
-                         plot_check = FALSE, RefMon = 6){
+                         plot_check = FALSE, RefMon = 6,
+                         out_dir = "output_climwin"){
 
+  biol_data <- subset(biol_data, ID == ID)
   # add Date to biol data (for slidingwin)
   biol_data$Date <- as.Date(paste('01', '06', biol_data$Year,
                                   sep = '/'), format = '%d/%m/%Y')
@@ -43,12 +53,12 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
   biol_data <- biol_data[! is.na(biol_data$Trait_mean), ]
 
   location_spatial <-  sp::SpatialPointsDataFrame(coords = biol_data[1, c('Longitude', 'Latitude')],
-                                              data = data.frame(ID = biol_data$ID[1]),
-                                              proj4string = sp::CRS(as.character('+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0')))
+                                                  data = data.frame(ID = biol_data$ID[1]),
+                                                  proj4string = sp::CRS(as.character('+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0')))
 
   ##  for a visual check
   if (plot_check){
-    plot(clim_data[[1]])
+    raster::plot(clim_data[[1]])
     points(location_spatial)
   }
 
@@ -69,7 +79,7 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
   ptstart <- proc.time()
   Clim$Temp <- ifelse(is.na(Clim$Temp),
                       as.numeric(raster::extract(clim_data[[which(temp_dates$Date %in%
-                                                            Clim$Date)]], location_spatial)),
+                                                                    Clim$Date)]], location_spatial)),
                       NA)
   ptfinish <- proc.time() - ptstart
   cat('When extracting weather data from the raster the time elapsed is ',
@@ -89,17 +99,16 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
   # create weights here, otherwise slidingwin does not see them
   biol_data$W <- 1 / biol_data$Trait_SE^2
 
-  # browser()
   ptstart <- proc.time()
   climwin_output <- climwin::slidingwin(xvar = list(Temp = Clim$Temp),
                                         cdate = Clim$Date,
-                               bdate = biol_data$Date,
-                               baseline = lm(Trait_mean ~ 1, data = biol_data,
-                                             weights = W),
-                               range = c(365, 0),
-                               stat = 'mean', func = 'lin',
-                               type = 'absolute', refday = c(1, RefMon),
-                               cmissing = 'method2', cinterval = 'day')
+                                        bdate = biol_data$Date,
+                                        baseline = lm(Trait_mean ~ 1, data = biol_data,
+                                                      weights = W),
+                                        range = c(365, 0),
+                                        stat = 'mean', func = 'lin',
+                                        type = 'absolute', refday = c(1, RefMon),
+                                        cmissing = 'method2', cinterval = 'day')
   ptfinish <- proc.time() - ptstart
   cat('When fitting slidingwin() the time elapsed is ',
       ptfinish[3], ';\n', 'time spend for ',
@@ -112,16 +121,16 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
 
     ptstart <- proc.time()
     randwin_output <- climwin::randwin(repeats = repeats,
-                              xvar = list(Temp = Clim$Temp),
-                              cdate = Clim$Date,
-                              bdate = biol_data$Date,
-                              baseline = lm(Trait_mean ~ 1, data = biol_data,
-                                            weights = W),
-                              range = c(365, 0),
-                              stat = 'mean', func = 'lin',
-                              type = 'absolute', refday = c(1, RefMon),
-                              cmissing = 'method2',
-                              cinterval = 'day')
+                                       xvar = list(Temp = Clim$Temp),
+                                       cdate = Clim$Date,
+                                       bdate = biol_data$Date,
+                                       baseline = lm(Trait_mean ~ 1, data = biol_data,
+                                                     weights = W),
+                                       range = c(365, 0),
+                                       stat = 'mean', func = 'lin',
+                                       type = 'absolute', refday = c(1, RefMon),
+                                       cmissing = 'method2',
+                                       cinterval = 'day')
     ptfinish <- proc.time() - ptstart
     cat('When running randwin() with ', repeats,
         'number of repeats, the time elapsed is ',
@@ -132,24 +141,24 @@ climwin_proc <- function(biol_data, clim_data, ID, randwin = FALSE,
 
     # create a tibble to save all output together
     clim_out <- tibble::tibble(ID = biol_data$ID[1],
-                       Species = biol_data$Species[1],
-                       climwin_output = list(climwin_output[[1]]),
-                       randwin_output = list(randwin_output[[1]]),
-                       clim_data = list(Clim),
-                       biol_data = list(biol_data))
+                               Species = biol_data$Species[1],
+                               climwin_output = list(climwin_output[[1]]),
+                               randwin_output = list(randwin_output[[1]]),
+                               clim_data = list(Clim),
+                               biol_data = list(biol_data))
     saveRDS(object = clim_out,
-            file = paste0('./Output/', biol_data$Species[1], '_',
+            file = paste0('./', out_dir, '/', biol_data$Species[1], '_',
                           biol_data$Location[1], '_Rand',  '.RDS'))
 
   } else {
     # create a tibble to save all output together
     clim_out <- tibble::tibble(ID = biol_data$ID[1],
-                       Species = biol_data$Species[1],
-                       climwin_output = list(climwin_output[[1]]),
-                       clim_data = list(Clim),
-                       biol_data = list(biol_data))
+                               Species = biol_data$Species[1],
+                               climwin_output = list(climwin_output[[1]]),
+                               clim_data = list(Clim),
+                               biol_data = list(biol_data))
     saveRDS(object = clim_out,
-            file = paste0('./Output/', biol_data$Species[1], '_',
+            file = paste0('./', out_dir, '/', biol_data$Species[1], '_',
                           biol_data$Location[1],  '.RDS'))
   }
   return(clim_out)
