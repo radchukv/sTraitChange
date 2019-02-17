@@ -32,10 +32,10 @@
 #' biol <- read.csv('./data-raw/test_Ahola.csv')
 #' meanT <- raster::stack('./data-raw/tg_ens_mean_0.1deg_reg_v18.0e.nc')
 #' test_rand <- climwin_proc(biol_data = biol,
-#' clim_data = meanT, ID = 1,
-#' randwin = FALSE, seednum = 1302,
-#' repeats = 30, plot_check = FALSE,
-#' RefMon = 6, out_dir = './output_climwin/')
+#'                           clim_data = meanT, ID = 1,
+#'                           randwin = FALSE, seednum = 1302,
+#'                           repeats = 30, plot_check = FALSE,
+#'                           RefMon = 6, out_dir = 'output_climwin')
 #'
 climwin_proc <- function(biol_data, clim_data,
                          ID, randwin = FALSE,
@@ -43,7 +43,7 @@ climwin_proc <- function(biol_data, clim_data,
                          plot_check = FALSE, RefMon = 6,
                          out_dir = "output_climwin"){
 
-  biol_data <- subset(biol_data, ID == ID)
+  biol_data <- droplevels(biol_data[biol_data$ID == ID, ])
   # add Date to biol data (for slidingwin)
   biol_data$Date <- as.Date(paste('01', '06', biol_data$Year,
                                   sep = '/'), format = '%d/%m/%Y')
