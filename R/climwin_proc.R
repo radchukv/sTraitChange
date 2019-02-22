@@ -9,12 +9,15 @@
 #' @param clim_data Raster stack of climatic data across Europe
 #' (if the study is outside Europe use XX).
 #' @param ID Numeric giving a unique ID of the current dataset for a given population and species.
-#' @param randwin Logical (TRUE/FALSE). Should randwin() be run together with slidingwin()?
+#' @param randwin Logical (TRUE/FALSE). Should \code{\link[climwin]{randwin}}
+#'  be run together with \code{\link[climwin]{slidingwin}}?
 #' @param repeats If randwin is run, the number of times that data will be randomised.
-#' @param plot_check Logical (TRUE/FALSE). Whether to display one year (the first in the series)
-#' of climatic data together with the study location.
-#' @param RefMon Numeric specifying the month for the refday()
-#' (see slidingwin() for more information)
+#' @param plot_check Logical (TRUE/FALSE). Whether to display
+#' one year (the first in the series) of the climatic data
+#'  together with the study location.
+#' @param RefMon Numeric specifying the month for the refday(),
+#' see the same option in the function \code{\link[climwin]{slidingwin}}
+#' for more information.
 #' @param out_dir Character specifying the library on the path where
 #' to save the results
 #' @param stat Character specifying which statistics to use for
@@ -32,9 +35,9 @@
 #' traits, demographic rates and population size.
 #'
 #' @examples
-#' biol <- read.csv('./data-raw/test_Ahola.csv')
+#' dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
 #' meanT <- raster::stack('./data-raw/tg_ens_mean_0.1deg_reg_v18.0e.nc')
-#' test_rand <- climwin_proc(biol_data = biol,
+#' test_rand <- climwin_proc(biol_data = dat_birds,
 #'                           clim_data = meanT, ID = 1,
 #'                           randwin = FALSE, seednum = 1302,
 #'                           repeats = 30, plot_check = FALSE,

@@ -6,7 +6,7 @@
 \usage{
 climwin_proc(biol_data, clim_data, ID, randwin = FALSE, seednum = 1302,
   repeats = 20, plot_check = FALSE, RefMon = 6,
-  out_dir = "output_climwin")
+  out_dir = "output_climwin", stat = "mean")
 }
 \arguments{
 \item{biol_data}{Data frame with trait data for a given population and species.}
@@ -16,18 +16,25 @@ climwin_proc(biol_data, clim_data, ID, randwin = FALSE, seednum = 1302,
 
 \item{ID}{Numeric giving a unique ID of the current dataset for a given population and species.}
 
-\item{randwin}{Logical (TRUE/FALSE). Should randwin() be run together with slidingwin()?}
+\item{randwin}{Logical (TRUE/FALSE). Should \code{\link[climwin]{randwin}}
+be run together with \code{\link[climwin]{slidingwin}}?}
 
 \item{repeats}{If randwin is run, the number of times that data will be randomised.}
 
-\item{plot_check}{Logical (TRUE/FALSE). Whether to display one year (the first in the series)
-of climatic data together with the study location.}
+\item{plot_check}{Logical (TRUE/FALSE). Whether to display
+one year (the first in the series) of the climatic data
+ together with the study location.}
 
-\item{RefMon}{Numeric specifying the month for the refday()
-(see slidingwin() for more information)}
+\item{RefMon}{Numeric specifying the month for the refday(),
+see the same option in the function \code{\link[climwin]{slidingwin}}
+for more information.}
 
 \item{out_dir}{Character specifying the library on the path where
 to save the results}
+
+\item{stat}{Character specifying which statistics to use for
+aggregating the climatic data (see also the same option in
+\code{\link[climwin]{slidingwin}}).}
 }
 \value{
 A tibble with five columns if randwin is set to FALSE
@@ -45,12 +52,13 @@ identified window together with results of randomisation
 tests (if asked for)
 }
 \examples{
-biol <- read.csv('./data-raw/test_Ahola.csv')
+dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
 meanT <- raster::stack('./data-raw/tg_ens_mean_0.1deg_reg_v18.0e.nc')
-test_rand <- climwin_proc(biol_data = biol,
+test_rand <- climwin_proc(biol_data = dat_birds,
                           clim_data = meanT, ID = 1,
                           randwin = FALSE, seednum = 1302,
                           repeats = 30, plot_check = FALSE,
-                          RefMon = 6, out_dir = 'output_climwin')
+                          RefMon = 6, out_dir = 'output_climwin',
+                          stat = 'mean')
 
 }
