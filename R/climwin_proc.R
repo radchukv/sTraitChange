@@ -17,6 +17,9 @@
 #' (see slidingwin() for more information)
 #' @param out_dir Character specifying the library on the path where
 #' to save the results
+#' @param stat Character specifying which statistics to use for
+#'  aggregating the climatic data (see also the same option in
+#'  \code{\link[climwin]{slidingwin}}).
 #'
 #' @export
 #'
@@ -35,13 +38,15 @@
 #'                           clim_data = meanT, ID = 1,
 #'                           randwin = FALSE, seednum = 1302,
 #'                           repeats = 30, plot_check = FALSE,
-#'                           RefMon = 6, out_dir = 'output_climwin')
+#'                           RefMon = 6, out_dir = 'output_climwin',
+#'                           stat = 'mean')
 #'
 climwin_proc <- function(biol_data, clim_data,
                          ID, randwin = FALSE,
                          seednum = 1302, repeats = 20,
                          plot_check = FALSE, RefMon = 6,
-                         out_dir = "output_climwin"){
+                         out_dir = 'output_climwin',
+                         stat = 'mean'){
 
   biol_data <- droplevels(biol_data[biol_data$ID == ID, ])
   # add Date to biol data (for slidingwin)
@@ -106,7 +111,7 @@ climwin_proc <- function(biol_data, clim_data,
                                         baseline = lm(Trait_mean ~ 1, data = biol_data,
                                                       weights = W),
                                         range = c(365, 0),
-                                        stat = 'mean', func = 'lin',
+                                        stat = stat, func = 'lin',
                                         type = 'absolute', refday = c(1, RefMon),
                                         cmissing = 'method2', cinterval = 'day')
   ptfinish <- proc.time() - ptstart
@@ -127,7 +132,7 @@ climwin_proc <- function(biol_data, clim_data,
                                        baseline = lm(Trait_mean ~ 1, data = biol_data,
                                                      weights = W),
                                        range = c(365, 0),
-                                       stat = 'mean', func = 'lin',
+                                       stat = stat, func = 'lin',
                                        type = 'absolute', refday = c(1, RefMon),
                                        cmissing = 'method2',
                                        cinterval = 'day')
