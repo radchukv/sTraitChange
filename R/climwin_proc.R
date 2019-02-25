@@ -56,9 +56,11 @@ climwin_proc <- function(biol_data, clim_data,
   biol_data$Date <- as.Date(paste('01', '06', biol_data$Year,
                                   sep = '/'), format = '%d/%m/%Y')
 
-  # exclude missing values of trait - cannot work otherwise (another possibility would be
-  # to fill in the missing values...)
-  biol_data <- biol_data[! is.na(biol_data$Trait_mean), ]
+  ## imputing mean of the previous and next values for the mean of the traits, and
+  ## median of all the values for the SE of the traits
+  biol_data <- impute_ma(data = biol_data, column = 'Trait_mean')
+  biol_data <- impute_median(data = biol_data, column = 'Trait_SE')
+  # biol_data <- biol_data[! is.na(biol_data$Trait_mean), ] -  former approach, excluding NAs
 
   location_spatial <-  sp::SpatialPointsDataFrame(coords = biol_data[1, c('Longitude', 'Latitude')],
                                                   data = data.frame(ID = biol_data$ID[1]),
