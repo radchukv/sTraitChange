@@ -18,7 +18,7 @@
 #' out_biol <- convert_JulianDay(biol_data = biol_dat)
 #'
 convert_JulianDay <- function(biol_data){
-  if (levels(biol_data$Trait_Categ) %in% c('Phenological')){
+  if (any(levels(biol_data$Trait_Categ) %in% c('Phenological'))){
     subs_phen <- biol_data[biol_data$Trait_Categ == 'Phenological', ]
     if (any(! levels(subs_phen$Unit_trait) %in%
             c('JulianDay', 'Time'))){
