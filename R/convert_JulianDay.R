@@ -38,7 +38,7 @@ convert_JulianDay <- function(biol_data){
 
       full_dat <- rbind(droplevels(biol_data[biol_data$Unit_trait %in%
                                                c('JulianDay', 'Time'), ]),
-                        droplevels(biol_data[biol_data$Trait_Categ != 'Phenological']),
+                        droplevels(biol_data[biol_data$Trait_Categ != 'Phenological', ]),
                         biol_sub)
       return(full_dat)
 
