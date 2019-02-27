@@ -83,8 +83,9 @@ climwin_proc <- function(biol_data, clim_data,
   message(paste('Currently extracting temperature data for',
                 biol_data$Species[1], 'in', biol_data$Location[1]))
   Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 1, sep = '/'), format = '%d/%m/%Y'),
-                                as.Date(paste('01', '06', max(biol_data$Year), sep = '/'), format = '%d/%m/%Y'), 'day'),  # why max should be this and not + 1 year?
-                     Temp = NA)
+                                as.Date(paste('01', '09', max(biol_data$Year), sep = '/'), format = '%d/%m/%Y'), 'day'),  # why max should be this and not + 1 year?
+                     Temp = NA)  ##longer end date for clim dtaa compared to biol data is needed in order for basewin()
+  ## checks to not crush
 
   ptstart <- proc.time()
   Clim$Temp <- ifelse(is.na(Clim$Temp),
