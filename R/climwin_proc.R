@@ -26,13 +26,14 @@
 #'
 #' @export
 #'
-#' @return A tibble with five columns if randwin is set to FALSE
-#' and six columns if randwin is set TRUE. The columns are: "ID"
-#' - study id, "Species" - study species, "climwin_output" -
-#' a list returned by slidingwin(), "randwin_output" - a list
-#' returned by randwin (if set to TRUE), "clim_data" - a
-#' data frame with climate values, "biol_data" - a data frame with
-#' traits, demographic rates and population size.
+#' @return A tibble with six columns if randwin is set to FALSE
+#' and seven columns if randwin is set TRUE. The columns are: "ID"
+#' - study id, "Species" - study species, "Trait" - the trait considered,
+#' "climwin_output" - a list returned by slidingwin(),
+#' "randwin_output" - a list returned by randwin (if set to TRUE),
+#' "clim_data" - a data frame with climate values,
+#' "biol_data" - a data frame with traits, demographic rates
+#' and population size.
 #'
 #' @examples
 #' dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
@@ -81,7 +82,8 @@ climwin_proc <- function(biol_data, clim_data,
   ## extract data from Euro weather for all the necessary dates for the site
   ## (i.e. everything from the year before the first recorded nest until the year of the most recent brood).
   message(paste('Currently extracting temperature data for',
-                biol_data$Species[1], 'in', biol_data$Location[1]))
+                biol_data$Species[1], 'in', biol_data$Location[1], 'for',
+                biol_data$Trait[1]))
   Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 1, sep = '/'), format = '%d/%m/%Y'),
                                 as.Date(paste('01', '09', max(biol_data$Year), sep = '/'), format = '%d/%m/%Y'), 'day'),  # why max should be this and not + 1 year?
                      Temp = NA)  ##longer end date for clim dtaa compared to biol data is needed in order for basewin()
@@ -153,24 +155,28 @@ climwin_proc <- function(biol_data, clim_data,
     # create a tibble to save all output together
     clim_out <- tibble::tibble(ID = biol_data$ID[1],
                                Species = biol_data$Species[1],
+                               Trait = biol_data$Trait[1],
                                climwin_output = list(climwin_output[[1]]),
                                randwin_output = list(randwin_output[[1]]),
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
             file = paste0('./', out_dir, '/', biol_data$Species[1], '_',
-                          biol_data$Location[1], '_Rand',  '.RDS'))
+                          biol_data$Location[1], '_', biol_data$Trait[1],
+                          '_Rand',  '.RDS'))
 
   } else {
     # create a tibble to save all output together
     clim_out <- tibble::tibble(ID = biol_data$ID[1],
                                Species = biol_data$Species[1],
+                               Trait = biol_data$Trait[1],
                                climwin_output = list(climwin_output[[1]]),
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
             file = paste0('./', out_dir, '/', biol_data$Species[1], '_',
-                          biol_data$Location[1],  '.RDS'))
+                          biol_data$Location[1], '_', biol_data$Trait[1],
+                          '.RDS'))
   }
   return(clim_out)
 }

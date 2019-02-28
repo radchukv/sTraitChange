@@ -37,13 +37,14 @@ aggregating the climatic data (see also the same option in
 \code{\link[climwin]{slidingwin}}).}
 }
 \value{
-A tibble with five columns if randwin is set to FALSE
-and six columns if randwin is set TRUE. The columns are: "ID"
-- study id, "Species" - study species, "climwin_output" -
-a list returned by slidingwin(), "randwin_output" - a list
-returned by randwin (if set to TRUE), "clim_data" - a
-data frame with climate values, "biol_data" - a data frame with
-traits, demographic rates and population size.
+A tibble with six columns if randwin is set to FALSE
+and seven columns if randwin is set TRUE. The columns are: "ID"
+- study id, "Species" - study species, "Trait" - the trait considered,
+"climwin_output" - a list returned by slidingwin(),
+"randwin_output" - a list returned by randwin (if set to TRUE),
+"clim_data" - a data frame with climate values,
+"biol_data" - a data frame with traits, demographic rates
+and population size.
 }
 \description{
 \code{climwin_proc} performs climate window analysis for
