@@ -1,3 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
+^output_climwin$
+^output_SEM$
