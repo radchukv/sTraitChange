@@ -161,9 +161,9 @@ climwin_proc <- function(biol_data, clim_data,
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
-            file = paste0('./', out_dir, '/', biol_data$Species[1], '_',
-                          biol_data$Location[1], '_', biol_data$Trait[1],
-                          '_Rand',  '.RDS'))
+            file = paste0('./', out_dir, '/', biol_data$ID[1], '_',
+                          biol_data$Species[1], '_', biol_data$Location[1],
+                          '_', biol_data$Trait[1], '_Rand',  '.RDS'))
 
   } else {
     # create a tibble to save all output together
@@ -174,7 +174,8 @@ climwin_proc <- function(biol_data, clim_data,
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
-            file = paste0('./', out_dir, '/', biol_data$Species[1], '_',
+            file = paste0('./', out_dir, '/', biol_data$ID[1], '_',
+                          biol_data$Species[1], '_',
                           biol_data$Location[1], '_', biol_data$Trait[1],
                           '.RDS'))
   }
