@@ -81,7 +81,8 @@ climwin_proc <- function(biol_data, clim_data,
 
   ## extract data from Euro weather for all the necessary dates for the site
   ## (i.e. everything from the year before the first recorded nest until the year of the most recent brood).
-  message(paste('Currently extracting temperature data for',
+  message(paste('Currently extracting temperature data for study',
+                biol_data$ID[1], 'for species',
                 biol_data$Species[1], 'in', biol_data$Location[1], 'for',
                 biol_data$Trait[1]))
   Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 1, sep = '/'), format = '%d/%m/%Y'),
@@ -161,9 +162,9 @@ climwin_proc <- function(biol_data, clim_data,
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
-            file = paste0('./', out_dir, '/', biol_data$Species[1], '_',
-                          biol_data$Location[1], '_', biol_data$Trait[1],
-                          '_Rand',  '.RDS'))
+            file = paste0('./', out_dir, '/', biol_data$ID[1], '_',
+                          biol_data$Species[1], '_', biol_data$Location[1],
+                          '_', biol_data$Trait[1], '_Rand',  '.RDS'))
 
   } else {
     # create a tibble to save all output together
@@ -174,7 +175,8 @@ climwin_proc <- function(biol_data, clim_data,
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
-            file = paste0('./', out_dir, '/', biol_data$Species[1], '_',
+            file = paste0('./', out_dir, '/', biol_data$ID[1], '_',
+                          biol_data$Species[1], '_',
                           biol_data$Location[1], '_', biol_data$Trait[1],
                           '.RDS'))
   }
