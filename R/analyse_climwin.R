@@ -37,14 +37,16 @@ analyse_climwin <- function(ID, biol_data,
 
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
   if (randwin) {
-    dat <- readRDS(paste0('./', out_dir, '/', subs$Species[1], '_',
-                          subs$Location[1], '_Rand',  '.RDS'))
+    dat <- readRDS(paste0('./', out_dir, '/', subs$ID[1], '_',
+                          subs$Species[1], '_', subs$Location[1],
+                          '_', subs$Trait[1], '_Rand', '.RDS'))
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
     randwin_out <- dat$randwin_output[[1]]
   } else {
-    dat <- readRDS(paste0('./', out_dir, '/', subs$Species[1], '_',
-                          subs$Location[1], '.RDS'))
+    dat <- readRDS(paste0('./', out_dir, '/', subs$ID[1], '_',
+                          subs$Species[1], '_', subs$Location[1],
+                          '_', subs$Trait[1], '.RDS'))
 
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
@@ -57,8 +59,9 @@ analyse_climwin <- function(ID, biol_data,
   # model or of the medwin
   # climwin::medwin(climwin_out$Dataset, cw = 0.95)
 
-  pdf(paste0('./', out_dir, '/', subs$Species[1], '_',
-             subs$Location[1], '_climwin.pdf'))
+  pdf(paste0('./', out_dir, '/', subs$ID[1], '_',
+             subs$Species[1], '_', subs$Location[1],
+             '_', subs$Trait[1], '_climwin.pdf'))
   par(mfrow = c(2,2))
   print(climwin::plotdelta(climwin_out$Dataset))
   print(climwin::plotwin(climwin_out$Dataset))
@@ -83,12 +86,15 @@ analyse_climwin <- function(ID, biol_data,
 
       res <- tibble::tibble(ID = biol$ID[1],
                             Species = biol$Species[1],
+                            Location = biol$Location[1],
+                            Trait = biol$Trait[1],
                             pvalue = pval_rand,
                             data_res = list(dat_out))
       # save these data for SEM
       saveRDS(object = res,
-              file = paste0('./', out_dir, '/', biol$Species[1], '_',
-                            biol$Location[1], '_ForSEM',  '.RDS'))
+              file = paste0('./', out_dir, '/', biol$ID[1], '_',
+                            biol$Species[1], '_', biol$Location[1],
+                            '_', biol$Trait[1], '_ForSEM',  '.RDS'))
 
       return(res)
     } else {
@@ -97,6 +103,8 @@ analyse_climwin <- function(ID, biol_data,
               'No output dataset created')
       return(tibble::tibble(ID = biol$ID[1],
                             Species = biol$Species[1],
+                            Location = biol$Location[1],
+                            Trait = biol$Trait[1],
                             pvalue = pval_rand))
     }
   } else {
