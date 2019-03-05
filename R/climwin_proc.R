@@ -86,7 +86,7 @@ climwin_proc <- function(biol_data, clim_data,
                 biol_data$Species[1], 'in', biol_data$Location[1], 'for',
                 biol_data$Trait[1]))
   Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 1, sep = '/'), format = '%d/%m/%Y'),
-                                as.Date(paste('01', '09', max(biol_data$Year), sep = '/'), format = '%d/%m/%Y'), 'day'),  # why max should be this and not + 1 year?
+                                as.Date(paste('01', '12', max(biol_data$Year), sep = '/'), format = '%d/%m/%Y'), 'day'),  # why max should be this and not + 1 year?
                      Temp = NA)  ##longer end date for clim dtaa compared to biol data is needed in order for basewin()
   ## checks to not crush
 
