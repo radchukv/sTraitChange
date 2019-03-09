@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_res_SEM.R
 \name{get_res_SEM}
 \alias{get_res_SEM}
-\title{Extracts results of the fitted structural equation model}
+\title{Extract results of the fitted structural equation model}
 \usage{
 get_res_SEM(mod_obj)
 }

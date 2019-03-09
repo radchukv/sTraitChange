@@ -1,4 +1,4 @@
-#' Extracts results of the fitted structural equation model
+#' Extract results of the fitted structural equation model
 #'
 #' \code{get_res_SEM} extracts results of the fitted
 #'  structural equation model
