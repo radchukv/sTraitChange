@@ -4,8 +4,10 @@
 #' with climate window analysis (function \code{\link{climwin_proc}})
 #' for the specified study ID
 #'
-#' @param biol_data Data frame with trait data for a given population and species.
-#' @param ID Numeric giving a unique ID of the current dataset for a given population and species.
+#' @param biol_data Data frame with trait data for a given
+#' population and species.
+#' @param ID Numeric giving a unique ID of the current dataset for
+#' a given population and species.
 #' @param randwin Logical (TRUE/FALSE) specifying whether \code{\link[climwin]{randwin}}
 #' was run together with \code{\link[climwin]{slidingwin}}.
 #' @param out_dir Character specifying the library on the path where
