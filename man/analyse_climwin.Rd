@@ -8,9 +8,11 @@ analyse_climwin(ID, biol_data, out_dir = "output_climwin",
   randwin = FALSE, metric = "C")
 }
 \arguments{
-\item{ID}{Numeric giving a unique ID of the current dataset for a given population and species.}
+\item{ID}{Numeric giving a unique ID of the current dataset for
+a given population and species.}
 
-\item{biol_data}{Data frame with trait data for a given population and species.}
+\item{biol_data}{Data frame with trait data for a given
+population and species.}
 
 \item{out_dir}{Character specifying the library on the path where
 the results of climate window analysis were stored.}
