@@ -93,6 +93,6 @@ fit_SEM <- function(biol_data, ID, out_dir,
           file = paste0('./', out_dir, '/', res_SEM$ID[1], '_',
                         res_SEM$Species[1], '_', res_SEM$Location[1],
                         '_', res_SEM$Trait[1], '_',
-                        res_SEM$Demog_rate[1], '_ForSEM',  '.RDS'))
+                        res_SEM$Demog_rate[1], '_ResultsSEM',  '.RDS'))
   return(res_SEM)
 }
