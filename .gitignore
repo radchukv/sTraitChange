@@ -4,4 +4,5 @@
 .Ruserdata
 data-raw
 output_climwin
+output_climwin_precip
 output_SEM
