@@ -67,8 +67,12 @@ fit_SEM <- function(biol_data, ID, out_dir,
              data_GR$Species[1], '_', data_GR$Location[1],
              '_', data_GR$Trait[1], '_relations.pdf'))
   psych::pairs.panels(subset(data_GR, select = c(Clim, Trait_mean,
-                                                 Demog_rate_mean, Pop_mean, GR)),
-                      ellipses = FALSE, hist.col = 'grey', lm = TRUE)
+                                                  Demog_rate_mean, Pop_mean, GR)),
+                              ellipses = FALSE, hist.col = 'grey', lm = TRUE)
+  mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
+        line = 3)
+  mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
+        line = 4)
   dev.off()
 
   ## now call a function fitting a model (depending on the options:
