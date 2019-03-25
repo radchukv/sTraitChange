@@ -60,6 +60,7 @@ get_res_SEM <- function(mod_obj){
   res <- tibble::tibble(ID = unique(data$ID),
                         Species = unique(data$Species),
                         Location = unique(data$Location),
+                        Taxon = unique(data$Taxon),
                         Trait_Categ = unique(data$Trait_Categ),
                         Trait = unique(data$Trait),
                         Demog_rate_Categ = unique(data$Demog_rate_Categ),
