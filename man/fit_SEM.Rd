@@ -5,7 +5,7 @@
 \title{Fit structural equation model and return the results}
 \usage{
 fit_SEM(biol_data, ID, out_dir, DD = FALSE, weights = FALSE,
-  correlation = FALSE)
+  correlation = FALSE, standardize = FALSE)
 }
 \arguments{
 \item{biol_data}{Data frame with climate, trait and demographic rate
@@ -27,6 +27,9 @@ models.}
 
 \item{correlation}{Logical (TRUE/FALSE) specifying whether to include
 temporal autocorrelation with AR(1) structure.}
+
+\item{standardize}{Logical (TRUE/FALSE) specifying whether to
+standardize (using z scores) the variables prior to fitting the model.}
 }
 \value{
 A tibble with 15 columns that represent the metadata for a
@@ -51,5 +54,6 @@ dat <- test_fSEM$data_res[[1]]
 test <- fit_SEM(biol_data = dat, ID = 1,
                 out_dir = 'output_SEM',
                 DD = FALSE, weights = FALSE,
-                correlation = FALSE)  ## does not work for corr = TRUE yet
+                correlation = FALSE,
+                standardize = FALSE)  ## does not work for corr = TRUE yet
 }
