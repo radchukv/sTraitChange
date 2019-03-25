@@ -18,6 +18,8 @@
 #' models.
 #' @param correlation Logical (TRUE/FALSE) specifying whether to include
 #' temporal autocorrelation with AR(1) structure.
+#' @param standardize Logical (TRUE/FALSE) specifying whether to
+#' standardize (using z scores) the variables prior to fitting the model.
 #'
 #' @export
 #'
@@ -38,12 +40,14 @@
 #' test <- fit_SEM(biol_data = dat, ID = 1,
 #'                 out_dir = 'output_SEM',
 #'                 DD = FALSE, weights = FALSE,
-#'                 correlation = FALSE)  ## does not work for corr = TRUE yet
+#'                 correlation = FALSE,
+#'                 standardize = FALSE)  ## does not work for corr = TRUE yet
 
 fit_SEM <- function(biol_data, ID, out_dir,
                     DD = FALSE,
                     weights = FALSE,
-                    correlation = FALSE){
+                    correlation = FALSE,
+                    standardize = FALSE){
   # select one study
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
 
@@ -62,6 +66,28 @@ fit_SEM <- function(biol_data, ID, out_dir,
     dplyr::mutate(., GR = Pop_mean / Pop_mean_lag) %>%
     dplyr::filter(., !is.na(GR))
 
+  if(standardize){
+    data_GR <- data_GR %>%
+      dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean),
+                    Demog_rate_SE = Demog_rate_SE /sd(Demog_rate_mean),
+                    Clim = scale(Clim),
+                    Trait_mean = scale(Trait_mean),
+                    Demog_rate_mean = scale(Demog_rate_mean),
+                    Pop_mean = scale(Pop_mean),
+                    GR = scale(GR))
+
+    pdf(paste0('./', out_dir, '/', data_GR$ID[1], '_',
+               data_GR$Species[1], '_', data_GR$Location[1],
+               '_', data_GR$Trait[1], '_z_score_relations.pdf'))
+    psych::pairs.panels(subset(data_GR, select = c(Clim, Trait_mean,
+                                                   Demog_rate_mean, Pop_mean, GR)),
+                        ellipses = FALSE, hist.col = 'grey', lm = TRUE)
+    mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
+          line = 3)
+    mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
+          line = 4)
+    dev.off()
+     }
   # exploratory plots
   pdf(paste0('./', out_dir, '/', data_GR$ID[1], '_',
              data_GR$Species[1], '_', data_GR$Location[1],
