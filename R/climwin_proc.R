@@ -23,6 +23,8 @@
 #' @param stat Character specifying which statistics to use for
 #'  aggregating the climatic data (see also the same option in
 #'  \code{\link[climwin]{slidingwin}}).
+#' @param region Character specifying from which region the climatic data is
+#' extracted. For now supported are: 'Europe' and 'USA'. Defaults to 'Europe'.
 #'
 #' @export
 #'
@@ -50,7 +52,7 @@ climwin_proc <- function(biol_data, clim_data,
                          seednum = 1302, repeats = 20,
                          plot_check = FALSE, RefMon = 6,
                          out_dir = 'output_climwin',
-                         stat = 'mean'){
+                         stat = 'mean', region = 'Europe'){
 
   biol_data <- droplevels(biol_data[biol_data$ID == ID, ])
   # add Date to biol data (for slidingwin)
@@ -75,8 +77,15 @@ climwin_proc <- function(biol_data, clim_data,
 
   ####                          Extract temperature data                  ####
   # Determine date data for each layer of the raster (allows us to sort by each year).
+  if (region == 'Europe'){
   temp_dates <- data.frame(Date = as.Date(names(clim_data),
                                           format = 'X%Y.%m.%d'))
+  }else{
+    if(region == 'USA')
+      temp_dates <- data.frame(Date = as.Date(substr(names(clim_data),
+                                                     start = 1, stop = 11),
+                                              format = 'X%Y.%m.%d'))
+    }
   temp_dates$Year <- lubridate::year(temp_dates$Date)
 
   ## extract data from Euro weather for all the necessary dates for the site
