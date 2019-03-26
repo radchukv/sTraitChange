@@ -50,14 +50,23 @@ get_res_SEM <- function(mod_obj){
   coefs <- piecewiseSEM::coefs(mod_obj)
 
   data <- mod_obj$data
+
+  # add timeseries duration
+  data <- data %>%
+    dplyr::group_by(., ID) %>%
+    dplyr::mutate(., NYears = n()) %>%
+    dplyr::ungroup()
+
   res <- tibble::tibble(ID = unique(data$ID),
                         Species = unique(data$Species),
                         Location = unique(data$Location),
+                        Taxon = unique(data$Taxon),
                         Trait_Categ = unique(data$Trait_Categ),
                         Trait = unique(data$Trait),
                         Demog_rate_Categ = unique(data$Demog_rate_Categ),
                         Demog_rate = unique(data$Demog_rate),
                         Count = unique(data$Count),
+                        Nyears = unique(data$NYears),
                         dTable = list(dTable),
                         Cstat = list(Cstat),
                         R2 = list(R2_Relation),
