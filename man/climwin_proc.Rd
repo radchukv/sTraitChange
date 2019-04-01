@@ -6,7 +6,7 @@
 \usage{
 climwin_proc(biol_data, clim_data, ID, randwin = FALSE, seednum = 1302,
   repeats = 20, plot_check = FALSE, RefMon = 6,
-  out_dir = "output_climwin", stat = "mean")
+  out_dir = "output_climwin", stat = "mean", region = "Europe")
 }
 \arguments{
 \item{biol_data}{Data frame with trait data for a given population and species.}
@@ -35,6 +35,9 @@ to save the results}
 \item{stat}{Character specifying which statistics to use for
 aggregating the climatic data (see also the same option in
 \code{\link[climwin]{slidingwin}}).}
+
+\item{region}{Character specifying from which region the climatic data is
+extracted. For now supported are: 'Europe' and 'USA'. Defaults to 'Europe'.}
 }
 \value{
 A tibble with six columns if randwin is set to FALSE

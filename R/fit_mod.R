@@ -58,13 +58,13 @@ fit_mod <- function(biol_data, ID,
   data <- droplevels(biol_data[biol_data$ID == ID, ])
   # formulas
   if(DD){
-    formGR <- 'GR ~ Clim + Demog_rate_mean + Pop_mean'
+    formGR <<- 'GR ~ Clim + Demog_rate_mean + Pop_mean'
   }else{
-    formGR <- 'GR ~ Clim + Demog_rate_mean'   ## gls have problmes with environment...
+    formGR <<- 'GR ~ Clim + Demog_rate_mean'   ## gls have problmes with environment...
   }                   ## should probably contact the developers...
 
-  formDemRate <- 'Demog_rate_mean ~ Clim + Trait_mean'
-  formTrait <- 'Trait_mean ~ Clim'
+  formDemRate <<- 'Demog_rate_mean ~ Clim + Trait_mean'
+  formTrait <<- 'Trait_mean ~ Clim'
 
   # weights
   if (weights) {
@@ -75,6 +75,7 @@ fit_mod <- function(biol_data, ID,
     data$weights_Trait <- rep(1, nrow(data))
   }
 
+  #data <<- data  ## for autocorrelation, otherwise gls does not wok within psem
   if(correlation){
     models_list <- piecewiseSEM::psem(
       nlme::gls(stats::as.formula(formGR),  ## maybe try to go not with gls but another model that allows for weights and autocor
