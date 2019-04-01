@@ -6,5 +6,9 @@ data-raw
 output_climwin
 output_climwin_precip
 output_SEM
+<<<<<<< HEAD
 output_climwin_temp_us
 output_climwin_precip_us
+=======
+.DS_Store
+>>>>>>> d23831f7d65f6cfb92011b0bd6b635af7dc37050
