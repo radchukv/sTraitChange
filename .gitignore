@@ -6,3 +6,5 @@ data-raw
 output_climwin
 output_climwin_precip
 output_SEM
+output_climwin_temp_us
+output_climwin_precip_us
