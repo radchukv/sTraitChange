@@ -5,7 +5,7 @@
 \title{Analyze the results of climate window analysis}
 \usage{
 analyse_climwin(ID, biol_data, out_dir = "output_climwin",
-  randwin = FALSE, metric = "C")
+  randwin = FALSE, metric = "C", MinDur = 7, MaxDur = 300)
 }
 \arguments{
 \item{ID}{Numeric giving a unique ID of the current dataset for
@@ -22,7 +22,11 @@ was run together with \code{\link[climwin]{slidingwin}}.}
 
 \item{metric}{Character specifying 'AIC' or 'C'. This define whether
 a value of PDAIC or Pc will be returned. For more information
-see the same option in the function \code{\link[climwin]{pvalue}}}
+see the same option in the function \code{\link[climwin]{pvalue}}.}
+
+\item{MinDur}{A numeric specifying the minimum allowed window duration.}
+
+\item{MaxDur}{A numeric specifying the maximum allowed window duration.}
 }
 \value{
 If the results are not likely to be an issue of overfitting,
@@ -43,5 +47,6 @@ for the specified study ID
 dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
 t_anal <- analyse_climwin(ID = 1, biol_data = dat_birds,
                           out_dir = 'output_climwin',
-                          randwin = TRUE, metric = 'C')
+                          randwin = TRUE, metric = 'C',
+                          MinDur = 7, MaxDur = 300)
 }

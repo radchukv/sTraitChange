@@ -14,7 +14,9 @@
 #' the results of climate window analysis were stored.
 #' @param metric Character specifying 'AIC' or 'C'. This define whether
 #' a value of PDAIC or Pc will be returned. For more information
-#' see the same option in the function \code{\link[climwin]{pvalue}}
+#' see the same option in the function \code{\link[climwin]{pvalue}}.
+#' @param MinDur A numeric specifying the minimum allowed window duration.
+#' @param MaxDur A numeric specifying the maximum allowed window duration.
 #'
 #' @export
 #'
@@ -31,11 +33,13 @@
 #' dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
 #' t_anal <- analyse_climwin(ID = 1, biol_data = dat_birds,
 #'                           out_dir = 'output_climwin',
-#'                           randwin = TRUE, metric = 'C')
+#'                           randwin = TRUE, metric = 'C',
+#'                           MinDur = 7, MaxDur = 300)
 
 analyse_climwin <- function(ID, biol_data,
                             out_dir = 'output_climwin',
-                            randwin = FALSE, metric = 'C'){
+                            randwin = FALSE, metric = 'C',
+                            MinDur = 7, MaxDur = 300) {
 
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
   if (randwin) {
@@ -45,6 +49,7 @@ analyse_climwin <- function(ID, biol_data,
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
     randwin_out <- dat$randwin_output[[1]]
+    climdata <- dat$clim_data[[1]]
   } else {
     dat <- readRDS(paste0('./', out_dir, '/', subs$ID[1], '_',
                           subs$Species[1], '_', subs$Location[1],
@@ -52,14 +57,8 @@ analyse_climwin <- function(ID, biol_data,
 
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
+    climdata <- dat$clim_data[[1]]
   }
-
-  # climwin_out$BestModel
-  # head(climwin_out$BestModelData)
-
-  # discuss with Liam whether to take the results of the best
-  # model or of the medwin
-  # climwin::medwin(climwin_out$Dataset, cw = 0.95)
 
   pdf(paste0('./', out_dir, '/', subs$ID[1], '_',
              subs$Species[1], '_', subs$Location[1],
@@ -83,31 +82,51 @@ analyse_climwin <- function(ID, biol_data,
     if(pval_rand < 0.05){
       message('Results of slidingwin() are unlikely an issue of overfitting.\n',
               'Randomization pvalue = ', round(pval_rand, 5), '\n')
-      dat_out <- cbind(biol, Clim =
-                         climwin_out$BestModelData[, c('climate')])
-
-      res <- tibble::tibble(ID = biol$ID[1],
-                            Species = biol$Species[1],
-                            Location = biol$Location[1],
-                            Trait = biol$Trait[1],
-                            pvalue = pval_rand,
-                            data_res = list(dat_out))
-      # save these data for SEM
-      saveRDS(object = res,
-              file = paste0('./', out_dir, '/', biol$ID[1], '_',
-                            biol$Species[1], '_', biol$Location[1],
-                            '_', biol$Trait[1], '_ForSEM',  '.RDS'))
+      dat_out <- check_winDur(climwin_out = climwin_out,
+                              clim = climdata,
+                              biol_data = biol,
+                              MinDur = MinDur, MaxDur = MaxDur)
+      if(! is.null(dat_out)){
+        res <- tibble::tibble(ID = biol$ID[1],
+                              Species = biol$Species[1],
+                              Location = biol$Location[1],
+                              Trait = biol$Trait[1],
+                              pvalue = pval_rand,
+                              data_res = list(dat_out))
+        # save these data for SEM
+        saveRDS(object = res,
+                file = paste0('./', out_dir, '/', biol$ID[1], '_',
+                              biol$Species[1], '_', biol$Location[1],
+                              '_', biol$Trait[1], '_ForSEM',  '.RDS'))
+      }
 
       return(res)
     } else {
       message('Results of slidingwin() are likely an issue of overfitting.\n',
-              'Randomization pvalue = ', round(pval_rand, 5), '\n',
-              'No output dataset created')
-      return(tibble::tibble(ID = biol$ID[1],
-                            Species = biol$Species[1],
-                            Location = biol$Location[1],
-                            Trait = biol$Trait[1],
-                            pvalue = pval_rand))
+              'Randomization pvalue = ', round(pval_rand, 5), '\n')
+      dat_out <- check_winDur(climwin_out = climwin_out,
+                              clim = climdata,
+                              biol_data = biol,
+                              MinDur = MinDur, MaxDur = MaxDur)
+      if(! is.null(dat_out)){
+        res <- tibble::tibble(ID = biol$ID[1],
+                              Species = biol$Species[1],
+                              Location = biol$Location[1],
+                              Trait = biol$Trait[1],
+                              pvalue = pval_rand,
+                              data_res = list(dat_out))
+        # save these data for SEM
+        saveRDS(object = res,
+                file = paste0('./', out_dir, '/', biol$ID[1], '_',
+                              biol$Species[1], '_', biol$Location[1],
+                              '_', biol$Trait[1], '_ForSEM',  '.RDS'))
+      } else {
+        return(tibble::tibble(ID = biol$ID[1],
+                              Species = biol$Species[1],
+                              Location = biol$Location[1],
+                              Trait = biol$Trait[1],
+                              pvalue = pval_rand))
+      }
     }
   } else {
     message('No ramdomizations were supplied and therefore \n',
