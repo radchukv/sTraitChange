@@ -6,7 +6,7 @@
 \usage{
 climwin_proc(biol_data, clim_data, ID, randwin = FALSE, seednum = 1302,
   repeats = 20, plot_check = FALSE, RefMon = 6,
-  out_dir = "output_climwin", stat = "mean", region = "Europe")
+  out_clim = "output_climwin", stat = "mean", region = "Europe")
 }
 \arguments{
 \item{biol_data}{Data frame with trait data for a given population and species.}
@@ -29,8 +29,8 @@ one year (the first in the series) of the climatic data
 see the same option in the function \code{\link[climwin]{slidingwin}}
 for more information.}
 
-\item{out_dir}{Character specifying the library on the path where
-to save the results}
+\item{out_clim}{Character specifying the library on the path where
+to save the results of climate window analysis}
 
 \item{stat}{Character specifying which statistics to use for
 aggregating the climatic data (see also the same option in
@@ -62,7 +62,7 @@ test_rand <- climwin_proc(biol_data = dat_birds,
                           clim_data = meanT, ID = 1,
                           randwin = FALSE, seednum = 1302,
                           repeats = 30, plot_check = FALSE,
-                          RefMon = 6, out_dir = 'output_climwin',
+                          RefMon = 6, out_clim = 'output_climwin',
                           stat = 'mean')
 
 }

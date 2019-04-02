@@ -18,8 +18,8 @@
 #' @param RefMon Numeric specifying the month for the refday(),
 #' see the same option in the function \code{\link[climwin]{slidingwin}}
 #' for more information.
-#' @param out_dir Character specifying the library on the path where
-#' to save the results
+#' @param out_clim Character specifying the library on the path where
+#' to save the results of climate window analysis
 #' @param stat Character specifying which statistics to use for
 #'  aggregating the climatic data (see also the same option in
 #'  \code{\link[climwin]{slidingwin}}).
@@ -44,14 +44,14 @@
 #'                           clim_data = meanT, ID = 1,
 #'                           randwin = FALSE, seednum = 1302,
 #'                           repeats = 30, plot_check = FALSE,
-#'                           RefMon = 6, out_dir = 'output_climwin',
+#'                           RefMon = 6, out_clim = 'output_climwin',
 #'                           stat = 'mean')
 #'
 climwin_proc <- function(biol_data, clim_data,
                          ID, randwin = FALSE,
                          seednum = 1302, repeats = 20,
                          plot_check = FALSE, RefMon = 6,
-                         out_dir = 'output_climwin',
+                         out_clim = 'output_climwin',
                          stat = 'mean', region = 'Europe'){
 
   biol_data <- droplevels(biol_data[biol_data$ID == ID, ])
@@ -171,7 +171,7 @@ climwin_proc <- function(biol_data, clim_data,
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
-            file = paste0('./', out_dir, '/', biol_data$ID[1], '_',
+            file = paste0('./', out_clim, '/', biol_data$ID[1], '_',
                           biol_data$Species[1], '_', biol_data$Location[1],
                           '_', biol_data$Trait[1], '_Rand',  '.RDS'))
 
@@ -184,7 +184,7 @@ climwin_proc <- function(biol_data, clim_data,
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
-            file = paste0('./', out_dir, '/', biol_data$ID[1], '_',
+            file = paste0('./', out_clim, '/', biol_data$ID[1], '_',
                           biol_data$Species[1], '_',
                           biol_data$Location[1], '_', biol_data$Trait[1],
                           '.RDS'))
