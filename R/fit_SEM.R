@@ -8,7 +8,7 @@
 #' data for a given population and species.
 #' @param ID Numeric giving a unique ID of the current dataset for
 #' a given population and species.
-#' @param out_dir Character specifying the library on the path where
+#' @param out_SEM Character specifying the library on the path where
 #' the results of structural equation analysis are stored.
 #' @param DD Logical (TRUE/FALSE) specifying whether to account for density
 #' dependence by including population size as additional explanatory of
@@ -38,12 +38,12 @@
 #' dat <- test_fSEM$data_res[[1]]
 #' # fit the model
 #' test <- fit_SEM(biol_data = dat, ID = 1,
-#'                 out_dir = 'output_SEM',
+#'                 out_SEM = 'output_SEM',
 #'                 DD = FALSE, weights = FALSE,
 #'                 correlation = FALSE,
 #'                 standardize = FALSE)  ## does not work for corr = TRUE yet
 
-fit_SEM <- function(biol_data, ID, out_dir,
+fit_SEM <- function(biol_data, ID, out_SEM,
                     DD = FALSE,
                     weights = FALSE,
                     correlation = FALSE,
@@ -76,7 +76,7 @@ fit_SEM <- function(biol_data, ID, out_dir,
                     Pop_mean = scale(Pop_mean),
                     GR = scale(GR))
 
-    pdf(paste0('./', out_dir, '/', data_GR$ID[1], '_',
+    pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
                data_GR$Species[1], '_', data_GR$Location[1],
                '_', data_GR$Trait[1], '_z_score_relations.pdf'))
     psych::pairs.panels(subset(data_GR, select = c(Clim, Trait_mean,
@@ -89,7 +89,7 @@ fit_SEM <- function(biol_data, ID, out_dir,
     dev.off()
      }
   # exploratory plots
-  pdf(paste0('./', out_dir, '/', data_GR$ID[1], '_',
+  pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
              data_GR$Species[1], '_', data_GR$Location[1],
              '_', data_GR$Trait[1], '_relations.pdf'))
   psych::pairs.panels(subset(data_GR, select = c(Clim, Trait_mean,
@@ -120,7 +120,7 @@ fit_SEM <- function(biol_data, ID, out_dir,
 
   # write output
   saveRDS(object = res_SEM,
-          file = paste0('./', out_dir, '/', res_SEM$ID[1], '_',
+          file = paste0('./', out_SEM, '/', res_SEM$ID[1], '_',
                         res_SEM$Species[1], '_', res_SEM$Location[1],
                         '_', res_SEM$Trait[1], '_',
                         res_SEM$Demog_rate[1], '_ResultsSEM',  '.RDS'))

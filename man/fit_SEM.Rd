@@ -4,7 +4,7 @@
 \alias{fit_SEM}
 \title{Fit structural equation model and return the results}
 \usage{
-fit_SEM(biol_data, ID, out_dir, DD = FALSE, weights = FALSE,
+fit_SEM(biol_data, ID, out_SEM, DD = FALSE, weights = FALSE,
   correlation = FALSE, standardize = FALSE)
 }
 \arguments{
@@ -14,7 +14,7 @@ data for a given population and species.}
 \item{ID}{Numeric giving a unique ID of the current dataset for
 a given population and species.}
 
-\item{out_dir}{Character specifying the library on the path where
+\item{out_SEM}{Character specifying the library on the path where
 the results of structural equation analysis are stored.}
 
 \item{DD}{Logical (TRUE/FALSE) specifying whether to account for density
@@ -52,7 +52,7 @@ test_fSEM <- readRDS(paste0('./output_climwin/', subs$ID[1], '_',
 dat <- test_fSEM$data_res[[1]]
 # fit the model
 test <- fit_SEM(biol_data = dat, ID = 1,
-                out_dir = 'output_SEM',
+                out_SEM = 'output_SEM',
                 DD = FALSE, weights = FALSE,
                 correlation = FALSE,
                 standardize = FALSE)  ## does not work for corr = TRUE yet
