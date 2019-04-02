@@ -4,7 +4,8 @@
 \alias{check_winDur}
 \title{Check whether the window duration is within realistic range}
 \usage{
-check_winDur(climwin_out, clim, biol_data, MinDur, MaxDur)
+check_winDur(climwin_out, clim, biol_data, MinDur, MaxDur,
+  deltaThresh = -7)
 }
 \arguments{
 \item{climwin_out}{A list containing the results of climatic window analyses,
@@ -19,6 +20,9 @@ population and species.}
 \item{MinDur}{A numeric specifying the minimum allowed window duration.}
 
 \item{MaxDur}{A numeric specifying the maximum allowed window duration.}
+
+\item{deltaThresh}{A numeric specifying the minimum deltaAIC value for which the
+model will stil be judged acceptable for selecting the window duration.}
 }
 \value{
 If the climatic window within the specified range is found and the
@@ -32,7 +36,8 @@ NULL.
 \description{
 \code{check_winDur} checks whether the window duration of the best
 selected model is within the specified range and if not, finds the
-model with sucha  window (given it is still better than random one)
+model with such a window (given that the model with such window
+is still better than the one without climatic variable as explanatory)
 }
 \examples{
 dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
@@ -46,5 +51,5 @@ test_rand <- climwin_proc(biol_data = dat_birds,
 winDur <- check_winDur(climwin_out = test_rand$climwin_output[[1]],
                        clim = test_rand$clim_data[[1]],
                        biol_data = test_rand$biol_data[[1]],
-                       MinDur = 7, MaxDur = 300)
+                       MinDur = 7, MaxDur = 300, deltaThresh = -7)
 }
