@@ -4,8 +4,9 @@
 \alias{analyse_climwin}
 \title{Analyze the results of climate window analysis}
 \usage{
-analyse_climwin(ID, biol_data, out_dir = "output_climwin",
-  randwin = FALSE, metric = "C", MinDur = 7, MaxDur = 300)
+analyse_climwin(ID, biol_data, out_clim = "output_climwin",
+  randwin = FALSE, metric = "C", MinDur = 7, MaxDur = 300,
+  deltaThresh = -7, out_for_SEM = "output_forSEM")
 }
 \arguments{
 \item{ID}{Numeric giving a unique ID of the current dataset for
@@ -14,7 +15,7 @@ a given population and species.}
 \item{biol_data}{Data frame with trait data for a given
 population and species.}
 
-\item{out_dir}{Character specifying the library on the path where
+\item{out_clim}{Character specifying the library on the path where
 the results of climate window analysis were stored.}
 
 \item{randwin}{Logical (TRUE/FALSE) specifying whether \code{\link[climwin]{randwin}}
@@ -27,6 +28,9 @@ see the same option in the function \code{\link[climwin]{pvalue}}.}
 \item{MinDur}{A numeric specifying the minimum allowed window duration.}
 
 \item{MaxDur}{A numeric specifying the maximum allowed window duration.}
+
+\item{out_for_SEM}{Character specifying the library on the path where
+to store the results that are to be used as input for SEM.}
 }
 \value{
 If the results are not likely to be an issue of overfitting,
@@ -46,7 +50,8 @@ for the specified study ID
 \examples{
 dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
 t_anal <- analyse_climwin(ID = 1, biol_data = dat_birds,
-                          out_dir = 'output_climwin',
+                          out_clim = 'output_climwin',
+                          out_for_SEM = 'output_forSEM'
                           randwin = TRUE, metric = 'C',
                           MinDur = 7, MaxDur = 300)
 }

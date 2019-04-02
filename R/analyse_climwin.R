@@ -10,8 +10,10 @@
 #' a given population and species.
 #' @param randwin Logical (TRUE/FALSE) specifying whether \code{\link[climwin]{randwin}}
 #' was run together with \code{\link[climwin]{slidingwin}}.
-#' @param out_dir Character specifying the library on the path where
+#' @param out_clim Character specifying the library on the path where
 #' the results of climate window analysis were stored.
+#' @param out_for_SEM Character specifying the library on the path where
+#' to store the results that are to be used as input for SEM.
 #' @param metric Character specifying 'AIC' or 'C'. This define whether
 #' a value of PDAIC or Pc will be returned. For more information
 #' see the same option in the function \code{\link[climwin]{pvalue}}.
@@ -32,18 +34,21 @@
 #' @examples
 #' dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
 #' t_anal <- analyse_climwin(ID = 1, biol_data = dat_birds,
-#'                           out_dir = 'output_climwin',
+#'                           out_clim = 'output_climwin',
+#'                           out_for_SEM = 'output_forSEM'
 #'                           randwin = TRUE, metric = 'C',
 #'                           MinDur = 7, MaxDur = 300)
 
 analyse_climwin <- function(ID, biol_data,
-                            out_dir = 'output_climwin',
+                            out_clim = 'output_climwin',
                             randwin = FALSE, metric = 'C',
-                            MinDur = 7, MaxDur = 300) {
+                            MinDur = 7, MaxDur = 300,
+                            deltaThresh = -7,
+                            out_for_SEM = 'output_forSEM') {
 
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
   if (randwin) {
-    dat <- readRDS(paste0('./', out_dir, '/', subs$ID[1], '_',
+    dat <- readRDS(paste0('./', out_clim, '/', subs$ID[1], '_',
                           subs$Species[1], '_', subs$Location[1],
                           '_', subs$Trait[1], '_Rand', '.RDS'))
     climwin_out <- dat$climwin_output[[1]]
@@ -51,7 +56,7 @@ analyse_climwin <- function(ID, biol_data,
     randwin_out <- dat$randwin_output[[1]]
     climdata <- dat$clim_data[[1]]
   } else {
-    dat <- readRDS(paste0('./', out_dir, '/', subs$ID[1], '_',
+    dat <- readRDS(paste0('./', out_clim, '/', subs$ID[1], '_',
                           subs$Species[1], '_', subs$Location[1],
                           '_', subs$Trait[1], '.RDS'))
 
@@ -60,7 +65,7 @@ analyse_climwin <- function(ID, biol_data,
     climdata <- dat$clim_data[[1]]
   }
 
-  pdf(paste0('./', out_dir, '/', subs$ID[1], '_',
+  pdf(paste0('./', out_clim, '/', subs$ID[1], '_',
              subs$Species[1], '_', subs$Location[1],
              '_', subs$Trait[1], '_climwin.pdf'))
   par(mfrow = c(2,2))
@@ -85,7 +90,8 @@ analyse_climwin <- function(ID, biol_data,
       dat_out <- check_winDur(climwin_out = climwin_out,
                               clim = climdata,
                               biol_data = biol,
-                              MinDur = MinDur, MaxDur = MaxDur)
+                              MinDur = MinDur, MaxDur = MaxDur,
+                              deltaThresh = deltaThresh)
       if(! is.null(dat_out)){
         res <- tibble::tibble(ID = biol$ID[1],
                               Species = biol$Species[1],
@@ -95,7 +101,7 @@ analyse_climwin <- function(ID, biol_data,
                               data_res = list(dat_out))
         # save these data for SEM
         saveRDS(object = res,
-                file = paste0('./', out_dir, '/', biol$ID[1], '_',
+                file = paste0('./', out_for_SEM, '/', biol$ID[1], '_',
                               biol$Species[1], '_', biol$Location[1],
                               '_', biol$Trait[1], '_ForSEM',  '.RDS'))
       }
@@ -107,7 +113,8 @@ analyse_climwin <- function(ID, biol_data,
       dat_out <- check_winDur(climwin_out = climwin_out,
                               clim = climdata,
                               biol_data = biol,
-                              MinDur = MinDur, MaxDur = MaxDur)
+                              MinDur = MinDur, MaxDur = MaxDur,
+                              deltaThresh = deltaThresh)
       if(! is.null(dat_out)){
         res <- tibble::tibble(ID = biol$ID[1],
                               Species = biol$Species[1],
@@ -117,7 +124,7 @@ analyse_climwin <- function(ID, biol_data,
                               data_res = list(dat_out))
         # save these data for SEM
         saveRDS(object = res,
-                file = paste0('./', out_dir, '/', biol$ID[1], '_',
+                file = paste0('./', out_for_SEM, '/', biol$ID[1], '_',
                               biol$Species[1], '_', biol$Location[1],
                               '_', biol$Trait[1], '_ForSEM',  '.RDS'))
       } else {
