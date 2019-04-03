@@ -17,7 +17,7 @@
 #' biol_stand <- convert_JulianDay(biol_data = biol_dat)
 #' # example for ID = 1
 #' subs <- droplevels(biol_stand[biol_stand$ID == 1, ])
-#' test_fSEM <- readRDS(paste0('./output_climwin/', subs$ID[1], '_',
+#' test_fSEM <- readRDS(paste0('./output_forSEM_temp/', subs$ID[1], '_',
 #'                     subs$Species[1], '_', subs$Location[1],
 #'                     '_', subs$Trait[1], '_ForSEM',  '.RDS'))
 #' dat <- test_fSEM$data_res[[1]]
@@ -60,6 +60,9 @@ get_res_SEM <- function(mod_obj){
   res <- tibble::tibble(ID = unique(data$ID),
                         Species = unique(data$Species),
                         Location = unique(data$Location),
+                        Country = unique(data$Country),
+                        Longitude = unique(data$Longitude),
+                        Latitude = unique(data$Latitude),
                         Taxon = unique(data$Taxon),
                         Trait_Categ = unique(data$Trait_Categ),
                         Trait = unique(data$Trait),
@@ -67,6 +70,8 @@ get_res_SEM <- function(mod_obj){
                         Demog_rate = unique(data$Demog_rate),
                         Count = unique(data$Count),
                         Nyears = unique(data$NYears),
+                        WinDur = unique(data$WinDur),
+                        deltaAIC = unique(data$deltaAIC),
                         dTable = list(dTable),
                         Cstat = list(Cstat),
                         R2 = list(R2_Relation),

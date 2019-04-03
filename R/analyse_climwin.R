@@ -96,6 +96,7 @@ analyse_climwin <- function(ID, biol_data,
         res <- tibble::tibble(ID = biol$ID[1],
                               Species = biol$Species[1],
                               Location = biol$Location[1],
+                              Country = biol$Country[1],
                               Trait = biol$Trait[1],
                               pvalue = pval_rand,
                               data_res = list(dat_out))
@@ -119,6 +120,7 @@ analyse_climwin <- function(ID, biol_data,
         res <- tibble::tibble(ID = biol$ID[1],
                               Species = biol$Species[1],
                               Location = biol$Location[1],
+                              Country = biol$Country[1],
                               Trait = biol$Trait[1],
                               pvalue = pval_rand,
                               data_res = list(dat_out))
@@ -131,6 +133,7 @@ analyse_climwin <- function(ID, biol_data,
         return(tibble::tibble(ID = biol$ID[1],
                               Species = biol$Species[1],
                               Location = biol$Location[1],
+                              Country = biol$Country[1],
                               Trait = biol$Trait[1],
                               pvalue = pval_rand))
       }

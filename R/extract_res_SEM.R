@@ -20,10 +20,12 @@
 extract_res_SEM <- function(list_fitSEM, stat_extr){
   res <- bind_rows(lapply(1:length(list_fitSEM), FUN = function(x){
     elem <- list_fitSEM[[x]]
-    metadat <- elem[c('ID', 'Species', 'Location', 'Taxon',
+    metadat <- elem[c('ID', 'Species', 'Location', 'Country',
+                      'Longitude', 'Latitude', 'Taxon',
                       'Trait_Categ', 'Trait', 'Demog_rate_Categ',
                       'Demog_rate', 'Count', 'Nyears',
-                      'weights', 'DD', 'corr')]
+                      'WinDur', 'deltaAIC', 'weights',
+                      'DD', 'corr')]
     test <- elem[[stat_extr]][[1]]
 
     if(stat_extr == 'coefs'){
