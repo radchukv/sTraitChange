@@ -56,6 +56,11 @@ fit_mod <- function(biol_data, ID,
                     ...){
 
   data <- droplevels(biol_data[biol_data$ID == ID, ])
+
+  ## this will have to be taken care of at the data cleaning step...
+  if(! any(is.na(data$Demog_rate_SE))){
+  data <- data[data$Demog_rate_SE != 0, ]
+ }
   # formulas
   if(DD){
     formGR <<- 'GR ~ Clim + Demog_rate_mean + Pop_mean'
@@ -68,8 +73,13 @@ fit_mod <- function(biol_data, ID,
 
   # weights
   if (weights) {
+    if(! any(is.na(data$Demog_rate_SE))){
     data$weights_DemRate <- 1 / data$Demog_rate_SE^2
+    } else {
+      data$weights_DemRate <- 1  ## temporary fix - for studies with NAs in DemRate_SE
+    }
     data$weights_Trait <-  1 / data$Trait_SE^2
+
   } else {
     data$weights_DemRate <- rep(1, nrow(data))
     data$weights_Trait <- rep(1, nrow(data))
