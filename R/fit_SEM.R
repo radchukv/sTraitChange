@@ -31,8 +31,8 @@
 #' biol_dat <- read.csv('./data-raw/Closed_Data_26_02.csv')
 #' biol_stand <- convert_JulianDay(biol_data = biol_dat)
 #' # example for ID = 1
-#' subs <- droplevels(biol_stand[biol_stand$ID == 1, ])
-#' test_fSEM <- readRDS(paste0('./output_climwin/', subs$ID[1], '_',
+#' subs <- droplevels(biol_stand[biol_stand$ID == 25, ])
+#' test_fSEM <- readRDS(paste0('./output_forSEM_temp/', subs$ID[1], '_',
 #'                     subs$Species[1], '_', subs$Location[1],
 #'                     '_', subs$Trait[1], '_ForSEM',  '.RDS'))
 #' dat <- test_fSEM$data_res[[1]]
@@ -62,14 +62,27 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
   ## calculate GR
   data_GR <- subs %>%
-    dplyr::mutate(., Pop_mean_lag = lag(Pop_mean)) %>%
-    dplyr::mutate(., GR = Pop_mean / Pop_mean_lag) %>%
+    dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) %>%
+    dplyr::mutate(., GR = Pop_mean_lag / Pop_mean) %>%
     dplyr::filter(., !is.na(GR))
+
+  # exploratory plots
+  pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
+             data_GR$Species[1], '_', data_GR$Location[1],
+             '_', data_GR$Trait[1], '_relations.pdf'))
+  psych::pairs.panels(subset(data_GR, select = c(Clim, Trait_mean,
+                                                 Demog_rate_mean, Pop_mean, GR)),
+                      ellipses = FALSE, hist.col = 'grey', lm = TRUE)
+  mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
+        line = 3)
+  mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
+        line = 4)
+  dev.off()
 
   if(standardize){
     data_GR <- data_GR %>%
-      dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean),
-                    Demog_rate_SE = Demog_rate_SE /sd(Demog_rate_mean),
+      dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean, na.rm = T),
+                    Demog_rate_SE = Demog_rate_SE /sd(Demog_rate_mean, na.rm = T),
                     Clim = scale(Clim),
                     Trait_mean = scale(Trait_mean),
                     Demog_rate_mean = scale(Demog_rate_mean),
@@ -88,18 +101,6 @@ fit_SEM <- function(biol_data, ID, out_SEM,
           line = 4)
     dev.off()
      }
-  # exploratory plots
-  pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
-             data_GR$Species[1], '_', data_GR$Location[1],
-             '_', data_GR$Trait[1], '_relations.pdf'))
-  psych::pairs.panels(subset(data_GR, select = c(Clim, Trait_mean,
-                                                  Demog_rate_mean, Pop_mean, GR)),
-                              ellipses = FALSE, hist.col = 'grey', lm = TRUE)
-  mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
-        line = 3)
-  mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
-        line = 4)
-  dev.off()
 
   ## now call a function fitting a model (depending on the options:
   ## - autocor / no, DD/no, weights /no)

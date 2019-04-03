@@ -45,8 +45,8 @@ the results to be used in meta-analysis
 biol_dat <- read.csv('./data-raw/Closed_Data_26_02.csv')
 biol_stand <- convert_JulianDay(biol_data = biol_dat)
 # example for ID = 1
-subs <- droplevels(biol_stand[biol_stand$ID == 1, ])
-test_fSEM <- readRDS(paste0('./output_climwin/', subs$ID[1], '_',
+subs <- droplevels(biol_stand[biol_stand$ID == 25, ])
+test_fSEM <- readRDS(paste0('./output_forSEM_temp/', subs$ID[1], '_',
                     subs$Species[1], '_', subs$Location[1],
                     '_', subs$Trait[1], '_ForSEM',  '.RDS'))
 dat <- test_fSEM$data_res[[1]]
