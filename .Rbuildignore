@@ -6,3 +6,5 @@
 ^output_climwin_precip$
 ^output_climwin_temp_us$
 ^output_climwin_precip_us$
+^output_forSEM_precip$
+^output_forSEM_temp$
