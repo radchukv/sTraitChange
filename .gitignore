@@ -5,7 +5,8 @@
 data-raw
 output_climwin
 output_climwin_precip
-output_SEM
+output_SEM_temp
+output_SEM_precip
 output_climwin_temp_us
 output_climwin_precip_us
 output_forSEM_temp
