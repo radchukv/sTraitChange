@@ -9,3 +9,5 @@
 ^output_climwin_precip_us$
 ^output_forSEM_precip$
 ^output_forSEM_temp$
+^output_meta$
+
