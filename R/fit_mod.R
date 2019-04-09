@@ -7,9 +7,12 @@
 #' data for a given population and species.
 #' @param ID Numeric giving a unique ID of the current dataset for
 #' a given population and species.
-#' @param DD Logical (TRUE/FALSE) specifying whether to account for density
-#' dependence by including population size as additional explanatory of
-#' population growth rate.
+#' @param DD Character specifying how to account for density dependence by
+#' including population size as additional explanatory in the model. Possibilities
+#' are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
+#' of population size on growth rate, 'n_effectD' - effect of population size
+#' on demographic rate, 'n_effectDGR' - effect of population size on demographic
+#' rate and growth rate.
 #' @param weights Logical (TRUE/FALSE) specifying whether to use inverse of
 #' variances for traits and demographic rates as weights in the respective
 #' models.
@@ -50,7 +53,7 @@
 #'                 correlation = FALSE)  ## does not work for corr = TRUE yet
 
 fit_mod <- function(biol_data, ID,
-                    DD = FALSE,
+                    DD = 'none',
                     weights = FALSE,
                     correlation = FALSE,
                     ...){
@@ -62,13 +65,23 @@ fit_mod <- function(biol_data, ID,
   data <- data[data$Demog_rate_SE != 0, ]
  }
   # formulas
-  if(DD){
+  if(DD == 'n_effectGR'){
     formGR <<- 'GR ~ Clim + Demog_rate_mean + Pop_mean'
-  }else{
+    formDemRate <<- 'Demog_rate_mean ~ Clim + Trait_mean'
+  }
+  if(DD == 'n_effectD'){
+    formGR <<- 'GR ~ Clim + Demog_rate_mean'
+    formDemRate <<- 'Demog_rate_mean ~ Clim + Trait_mean + Pop_mean'
+  }
+  if(DD == 'n_effectDGR'){
+    formGR <<- 'GR ~ Clim + Demog_rate_mean + Pop_mean'
+    formDemRate <<- 'Demog_rate_mean ~ Clim + Trait_mean + Pop_mean'
+  }
+  if(DD == 'none'){
     formGR <<- 'GR ~ Clim + Demog_rate_mean'   ## gls have problmes with environment...
-  }                   ## should probably contact the developers...
+    formDemRate <<- 'Demog_rate_mean ~ Clim + Trait_mean'
+  }
 
-  formDemRate <<- 'Demog_rate_mean ~ Clim + Trait_mean'
   formTrait <<- 'Trait_mean ~ Clim'
 
   # weights

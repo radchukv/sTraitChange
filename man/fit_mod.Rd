@@ -4,7 +4,7 @@
 \alias{fit_mod}
 \title{Fit structural equation model with requested specifications}
 \usage{
-fit_mod(biol_data, ID, DD = FALSE, weights = FALSE,
+fit_mod(biol_data, ID, DD = "none", weights = FALSE,
   correlation = FALSE, ...)
 }
 \arguments{
@@ -14,9 +14,12 @@ data for a given population and species.}
 \item{ID}{Numeric giving a unique ID of the current dataset for
 a given population and species.}
 
-\item{DD}{Logical (TRUE/FALSE) specifying whether to account for density
-dependence by including population size as additional explanatory of
-population growth rate.}
+\item{DD}{Character specifying how to account for density dependence by
+including population size as additional explanatory in the model. Possibilities
+are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
+of population size on growth rate, 'n_effectD' - effect of population size
+on demographic rate, 'n_effectDGR' - effect of population size on demographic
+rate and growth rate.}
 
 \item{weights}{Logical (TRUE/FALSE) specifying whether to use inverse of
 variances for traits and demographic rates as weights in the respective

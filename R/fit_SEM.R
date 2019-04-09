@@ -44,7 +44,7 @@
 #'                 standardize = FALSE)  ## does not work for corr = TRUE yet
 
 fit_SEM <- function(biol_data, ID, out_SEM,
-                    DD = FALSE,
+                    DD = 'none',
                     weights = FALSE,
                     correlation = FALSE,
                     standardize = FALSE){
@@ -103,7 +103,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
      }
 
   ## now call a function fitting a model (depending on the options:
-  ## - autocor / no, DD/no, weights /no)
+  ## - autocor / no, DD/no/on what element, weights /no)
 
   SEM_mod <- fit_mod(biol_data = data_GR, ID = ID,
                      DD = DD,

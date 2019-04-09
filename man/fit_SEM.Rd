@@ -4,7 +4,7 @@
 \alias{fit_SEM}
 \title{Fit structural equation model and return the results}
 \usage{
-fit_SEM(biol_data, ID, out_SEM, DD = FALSE, weights = FALSE,
+fit_SEM(biol_data, ID, out_SEM, DD = "none", weights = FALSE,
   correlation = FALSE, standardize = FALSE)
 }
 \arguments{
