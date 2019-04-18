@@ -47,7 +47,8 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                     DD = 'none',
                     weights = FALSE,
                     correlation = FALSE,
-                    standardize = FALSE){
+                    standardize = FALSE,
+                    detrend = FALSE){
   # select one study
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
 
@@ -101,6 +102,24 @@ fit_SEM <- function(biol_data, ID, out_SEM,
           line = 4)
     dev.off()
      }
+
+  if(detrend){
+    data_GR$weights_Trait <-  1 / data_GR$Trait_SE^2
+    data_GR <- data_GR %>%
+      dplyr::mutate(Clim = scale(Clim),
+                    Trait_mean = stats::resid(stats::lm(Trait_mean ~ Pop_mean,
+                                                        weights = weights_Trait, data = .)) /
+                      sd(stats::resid(stats::lm(Trait_mean ~ Pop_mean,
+                                                weights = weights_Trait,
+                                                data = .)), na.rm = TRUE),
+                    Demog_rate_mean =
+                      stats::resid(stats::lm(Demog_rate_mean ~ Pop_mean,
+                                             data = .)) /
+                      sd(stats::resid(stats::lm(Demog_rate_mean ~ Pop_mean,
+                                                data = .)), na.rm = TRUE),
+                    GR = stats::resid(stats::lm(GR ~ Pop_mean, data = .)) /
+                      sd(stats::resid(stats::lm(GR ~ Pop_mean, data = .)), na.rm = T))
+  }
 
   ## now call a function fitting a model (depending on the options:
   ## - autocor / no, DD/no/on what element, weights /no)
