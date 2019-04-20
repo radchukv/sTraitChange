@@ -6,8 +6,8 @@
 #' tests (if asked for)
 #'
 #' @param biol_data Data frame with trait data for a given population and species.
-#' @param clim_data Raster stack of climatic data across Europe
-#' (if the study is outside Europe use XX).
+#' @param clim_data Raster stack of climatic data for the region that encompases
+#' the study location.
 #' @param ID Numeric giving a unique ID of the current dataset for a given population and species.
 #' @param randwin Logical (TRUE/FALSE). Should \code{\link[climwin]{randwin}}
 #'  be run together with \code{\link[climwin]{slidingwin}}?
@@ -15,9 +15,9 @@
 #' @param plot_check Logical (TRUE/FALSE). Whether to display
 #' one year (the first in the series) of the climatic data
 #'  together with the study location.
-#' @param RefMon Numeric specifying the month for the refday(),
-#' see the same option in the function \code{\link[climwin]{slidingwin}}
-#' for more information.
+#' @param cinterval A character specifying the resolution at which climate window
+#' analysis will be conducted, defaults to 'week' (weekly resolution). For more details
+#' see the same option in the function \code{\link[climwin]{slidingwin}}.
 #' @param out_clim Character specifying the library on the path where
 #' to save the results of climate window analysis
 #' @param stat Character specifying which statistics to use for
@@ -44,14 +44,16 @@
 #'                           clim_data = meanT, ID = 1,
 #'                           randwin = FALSE, seednum = 1302,
 #'                           repeats = 30, plot_check = FALSE,
-#'                           RefMon = 6, out_clim = 'output_climwin',
-#'                           stat = 'mean')
+#'                           out_clim = 'output_climwin',
+#'                           cinterval = 'week',
+#'                           stat = 'mean', region = 'Europe')
 #'
 climwin_proc <- function(biol_data, clim_data,
                          ID, randwin = FALSE,
-                         seednum = 1302, repeats = 20,
-                         plot_check = FALSE, RefMon = 6,
-                         out_clim = 'output_climwin',
+                         seednum = 1302, repeats = 200,
+                         plot_check = FALSE,
+                         cinterval = 'week',
+                         out_clim = 'output_climwin_test',
                          stat = 'mean', region = 'Europe'){
 
   biol_data <- droplevels(biol_data[biol_data$ID == ID, ])
@@ -61,8 +63,9 @@ climwin_proc <- function(biol_data, clim_data,
 
   ## imputing mean of the previous and next values for the mean of the traits, and
   ## median of all the values for the SE of the traits
-  biol_data <- impute_ma(data = biol_data, column = 'Trait_mean')
-  biol_data <- impute_median(data = biol_data, column = 'Trait_SE')
+  ## !!!! checking with no imputation for now   !!!!
+  # biol_data <- impute_ma(data = biol_data, column = 'Trait_mean')
+  # biol_data <- impute_median(data = biol_data, column = 'Trait_SE')
   # biol_data <- biol_data[! is.na(biol_data$Trait_mean), ] -  former approach, excluding NAs
 
   location_spatial <-  sp::SpatialPointsDataFrame(coords = biol_data[1, c('Longitude', 'Latitude')],
@@ -78,14 +81,14 @@ climwin_proc <- function(biol_data, clim_data,
   ####                          Extract temperature data                  ####
   # Determine date data for each layer of the raster (allows us to sort by each year).
   if (region == 'Europe'){
-  temp_dates <- data.frame(Date = as.Date(names(clim_data),
-                                          format = 'X%Y.%m.%d'))
+    temp_dates <- data.frame(Date = as.Date(names(clim_data),
+                                            format = 'X%Y.%m.%d'))
   }else{
     if(region == 'USA')
       temp_dates <- data.frame(Date = as.Date(substr(names(clim_data),
                                                      start = 1, stop = 11),
                                               format = 'X%Y.%m.%d'))
-    }
+  }
   temp_dates$Year <- lubridate::year(temp_dates$Date)
 
   ## extract data from Euro weather for all the necessary dates for the site
@@ -94,15 +97,19 @@ climwin_proc <- function(biol_data, clim_data,
                 biol_data$ID[1], 'for species',
                 biol_data$Species[1], 'in', biol_data$Location[1], 'for',
                 biol_data$Trait[1]))
-  Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 1, sep = '/'), format = '%d/%m/%Y'),
-                                as.Date(paste('01', '12', max(biol_data$Year), sep = '/'), format = '%d/%m/%Y'), 'day'),  # why max should be this and not + 1 year?
+  Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 2, sep = '/'), format = '%d/%m/%Y'),
+                                as.Date(paste('01', '12', max(biol_data$Year) + 1, sep = '/'), format = '%d/%m/%Y'), 'day'),  # why max should be this and not + 1 year?
                      Temp = NA)  ##longer end date for clim dtaa compared to biol data is needed in order for basewin()
   ## checks to not crush
 
+  ## marking the focal and the adjecent cells
+  cellNum <- raster::cellFromXY(clim_data, location_spatial)
+  FiveCell <- raster::adjacent(clim_data, cellNum, include = TRUE, pairs = FALSE)
+
   ptstart <- proc.time()
   Clim$Temp <- ifelse(is.na(Clim$Temp),
-                      as.numeric(raster::extract(clim_data[[which(temp_dates$Date %in%
-                                                                    Clim$Date)]], location_spatial)),
+                      colMeans(raster::extract(clim_data[[which(temp_dates$Date %in%
+                                                                  Clim$Date)]], FiveCell), na.rm = T),
                       NA)
   ptfinish <- proc.time() - ptstart
   cat('When extracting weather data from the raster the time elapsed is ',
@@ -119,19 +126,41 @@ climwin_proc <- function(biol_data, clim_data,
   # NOW THAT WE HAVE CLIMATE AND BIOLOGICAL DATA WE CAN RUN CLIMWIN!!
   set.seed(seednum)
 
-  # create weights here, otherwise slidingwin does not see them
-  biol_data$W <- 1 / biol_data$Trait_SE^2
+
+  # biol_data$W <- 1 / biol_data$Trait_SE^2
+  # get the refday for each species - the latest observed date (across years)
+  # for phenological traits or the latest record made for morphological traits
+  if(unique(biol_data$Trait_Categ) == 'Phenological'){
+    refDay <- max(biol_data$Trait_mean, na.rm = T)
+    refDay <- as.Date(refDay, origin = as.Date(paste('01', '01', lubridate::year(Sys.Date()), sep = '/'),
+                                               format = '%d/%m/%Y'))
+  }
+  if(unique(biol_data$Trait_Categ == 'Morphological')){
+    refDay <- max(biol_data$Record_date, na.rm = T)
+    refDay <- as.Date(refDay, origin = as.Date(paste('01', '01', lubridate::year(Sys.Date()), sep = '/'),
+                                               format = '%d/%m/%Y'))
+  }
+
+
+  ## have to exclude the rows with missing biological data before running the slidingwin
+  biol_data_noNA <- biol_data %>%
+    filter(!is.na(Trait_mean) | !is.na(Trait_SE)) %>%
+    # create weights here, otherwise slidingwin does not see them
+    mutate(W = 1/ Trait_SE^2)
 
   ptstart <- proc.time()
   climwin_output <- climwin::slidingwin(xvar = list(Temp = Clim$Temp),
                                         cdate = Clim$Date,
-                                        bdate = biol_data$Date,
-                                        baseline = lm(Trait_mean ~ 1, data = biol_data,
+                                        bdate = biol_data_noNA$Date,
+                                        baseline = lm(Trait_mean ~ Year, data = biol_data_noNA,
                                                       weights = W),
-                                        range = c(365, 0),
+                                        range = c(104, 0),
+                                        cinterval = cinterval,
                                         stat = stat, func = 'lin',
-                                        type = 'absolute', refday = c(1, RefMon),
-                                        cmissing = 'method2', cinterval = 'day')
+                                        type = 'absolute',
+                                        refday = c(lubridate::day(refDay),
+                                                   lubridate::month(refDay)),
+                                        cmissing = 'method2')
   ptfinish <- proc.time() - ptstart
   cat('When fitting slidingwin() the time elapsed is ',
       ptfinish[3], ';\n', 'time spend for ',
@@ -146,14 +175,16 @@ climwin_proc <- function(biol_data, clim_data,
     randwin_output <- climwin::randwin(repeats = repeats,
                                        xvar = list(Temp = Clim$Temp),
                                        cdate = Clim$Date,
-                                       bdate = biol_data$Date,
-                                       baseline = lm(Trait_mean ~ 1, data = biol_data,
+                                       bdate = biol_data_noNA$Date,
+                                       baseline = lm(Trait_mean ~ Year, data = biol_data_noNA,
                                                      weights = W),
-                                       range = c(365, 0),
+                                       range = c(104, 0),
+                                       cinterval = cinterval,
                                        stat = stat, func = 'lin',
-                                       type = 'absolute', refday = c(1, RefMon),
-                                       cmissing = 'method2',
-                                       cinterval = 'day')
+                                       type = 'absolute',
+                                       refday = c(lubridate::day(refDay),
+                                                  lubridate::month(refDay)),
+                                       cmissing = 'method2')
     ptfinish <- proc.time() - ptstart
     cat('When running randwin() with ', repeats,
         'number of repeats, the time elapsed is ',
@@ -168,6 +199,7 @@ climwin_proc <- function(biol_data, clim_data,
                                Trait = biol_data$Trait[1],
                                climwin_output = list(climwin_output[[1]]),
                                randwin_output = list(randwin_output[[1]]),
+                               refDay = refDay,
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
@@ -181,6 +213,7 @@ climwin_proc <- function(biol_data, clim_data,
                                Species = biol_data$Species[1],
                                Trait = biol_data$Trait[1],
                                climwin_output = list(climwin_output[[1]]),
+                               refDay = refDay,
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
