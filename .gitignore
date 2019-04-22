@@ -3,7 +3,7 @@
 .RData
 .Ruserdata
 data-raw
-output_climwin
+output_climwin_temp
 output_climwin_precip
 output_SEM_temp
 output_SEM_precip
