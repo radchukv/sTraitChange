@@ -144,7 +144,7 @@ climwin_proc <- function(biol_data, clim_data,
 
   ## have to exclude the rows with missing biological data before running the slidingwin
   biol_data_noNA <- biol_data %>%
-    filter(!is.na(Trait_mean) | !is.na(Trait_SE)) %>%
+    filter(!is.na(Trait_mean) & !is.na(Trait_SE)) %>%
     # create weights here, otherwise slidingwin does not see them
     mutate(W = 1/ Trait_SE^2)
 
