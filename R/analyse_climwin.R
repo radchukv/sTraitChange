@@ -49,34 +49,44 @@ analyse_climwin <- function(ID, biol_data,
                             randwin = FALSE, metric = 'AIC',
                             MinDur = 1, MaxDur = 40,
                             deltaThresh = -7, test_winDur = FALSE,
-                            out_for_SEM = 'output_SEM_test') {
+                            out_for_SEM = 'output_SEM_test',
+                            oneGrid = TRUE, explanYear = TRUE,
+                            endWindow) {
 
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
   if (randwin) {
     dat <- readRDS(paste0('./', out_clim, '/', subs$ID[1], '_',
                           subs$Species[1], '_', subs$Location[1],
-                          '_', subs$Trait[1], '_Rand', '.RDS'))
+                          '_', subs$Trait[1], '_OneGrid_', oneGrid,
+                          '_explYear_', explanYear, '_EndWindow_',
+                          endWindow, '_Rand', '.RDS'))
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
     biol_data_noNA <- biol %>%
-      filter(!is.na(Trait_mean) | !is.na(Trait_SE))
+      filter(!is.na(Trait_mean) & !is.na(Trait_SE))
     randwin_out <- dat$randwin_output[[1]]
+    data_climwin <- climwin_out$Dataset
+    data_climwin$WindowDur <- data_climwin$WindowOpen - data_climwin$WindowClose
     climdata <- dat$clim_data[[1]]
   } else {
     dat <- readRDS(paste0('./', out_clim, '/', subs$ID[1], '_',
                           subs$Species[1], '_', subs$Location[1],
-                          '_', subs$Trait[1], '.RDS'))
+                          '_', subs$Trait[1], '_OneGrid_', oneGrid,
+                          '_explYear_', explanYear, '_EndWindow_',
+                          endWindow, '.RDS'))
 
     climwin_out <- dat$climwin_output[[1]]
+    biol <- dat$biol_data[[1]]
     data_climwin <- climwin_out$Dataset
     data_climwin$WindowDur <- data_climwin$WindowOpen - data_climwin$WindowClose
-    biol <- dat$biol_data[[1]]
     climdata <- dat$clim_data[[1]]
   }
 
   pdf(paste0('./', out_clim, '/', subs$ID[1], '_',
              subs$Species[1], '_', subs$Location[1],
-             '_', subs$Trait[1], '_climwin.pdf'))
+             '_', subs$Trait[1], '_OneGrid_', oneGrid,
+             '_explYear_', explanYear, '_EndWindow_',
+             endWindow, '_climwin.pdf'))
   par(mfrow = c(2,2))
   print(climwin::plotdelta(climwin_out$Dataset))
   print(climwin::plotwin(climwin_out$Dataset))
@@ -128,9 +138,11 @@ analyse_climwin <- function(ID, biol_data,
       saveRDS(object = res,
               file = paste0('./', out_for_SEM, '/', biol$ID[1], '_',
                             biol$Species[1], '_', biol$Location[1],
-                            '_', biol$Trait[1], '_ForSEM',  '.RDS'))
-    }
-    return(res)
+                            '_', biol$Trait[1], '_OneGrid_', oneGrid,
+                            '_explYear_', explanYear, '_EndWindow_',
+                            endWindow, '_ForSEM',  '.RDS'))
+      return(res)
+      }
   } else {
     message('No ramdomizations were supplied and therefore \n',
             'no randomization test can be conducted \n',
