@@ -187,7 +187,7 @@ climwin_proc <- function(biol_data, clim_data,
                                         type = 'absolute',
                                         refday = c(lubridate::day(refDay),
                                                    lubridate::month(refDay)),
-                                        cmissing = 'method2')
+                                        cmissing = 'method1')
   ptfinish <- proc.time() - ptstart
   cat('When fitting slidingwin() the time elapsed is ',
       ptfinish[3], ';\n', 'time spend for ',
@@ -212,7 +212,7 @@ climwin_proc <- function(biol_data, clim_data,
                                        type = 'absolute',
                                        refday = c(lubridate::day(refDay),
                                                   lubridate::month(refDay)),
-                                       cmissing = 'method2')
+                                       cmissing = 'method1')
     ptfinish <- proc.time() - ptstart
     cat('When running randwin() with ', repeats,
         'number of repeats, the time elapsed is ',

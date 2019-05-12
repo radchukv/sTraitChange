@@ -87,7 +87,7 @@ check_winDur <- function(climwin_out, clim,
               'has the duration of ', data_climwin$WindowDur[i], '\n',
               'and the deltaAICc is satisfactory: ', round(data_climwin$deltaAICc[i], 2),  '\n')
       SelMod <- data_climwin[i, ]
-
+## still is prone to bugs given the hard-coded options... e.g. cinterval
       single_sel_win <- climwin::singlewin(xvar = list(Temp = clim$Temp),
                                            cdate = clim$Date,
                                            bdate = biol_data$Date,
@@ -98,7 +98,7 @@ check_winDur <- function(climwin_out, clim,
                                            stat = as.character(data_climwin$Statistics[1]),
                                            func = 'lin',
                                            type = 'absolute', refday = c(1, data_climwin$Reference.month[1]),
-                                           cmissing = 'method2', cinterval = 'day')
+                                           cmissing = 'method1', cinterval = 'week')
       dat_out <- cbind(biol_data, Clim =
                          single_sel_win$BestModelData[, c('climate')],
                        WinDur = data_climwin$WindowDur[i],
