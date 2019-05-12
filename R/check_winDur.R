@@ -46,6 +46,14 @@ check_winDur <- function(climwin_out, clim,
   data_climwin <- climwin_out$Dataset
   data_climwin$WindowDur <- data_climwin$WindowOpen - data_climwin$WindowClose
 
+  expl <- length(strsplit(deparse(formula(climwin_out$BestModel)), split = '~')[[1]][2])
+  if (expl == 2){
+    formBase <<- 'Trait_mean ~ Year'
+  }
+  if(expl == 1){
+    formBase <<- 'Trait_mean ~ 1'
+  }
+
   if(data_climwin$WindowDur[1] > MinDur & data_climwin$WindowDur[1] < MaxDur){
 
     if(data_climwin$deltaAICc[1] <= deltaThresh){
@@ -83,7 +91,8 @@ check_winDur <- function(climwin_out, clim,
       single_sel_win <- climwin::singlewin(xvar = list(Temp = clim$Temp),
                                            cdate = clim$Date,
                                            bdate = biol_data$Date,
-                                           baseline = lm(Trait_mean ~ 1, data = biol_data,
+                                           baseline = lm(stats::as.formula(formBase),
+                                                         data = biol_data,
                                                          weights = W),
                                            range = c(SelMod$WindowOpen, SelMod$WindowClose),
                                            stat = as.character(data_climwin$Statistics[1]),
