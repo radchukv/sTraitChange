@@ -25,6 +25,11 @@
 #'  \code{\link[climwin]{slidingwin}}).
 #' @param region Character specifying from which region the climatic data is
 #' extracted. For now supported are: 'Europe' and 'USA'. Defaults to 'Europe'.
+#' @param oneGrid Logical (TRUE/FALSE). Whether to extact climatic data from
+#' a single grid cell where into which the study location falls or to use mean of
+#' five cells: the focal one and four neighbours.
+#' @param explanYear Logical (TRUE/FALSE). Whether to include year as an
+#' explanatory variable in the baseline formula for window analysis.
 #'
 #' @export
 #'
@@ -46,7 +51,8 @@
 #'                           repeats = 30, plot_check = FALSE,
 #'                           out_clim = 'output_climwin',
 #'                           cinterval = 'week',
-#'                           stat = 'mean', region = 'Europe')
+#'                           stat = 'mean', region = 'Europe',
+#'                           oneGrid = FALSE, explanYear = TRUE)
 #'
 climwin_proc <- function(biol_data, clim_data,
                          ID, randwin = FALSE,
@@ -54,7 +60,9 @@ climwin_proc <- function(biol_data, clim_data,
                          plot_check = FALSE,
                          cinterval = 'week',
                          out_clim = 'output_climwin_test',
-                         stat = 'mean', region = 'Europe'){
+                         stat = 'mean', region = 'Europe',
+                         oneGrid = TRUE, explanYear = TRUE,
+                         startWindow = 0, endWindow = 52){
 
   biol_data <- droplevels(biol_data[biol_data$ID == ID, ])
   # add Date to biol data (for slidingwin)
@@ -102,15 +110,26 @@ climwin_proc <- function(biol_data, clim_data,
                      Temp = NA)  ##longer end date for clim dtaa compared to biol data is needed in order for basewin()
   ## checks to not crush
 
+  ptstart <- proc.time()
+  ## using a single grid for Temp extraction
+   if (oneGrid){
+     Clim$Temp <- ifelse(is.na(Clim$Temp),
+                         as.numeric(raster::extract(clim_data[[which(temp_dates$Date %in%
+                                                                       Clim$Date)]], location_spatial)),
+                         NA)
+  }else{
+  ## using multiple grids for Temp extraction
+
   ## marking the focal and the adjecent cells
   cellNum <- raster::cellFromXY(clim_data, location_spatial)
   FiveCell <- raster::adjacent(clim_data, cellNum, include = TRUE, pairs = FALSE)
 
-  ptstart <- proc.time()
   Clim$Temp <- ifelse(is.na(Clim$Temp),
                       colMeans(raster::extract(clim_data[[which(temp_dates$Date %in%
                                                                   Clim$Date)]], FiveCell), na.rm = T),
                       NA)
+  }
+
   ptfinish <- proc.time() - ptstart
   cat('When extracting weather data from the raster the time elapsed is ',
       ptfinish[3], ';\n', 'time spend for ',
@@ -148,13 +167,21 @@ climwin_proc <- function(biol_data, clim_data,
     # create weights here, otherwise slidingwin does not see them
     mutate(W = 1/ Trait_SE^2)
 
+  ## prepare the baseline formula
+  if(explanYear){
+    formBase <<- 'Trait_mean ~ Year'
+  }else{
+    formBase <<- 'Trait_mean ~ 1'
+  }
+
   ptstart <- proc.time()
   climwin_output <- climwin::slidingwin(xvar = list(Temp = Clim$Temp),
                                         cdate = Clim$Date,
                                         bdate = biol_data_noNA$Date,
-                                        baseline = lm(Trait_mean ~ Year, data = biol_data_noNA,
+                                        baseline = stats::lm(stats::as.formula(formBase),
+                                                      data = biol_data_noNA,
                                                       weights = W),
-                                        range = c(104, 0),
+                                        range = c(endWindow, startWindow),
                                         cinterval = cinterval,
                                         stat = stat, func = 'lin',
                                         type = 'absolute',
@@ -176,9 +203,10 @@ climwin_proc <- function(biol_data, clim_data,
                                        xvar = list(Temp = Clim$Temp),
                                        cdate = Clim$Date,
                                        bdate = biol_data_noNA$Date,
-                                       baseline = lm(Trait_mean ~ Year, data = biol_data_noNA,
+                                       baseline = lm(stats::as.formula(formBase),
+                                                     data = biol_data_noNA,
                                                      weights = W),
-                                       range = c(104, 0),
+                                       range = c(endWindow, startWindow),
                                        cinterval = cinterval,
                                        stat = stat, func = 'lin',
                                        type = 'absolute',
@@ -205,7 +233,9 @@ climwin_proc <- function(biol_data, clim_data,
     saveRDS(object = clim_out,
             file = paste0('./', out_clim, '/', biol_data$ID[1], '_',
                           biol_data$Species[1], '_', biol_data$Location[1],
-                          '_', biol_data$Trait[1], '_Rand',  '.RDS'))
+                          '_', biol_data$Trait[1], '_OneGrid_', oneGrid,
+                          '_explYear_', explanYear, '_EndWindow_',
+                          endWindow, '_Rand',  '.RDS'))
 
   } else {
     # create a tibble to save all output together
@@ -220,7 +250,8 @@ climwin_proc <- function(biol_data, clim_data,
             file = paste0('./', out_clim, '/', biol_data$ID[1], '_',
                           biol_data$Species[1], '_',
                           biol_data$Location[1], '_', biol_data$Trait[1],
-                          '.RDS'))
+                          '_OneGrid_', oneGrid, '_explYear_', explanYear,
+                          '_EndWindow_', endWindow, '.RDS'))
   }
   return(clim_out)
 }
