@@ -4,9 +4,11 @@
 \alias{analyse_climwin}
 \title{Analyze the results of climate window analysis}
 \usage{
-analyse_climwin(ID, biol_data, out_clim = "output_climwin",
-  randwin = FALSE, metric = "C", MinDur = 7, MaxDur = 300,
-  deltaThresh = -7, out_for_SEM = "output_forSEM")
+analyse_climwin(ID, biol_data, out_clim = "output_climwin_test",
+  randwin = FALSE, metric = "AIC", MinDur = 1, MaxDur = 40,
+  deltaThresh = -7, test_winDur = FALSE,
+  out_for_SEM = "output_SEM_test", oneGrid = TRUE, explanYear = TRUE,
+  endWindow)
 }
 \arguments{
 \item{ID}{Numeric giving a unique ID of the current dataset for
@@ -28,6 +30,13 @@ see the same option in the function \code{\link[climwin]{pvalue}}.}
 \item{MinDur}{A numeric specifying the minimum allowed window duration.}
 
 \item{MaxDur}{A numeric specifying the maximum allowed window duration.}
+
+\item{deltaThresh}{A numeric specifying the minimum delta AIC with the null
+model to accept a specific climatic window model.}
+
+\item{test_winDur}{A Boolean specifying whether to check if the identified
+window lays within the specified range and the delta AIC value is larger than
+the specified threshold.}
 
 \item{out_for_SEM}{Character specifying the library on the path where
 to store the results that are to be used as input for SEM.}
