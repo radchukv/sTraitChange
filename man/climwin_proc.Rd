@@ -5,14 +5,16 @@
 \title{Conduct climate window analysis}
 \usage{
 climwin_proc(biol_data, clim_data, ID, randwin = FALSE, seednum = 1302,
-  repeats = 20, plot_check = FALSE, RefMon = 6,
-  out_clim = "output_climwin", stat = "mean", region = "Europe")
+  repeats = 200, plot_check = FALSE, cinterval = "week",
+  out_clim = "output_climwin_test", stat = "mean", region = "Europe",
+  oneGrid = TRUE, explanYear = TRUE, startWindow = 0,
+  endWindow = 52)
 }
 \arguments{
 \item{biol_data}{Data frame with trait data for a given population and species.}
 
-\item{clim_data}{Raster stack of climatic data across Europe
-(if the study is outside Europe use XX).}
+\item{clim_data}{Raster stack of climatic data for the region that encompases
+the study location.}
 
 \item{ID}{Numeric giving a unique ID of the current dataset for a given population and species.}
 
@@ -25,9 +27,9 @@ be run together with \code{\link[climwin]{slidingwin}}?}
 one year (the first in the series) of the climatic data
  together with the study location.}
 
-\item{RefMon}{Numeric specifying the month for the refday(),
-see the same option in the function \code{\link[climwin]{slidingwin}}
-for more information.}
+\item{cinterval}{A character specifying the resolution at which climate window
+analysis will be conducted, defaults to 'week' (weekly resolution). For more details
+see the same option in the function \code{\link[climwin]{slidingwin}}.}
 
 \item{out_clim}{Character specifying the library on the path where
 to save the results of climate window analysis}
@@ -38,6 +40,13 @@ aggregating the climatic data (see also the same option in
 
 \item{region}{Character specifying from which region the climatic data is
 extracted. For now supported are: 'Europe' and 'USA'. Defaults to 'Europe'.}
+
+\item{oneGrid}{Logical (TRUE/FALSE). Whether to extact climatic data from
+a single grid cell where into which the study location falls or to use mean of
+five cells: the focal one and four neighbours.}
+
+\item{explanYear}{Logical (TRUE/FALSE). Whether to include year as an
+explanatory variable in the baseline formula for window analysis.}
 }
 \value{
 A tibble with six columns if randwin is set to FALSE
@@ -62,7 +71,9 @@ test_rand <- climwin_proc(biol_data = dat_birds,
                           clim_data = meanT, ID = 1,
                           randwin = FALSE, seednum = 1302,
                           repeats = 30, plot_check = FALSE,
-                          RefMon = 6, out_clim = 'output_climwin',
-                          stat = 'mean')
+                          out_clim = 'output_climwin',
+                          cinterval = 'week',
+                          stat = 'mean', region = 'Europe',
+                          oneGrid = FALSE, explanYear = TRUE)
 
 }
