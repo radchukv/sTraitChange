@@ -145,7 +145,6 @@ climwin_proc <- function(biol_data, clim_data,
   # NOW THAT WE HAVE CLIMATE AND BIOLOGICAL DATA WE CAN RUN CLIMWIN!!
   set.seed(seednum)
 
-
   # biol_data$W <- 1 / biol_data$Trait_SE^2
   # get the refday for each species - the latest observed date (across years)
   # for phenological traits or the latest record made for morphological traits
@@ -154,12 +153,21 @@ climwin_proc <- function(biol_data, clim_data,
     refDay <- as.Date(refDay, origin = as.Date(paste('01', '01', lubridate::year(Sys.Date()), sep = '/'),
                                                format = '%d/%m/%Y'))
   }
-  if(unique(biol_data$Trait_Categ == 'Morphological')){
-    refDay <- max(biol_data$Record_date, na.rm = T)
-    refDay <- as.Date(refDay, origin = as.Date(paste('01', '01', lubridate::year(Sys.Date()), sep = '/'),
-                                               format = '%d/%m/%Y'))
+  if(unique(biol_data$Trait_Categ) == 'Morphological'){
+    if(length(grep('-', unique(biol_data$Record_date), value = T)) != 0){
+      RecMonth <- strsplit( grep('-', unique(biol_data$Record_date), value = T), split = '-')[[1]][2]
+    }else{
+      RecMonth <- as.character(unique(biol_data$Record_date))
+    }
+    refDay <- as.Date(paste('30', RecMonth, lubridate::year(Sys.Date()), sep = '/'),
+                                               format = '%d/%B/%Y')
+    print(refDay)
   }
 
+
+  ## replacing the SEs for those studies where they are fully missing
+  if (sum(is.na(biol_data$Trait_SE)) == nrow(biol_data)){
+    biol_data$Trait_SE <- 1}
 
   ## have to exclude the rows with missing biological data before running the slidingwin
   biol_data_noNA <- biol_data %>%
