@@ -156,8 +156,10 @@ climwin_proc <- function(biol_data, clim_data,
   if(unique(biol_data$Trait_Categ) == 'Morphological'){
     if(length(grep('-', unique(biol_data$Record_date), value = T)) != 0){
       RecMonth <- strsplit( grep('-', unique(biol_data$Record_date), value = T), split = '-')[[1]][2]
+      RecMonth <- substr(RecMonth, 1, 3)
     }else{
       RecMonth <- as.character(unique(biol_data$Record_date))
+      RecMonth <- substr(RecMonth, 1, 3)
     }
     refDay <- as.Date(paste('30', RecMonth, lubridate::year(Sys.Date()), sep = '/'),
                                                format = '%d/%B/%Y')
