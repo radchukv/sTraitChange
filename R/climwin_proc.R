@@ -30,6 +30,8 @@
 #' five cells: the focal one and four neighbours.
 #' @param explanYear Logical (TRUE/FALSE). Whether to include year as an
 #' explanatory variable in the baseline formula for window analysis.
+#' @param RefMon A numeric specifying the month for the absolute window
+#' to be used for all species.
 #'
 #' @export
 #'
@@ -62,7 +64,8 @@ climwin_proc <- function(biol_data, clim_data,
                          out_clim = 'output_climwin_test',
                          stat = 'mean', region = 'Europe',
                          oneGrid = TRUE, explanYear = TRUE,
-                         startWindow = 0, endWindow = 52){
+                         startWindow = 0, endWindow = 52,
+                         RefMon = NA){
 
   biol_data <- droplevels(biol_data[biol_data$ID == ID, ])
   # add Date to biol data (for slidingwin)
@@ -148,6 +151,11 @@ climwin_proc <- function(biol_data, clim_data,
   # biol_data$W <- 1 / biol_data$Trait_SE^2
   # get the refday for each species - the latest observed date (across years)
   # for phenological traits or the latest record made for morphological traits
+  if (! is.na(RefMon)){
+    refDay <-  as.Date(paste('01', RefMon, lubridate::year(Sys.Date()), sep = '/'),
+                       format = '%d/%m/%Y')
+    print(refDay)
+    }else {
   if(unique(biol_data$Trait_Categ) == 'Phenological'){
     refDay <- max(biol_data$Trait_mean, na.rm = T)
     refDay <- as.Date(refDay, origin = as.Date(paste('01', '01', lubridate::year(Sys.Date()), sep = '/'),
@@ -165,7 +173,7 @@ climwin_proc <- function(biol_data, clim_data,
                                                format = '%d/%B/%Y')
     print(refDay)
   }
-
+}
 
   ## replacing the SEs for those studies where they are fully missing
   if (sum(is.na(biol_data$Trait_SE)) == nrow(biol_data)){
@@ -245,7 +253,7 @@ climwin_proc <- function(biol_data, clim_data,
                           biol_data$Species[1], '_', biol_data$Location[1],
                           '_', biol_data$Trait[1], '_OneGrid_', oneGrid,
                           '_explYear_', explanYear, '_EndWindow_',
-                          endWindow, '_Rand',  '.RDS'))
+                          endWindow, '_RefMon_', RefMon, '_Rand',  '.RDS'))
 
   } else {
     # create a tibble to save all output together
@@ -261,7 +269,8 @@ climwin_proc <- function(biol_data, clim_data,
                           biol_data$Species[1], '_',
                           biol_data$Location[1], '_', biol_data$Trait[1],
                           '_OneGrid_', oneGrid, '_explYear_', explanYear,
-                          '_EndWindow_', endWindow, '.RDS'))
+                          '_EndWindow_', endWindow, '_RefMon_', RefMon,
+                          '.RDS'))
   }
   return(clim_out)
 }
