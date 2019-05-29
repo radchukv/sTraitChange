@@ -8,7 +8,7 @@ climwin_proc(biol_data, clim_data, ID, randwin = FALSE, seednum = 1302,
   repeats = 200, plot_check = FALSE, cinterval = "week",
   out_clim = "output_climwin_test", stat = "mean", region = "Europe",
   oneGrid = TRUE, explanYear = TRUE, startWindow = 0,
-  endWindow = 52)
+  endWindow = 52, RefMon = NA)
 }
 \arguments{
 \item{biol_data}{Data frame with trait data for a given population and species.}
@@ -47,6 +47,9 @@ five cells: the focal one and four neighbours.}
 
 \item{explanYear}{Logical (TRUE/FALSE). Whether to include year as an
 explanatory variable in the baseline formula for window analysis.}
+
+\item{RefMon}{A numeric specifying the month for the absolute window
+to be used for all species.}
 }
 \value{
 A tibble with six columns if randwin is set to FALSE

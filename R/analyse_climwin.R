@@ -51,7 +51,7 @@ analyse_climwin <- function(ID, biol_data,
                             deltaThresh = -7, test_winDur = FALSE,
                             out_for_SEM = 'output_SEM_test',
                             oneGrid = TRUE, explanYear = TRUE,
-                            endWindow) {
+                            endWindow, RefMon = NA) {
 
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
   if (randwin) {
@@ -59,7 +59,8 @@ analyse_climwin <- function(ID, biol_data,
                           subs$Species[1], '_', subs$Location[1],
                           '_', subs$Trait[1], '_OneGrid_', oneGrid,
                           '_explYear_', explanYear, '_EndWindow_',
-                          endWindow, '_Rand', '.RDS'))
+                          endWindow,'_RefMon_', RefMon,
+                          '_Rand', '.RDS'))
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
     biol_data_noNA <- biol %>%
@@ -73,7 +74,7 @@ analyse_climwin <- function(ID, biol_data,
                           subs$Species[1], '_', subs$Location[1],
                           '_', subs$Trait[1], '_OneGrid_', oneGrid,
                           '_explYear_', explanYear, '_EndWindow_',
-                          endWindow, '.RDS'))
+                          endWindow, '_RefMon_', RefMon,'.RDS'))
 
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
@@ -86,7 +87,7 @@ analyse_climwin <- function(ID, biol_data,
              subs$Species[1], '_', subs$Location[1],
              '_', subs$Trait[1], '_OneGrid_', oneGrid,
              '_explYear_', explanYear, '_EndWindow_',
-             endWindow, '_climwin.pdf'))
+             endWindow, '_RefMon_', RefMon, '_climwin.pdf'))
   par(mfrow = c(2,2))
   print(climwin::plotdelta(climwin_out$Dataset))
   print(climwin::plotwin(climwin_out$Dataset))
@@ -140,7 +141,8 @@ analyse_climwin <- function(ID, biol_data,
                             biol$Species[1], '_', biol$Location[1],
                             '_', biol$Trait[1], '_OneGrid_', oneGrid,
                             '_explYear_', explanYear, '_EndWindow_',
-                            endWindow, '_ForSEM',  '.RDS'))
+                            endWindow, '_RefMon_', RefMon,
+                            '_ForSEM',  '.RDS'))
       return(res)
       }
   } else {
