@@ -10,4 +10,6 @@
 ^output_forSEM_precip$
 ^output_forSEM_temp$
 ^output_meta$
+^output_forSEM_monthly$
+^output_climwin_monthly$
 
