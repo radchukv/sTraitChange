@@ -12,4 +12,5 @@
 ^output_meta$
 ^output_forSEM_monthly$
 ^output_climwin_monthly$
+^output_climwin_daily$
 

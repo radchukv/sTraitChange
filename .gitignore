@@ -6,6 +6,7 @@ data-raw
 output_climwin_temp
 output_climwin_precip
 output_climwin_monthly
+output_climwin_daily
 output_SEM_temp
 output_SEM_precip
 output_forSEM_monthly
