@@ -50,9 +50,11 @@
 #'                           randwin = FALSE, seednum = 1302,
 #'                           repeats = 30, plot_check = FALSE,
 #'                           out_clim = 'output_climwin',
-#'                           cinterval = 'week',
+#'                           cinterval = 'month',
 #'                           stat = 'mean',
-#'                           oneGrid = FALSE, explanYear = TRUE)
+#'                           startWindow = 0, endWindow = 12,
+#'                           oneGrid = FALSE, explanYear = TRUE,
+#'                           RefMon = NA)
 #'
 climwin_proc <- function(biol_data, clim_data,
                          ID, randwin = FALSE,
@@ -89,9 +91,9 @@ climwin_proc <- function(biol_data, clim_data,
 
   ####                          Extract temperature data                  ####
   # Determine date data for each layer of the raster (allows us to sort by each year).
-      temp_dates <- data.frame(Date = as.Date(substr(names(clim_data),
-                                                     start = 1, stop = 11),
-                                              format = 'X%Y.%m.%d'))
+  temp_dates <- data.frame(Date = as.Date(substr(names(clim_data),
+                                                 start = 1, stop = 11),
+                                          format = 'X%Y.%m.%d'))
   temp_dates$Year <- lubridate::year(temp_dates$Date)
 
   ## extract data from Euro weather for all the necessary dates for the site
