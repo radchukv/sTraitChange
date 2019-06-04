@@ -23,8 +23,6 @@
 #' @param stat Character specifying which statistics to use for
 #'  aggregating the climatic data (see also the same option in
 #'  \code{\link[climwin]{slidingwin}}).
-#' @param region Character specifying from which region the climatic data is
-#' extracted. For now supported are: 'Europe' and 'USA'. Defaults to 'Europe'.
 #' @param oneGrid Logical (TRUE/FALSE). Whether to extact climatic data from
 #' a single grid cell where into which the study location falls or to use mean of
 #' five cells: the focal one and four neighbours.
@@ -53,7 +51,7 @@
 #'                           repeats = 30, plot_check = FALSE,
 #'                           out_clim = 'output_climwin',
 #'                           cinterval = 'week',
-#'                           stat = 'mean', region = 'Europe',
+#'                           stat = 'mean',
 #'                           oneGrid = FALSE, explanYear = TRUE)
 #'
 climwin_proc <- function(biol_data, clim_data,
@@ -62,8 +60,8 @@ climwin_proc <- function(biol_data, clim_data,
                          plot_check = FALSE,
                          cinterval = 'week',
                          out_clim = 'output_climwin_test',
-                         stat = 'mean', region = 'Europe',
-                         oneGrid = TRUE, explanYear = TRUE,
+                         stat = 'mean', oneGrid = TRUE,
+                         explanYear = TRUE,
                          startWindow = 0, endWindow = 52,
                          RefMon = NA){
 
@@ -91,15 +89,9 @@ climwin_proc <- function(biol_data, clim_data,
 
   ####                          Extract temperature data                  ####
   # Determine date data for each layer of the raster (allows us to sort by each year).
-  if (region == 'Europe'){
-    temp_dates <- data.frame(Date = as.Date(names(clim_data),
-                                            format = 'X%Y.%m.%d'))
-  }else{
-    if(region == 'USA')
       temp_dates <- data.frame(Date = as.Date(substr(names(clim_data),
                                                      start = 1, stop = 11),
                                               format = 'X%Y.%m.%d'))
-  }
   temp_dates$Year <- lubridate::year(temp_dates$Date)
 
   ## extract data from Euro weather for all the necessary dates for the site
