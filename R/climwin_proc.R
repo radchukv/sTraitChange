@@ -29,7 +29,9 @@
 #' @param explanYear Logical (TRUE/FALSE). Whether to include year as an
 #' explanatory variable in the baseline formula for window analysis.
 #' @param RefMon A numeric specifying the month for the absolute window
-#' to be used for all species.
+#' to be used for all species. If NA is specified then a species-specific window is used for
+#' each dataset using the available data on phenology and the period when morphology
+#' was recorded.
 #'
 #' @export
 #'
