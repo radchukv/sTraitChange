@@ -92,7 +92,7 @@ analyse_climwin <- function(ID, biol_data,
              endWindow, '_RefMon_', RefMon, '_climwin.pdf'))
   par(mfrow = c(2,2))
   print(climwin::plotdelta(climwin_out$Dataset))
-  # print(climwin::plotwin(climwin_out$Dataset))  ## seems like a bug: if the window is exactly 1 time step, does not work
+  print(climwin::plotwin(climwin_out$Dataset))  ## seems like a bug: if the window is exactly 1 time step, does not work
   print(climwin::plotweights(climwin_out$Dataset))
   if(randwin){
     print(climwin::plothist(dataset = climwin_out$Dataset,
