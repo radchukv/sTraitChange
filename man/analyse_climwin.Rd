@@ -61,6 +61,8 @@ dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
 t_anal <- analyse_climwin(ID = 1, biol_data = dat_birds,
                           out_clim = 'output_climwin',
                           out_for_SEM = 'output_forSEM'
-                          randwin = TRUE, metric = 'C',
-                          MinDur = 7, MaxDur = 300)
+                          randwin = TRUE, metric = 'AIC',
+                          MinDur = 1, MaxDur = 12,
+                          oneGrid = TRUE, explanYear = TRUE,
+                          endWindow = 12, RefMon = NA)
 }

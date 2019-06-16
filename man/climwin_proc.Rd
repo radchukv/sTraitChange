@@ -6,9 +6,8 @@
 \usage{
 climwin_proc(biol_data, clim_data, ID, randwin = FALSE, seednum = 1302,
   repeats = 200, plot_check = FALSE, cinterval = "week",
-  out_clim = "output_climwin_test", stat = "mean", region = "Europe",
-  oneGrid = TRUE, explanYear = TRUE, startWindow = 0,
-  endWindow = 52, RefMon = NA)
+  out_clim = "output_climwin_test", stat = "mean", oneGrid = TRUE,
+  explanYear = TRUE, startWindow = 0, endWindow = 52, RefMon = NA)
 }
 \arguments{
 \item{biol_data}{Data frame with trait data for a given population and species.}
@@ -38,9 +37,6 @@ to save the results of climate window analysis}
 aggregating the climatic data (see also the same option in
 \code{\link[climwin]{slidingwin}}).}
 
-\item{region}{Character specifying from which region the climatic data is
-extracted. For now supported are: 'Europe' and 'USA'. Defaults to 'Europe'.}
-
 \item{oneGrid}{Logical (TRUE/FALSE). Whether to extact climatic data from
 a single grid cell where into which the study location falls or to use mean of
 five cells: the focal one and four neighbours.}
@@ -49,7 +45,9 @@ five cells: the focal one and four neighbours.}
 explanatory variable in the baseline formula for window analysis.}
 
 \item{RefMon}{A numeric specifying the month for the absolute window
-to be used for all species.}
+to be used for all species. If NA is specified then a species-specific window is used for
+each dataset using the available data on phenology and the period when morphology
+was recorded.}
 }
 \value{
 A tibble with six columns if randwin is set to FALSE
@@ -75,8 +73,10 @@ test_rand <- climwin_proc(biol_data = dat_birds,
                           randwin = FALSE, seednum = 1302,
                           repeats = 30, plot_check = FALSE,
                           out_clim = 'output_climwin',
-                          cinterval = 'week',
-                          stat = 'mean', region = 'Europe',
-                          oneGrid = FALSE, explanYear = TRUE)
+                          cinterval = 'month',
+                          stat = 'mean',
+                          startWindow = 0, endWindow = 12,
+                          oneGrid = FALSE, explanYear = TRUE,
+                          RefMon = NA)
 
 }
