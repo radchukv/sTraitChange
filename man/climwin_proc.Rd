@@ -7,13 +7,14 @@
 climwin_proc(biol_data, clim_data, ID, randwin = FALSE, seednum = 1302,
   repeats = 200, plot_check = FALSE, cinterval = "week",
   out_clim = "output_climwin_test", stat = "mean", oneGrid = TRUE,
-  explanYear = TRUE, startWindow = 0, endWindow = 52, RefMon = NA)
+  explanYear = TRUE, startWindow = 0, endWindow = 52, RefMon = NA,
+  weatherVar = NA)
 }
 \arguments{
 \item{biol_data}{Data frame with trait data for a given population and species.}
 
-\item{clim_data}{Raster stack of climatic data for the region that encompases
-the study location.}
+\item{clim_data}{Either raster stack of climatic data for the region that encompases
+the study location or a dataframe with the local weather from the closest weather station.}
 
 \item{ID}{Numeric giving a unique ID of the current dataset for a given population and species.}
 
@@ -48,6 +49,9 @@ explanatory variable in the baseline formula for window analysis.}
 to be used for all species. If NA is specified then a species-specific window is used for
 each dataset using the available data on phenology and the period when morphology
 was recorded.}
+
+\item{weatherVar}{Character corresponding to the name of the climatic variable
+in the data frame provided as clim_data.}
 }
 \value{
 A tibble with six columns if randwin is set to FALSE
@@ -77,6 +81,6 @@ test_rand <- climwin_proc(biol_data = dat_birds,
                           stat = 'mean',
                           startWindow = 0, endWindow = 12,
                           oneGrid = FALSE, explanYear = TRUE,
-                          RefMon = NA)
+                          RefMon = NA, weatherVar = NA)
 
 }

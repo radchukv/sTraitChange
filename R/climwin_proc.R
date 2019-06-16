@@ -6,8 +6,8 @@
 #' tests (if asked for)
 #'
 #' @param biol_data Data frame with trait data for a given population and species.
-#' @param clim_data Raster stack of climatic data for the region that encompases
-#' the study location.
+#' @param clim_data Either raster stack of climatic data for the region that encompases
+#' the study location or a dataframe with the local weather from the closest weather station.
 #' @param ID Numeric giving a unique ID of the current dataset for a given population and species.
 #' @param randwin Logical (TRUE/FALSE). Should \code{\link[climwin]{randwin}}
 #'  be run together with \code{\link[climwin]{slidingwin}}?
@@ -32,6 +32,8 @@
 #' to be used for all species. If NA is specified then a species-specific window is used for
 #' each dataset using the available data on phenology and the period when morphology
 #' was recorded.
+#' @param weatherVar Character corresponding to the name of the climatic variable
+#' in the data frame provided as clim_data.
 #'
 #' @export
 #'
@@ -56,7 +58,7 @@
 #'                           stat = 'mean',
 #'                           startWindow = 0, endWindow = 12,
 #'                           oneGrid = FALSE, explanYear = TRUE,
-#'                           RefMon = NA)
+#'                           RefMon = NA, weatherVar = NA)
 #'
 climwin_proc <- function(biol_data, clim_data,
                          ID, randwin = FALSE,
@@ -67,7 +69,7 @@ climwin_proc <- function(biol_data, clim_data,
                          stat = 'mean', oneGrid = TRUE,
                          explanYear = TRUE,
                          startWindow = 0, endWindow = 52,
-                         RefMon = NA){
+                         RefMon = NA, weatherVar = NA){
 
   biol_data <- droplevels(biol_data[biol_data$ID == ID, ])
   # add Date to biol data (for slidingwin)
@@ -87,54 +89,77 @@ climwin_proc <- function(biol_data, clim_data,
 
   ##  for a visual check
   if (plot_check){
-    raster::plot(clim_data[[1]])
-    points(location_spatial)
+    if(class(clim_data) != 'data.frame'){
+      raster::plot(clim_data[[1]])
+      points(location_spatial)
+    } else {
+      raster::plot(location_spatial)
+    }
   }
 
   ####                          Extract temperature data                  ####
   # Determine date data for each layer of the raster (allows us to sort by each year).
-  temp_dates <- data.frame(Date = as.Date(substr(names(clim_data),
-                                                 start = 1, stop = 11),
-                                          format = 'X%Y.%m.%d'))
-  temp_dates$Year <- lubridate::year(temp_dates$Date)
+  if(class(clim_data) == 'data.frame'){
+    ## if weather comes from a single station
+    Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 2, sep = '/'), format = '%d/%m/%Y'),
+                                  as.Date(paste('01', '12', max(biol_data$Year) + 1, sep = '/'), format = '%d/%m/%Y'), 'day'))
+    if(unique(biol_data$Study_Authors) %in% c('Lewis_et_al',
+                                              'Catry&Campioni', 'Cheng_et_al')){
+      clim_data$Date <- as.Date(clim_data$DATE, format = '%Y-%m-%d')
+    }else{
+    clim_data$Date <- as.Date(clim_data$DATE, format = '%d/%m/%Y')
+    }
+    subs_clim <- clim_data[, c('Date', weatherVar)]
+    Clim <- merge(subs_clim, Clim, by = 'Date')
+    Clim$Temp <- Clim[[weatherVar]]
 
-  ## extract data from Euro weather for all the necessary dates for the site
-  ## (i.e. everything from the year before the first recorded nest until the year of the most recent brood).
-  message(paste('Currently extracting temperature data for study',
-                biol_data$ID[1], 'for species',
-                biol_data$Species[1], 'in', biol_data$Location[1], 'for',
-                biol_data$Trait[1]))
-  Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 2, sep = '/'), format = '%d/%m/%Y'),
-                                as.Date(paste('01', '12', max(biol_data$Year) + 1, sep = '/'), format = '%d/%m/%Y'), 'day'),  # why max should be this and not + 1 year?
-                     Temp = NA)  ##longer end date for clim dtaa compared to biol data is needed in order for basewin()
-  ## checks to not crush
+  }else{ ## if weather is available as rasters or stacks
+    temp_dates <- data.frame(Date = as.Date(substr(names(clim_data),
+                                                   start = 1, stop = 11),
+                                            format = 'X%Y.%m.%d'))
+    temp_dates$Year <- lubridate::year(temp_dates$Date)
 
-  ptstart <- proc.time()
-  ## using a single grid for Temp extraction
-   if (oneGrid){
-     Clim$Temp <- ifelse(is.na(Clim$Temp),
-                         as.numeric(raster::extract(clim_data[[which(temp_dates$Date %in%
-                                                                       Clim$Date)]], location_spatial)),
-                         NA)
-  }else{
-  ## using multiple grids for Temp extraction
+    ## extract data from Euro weather for all the necessary dates for the site
+    ## (i.e. everything from the year before the first recorded nest until the year of the most recent brood).
+    message(paste('Currently extracting temperature data for study',
+                  biol_data$ID[1], 'for species',
+                  biol_data$Species[1], 'in', biol_data$Location[1], 'for',
+                  biol_data$Trait[1]))
+    Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 2, sep = '/'), format = '%d/%m/%Y'),
+                                  as.Date(paste('01', '12', max(biol_data$Year) + 1, sep = '/'), format = '%d/%m/%Y'), 'day'),  # why max should be this and not + 1 year?
+                       Temp = NA)  ##longer end date for clim dtaa compared to biol data is needed in order for basewin()
+    ## checks to not crush
 
-  ## marking the focal and the adjecent cells
-  cellNum <- raster::cellFromXY(clim_data, location_spatial)
-  FiveCell <- raster::adjacent(clim_data, cellNum, include = TRUE, pairs = FALSE)
+    ptstart <- proc.time()
 
-  Clim$Temp <- ifelse(is.na(Clim$Temp),
-                      colMeans(raster::extract(clim_data[[which(temp_dates$Date %in%
-                                                                  Clim$Date)]], FiveCell), na.rm = T),
-                      NA)
+    ## using a single grid for Temp extraction
+    if (oneGrid){
+      Clim$Temp <- ifelse(is.na(Clim$Temp),
+                          as.numeric(raster::extract(clim_data[[which(temp_dates$Date %in%
+                                                                        Clim$Date)]], location_spatial)),
+                          NA)
+    }else{
+      ## using multiple grids for Temp extraction
+
+      ## marking the focal and the adjecent cells
+      cellNum <- raster::cellFromXY(clim_data, location_spatial)
+      FiveCell <- raster::adjacent(clim_data, cellNum, include = TRUE, pairs = FALSE)
+
+      Clim$Temp <- ifelse(is.na(Clim$Temp),
+                          colMeans(raster::extract(clim_data[[which(temp_dates$Date %in%
+                                                                      Clim$Date)]], FiveCell), na.rm = T),
+                          NA)
+    }
+
+    ptfinish <- proc.time() - ptstart
+    cat('When extracting weather data from the raster the time elapsed is ',
+        ptfinish[3], ';\n', 'time spend for ',
+        names(ptfinish)[1], ' is ', ptfinish[1], ';\n',
+        'for ', names(ptfinish)[2], ' is ', ptfinish[2], '\n',
+        sep = '')
+
   }
 
-  ptfinish <- proc.time() - ptstart
-  cat('When extracting weather data from the raster the time elapsed is ',
-      ptfinish[3], ';\n', 'time spend for ',
-      names(ptfinish)[1], ' is ', ptfinish[1], ';\n',
-      'for ', names(ptfinish)[2], ' is ', ptfinish[2], '\n',
-      sep = '')
 
   # Check that data extracted properly!!
   if(all(is.na(Clim$Temp))){
@@ -151,30 +176,30 @@ climwin_proc <- function(biol_data, clim_data,
     refDay <-  as.Date(paste('01', RefMon, lubridate::year(Sys.Date()), sep = '/'),
                        format = '%d/%m/%Y')
     print(refDay)
-    }else {
-  if(unique(biol_data$Trait_Categ) == 'Phenological'){
-    refDay <- max(biol_data$Trait_mean, na.rm = T)
-    refDay <- as.Date(refDay, origin = as.Date(paste('01', '01', lubridate::year(Sys.Date()), sep = '/'),
-                                               format = '%d/%m/%Y'))
-  }
-  if(unique(biol_data$Trait_Categ) == 'Morphological'){
-    if(length(grep('-', unique(biol_data$Record_date), value = T)) != 0){
-      RecMonth <- strsplit( grep('-', unique(biol_data$Record_date), value = T), split = '-')[[1]][2]
-      RecMonth <- substr(RecMonth, 1, 3)
-    }else{
-      RecMonth <- as.character(unique(biol_data$Record_date))
-      RecMonth <- substr(RecMonth, 1, 3)
+  }else {
+    if(unique(biol_data$Trait_Categ) == 'Phenological'){
+      refDay <- max(biol_data$Trait_mean, na.rm = T)
+      refDay <- as.Date(refDay, origin = as.Date(paste('01', '01', lubridate::year(Sys.Date()), sep = '/'),
+                                                 format = '%d/%m/%Y'))
     }
-    if(RecMonth == 'Feb'){
-      refDay <- as.Date(paste('28', RecMonth, lubridate::year(Sys.Date()), sep = '/'),
-                        format = '%d/%B/%Y')
-    }else{
-      refDay <- as.Date(paste('30', RecMonth, lubridate::year(Sys.Date()), sep = '/'),
-                        format = '%d/%B/%Y')
+    if(unique(biol_data$Trait_Categ) == 'Morphological'){
+      if(length(grep('-', unique(biol_data$Record_date), value = T)) != 0){
+        RecMonth <- strsplit( grep('-', unique(biol_data$Record_date), value = T), split = '-')[[1]][2]
+        RecMonth <- substr(RecMonth, 1, 3)
+      }else{
+        RecMonth <- as.character(unique(biol_data$Record_date))
+        RecMonth <- substr(RecMonth, 1, 3)
       }
-    print(refDay)
+      if(RecMonth == 'Feb'){
+        refDay <- as.Date(paste('28', RecMonth, lubridate::year(Sys.Date()), sep = '/'),
+                          format = '%d/%B/%Y')
+      }else{
+        refDay <- as.Date(paste('30', RecMonth, lubridate::year(Sys.Date()), sep = '/'),
+                          format = '%d/%B/%Y')
+      }
+      print(refDay)
+    }
   }
-}
 
   ## replacing the SEs for those studies where they are fully missing
   if (sum(is.na(biol_data$Trait_SE)) == nrow(biol_data)){
@@ -198,8 +223,8 @@ climwin_proc <- function(biol_data, clim_data,
                                         cdate = Clim$Date,
                                         bdate = biol_data_noNA$Date,
                                         baseline = stats::lm(stats::as.formula(formBase),
-                                                      data = biol_data_noNA,
-                                                      weights = W),
+                                                             data = biol_data_noNA,
+                                                             weights = W),
                                         range = c(endWindow, startWindow),
                                         cinterval = cinterval,
                                         stat = stat, func = 'lin',
