@@ -190,6 +190,7 @@ climwin_proc <- function(biol_data, clim_data,
         RecMonth <- as.character(unique(biol_data$Record_date))
         RecMonth <- substr(RecMonth, 1, 3)
       }
+      if (! is.na(RecMonth)){
       if(RecMonth == 'Feb'){
         refDay <- as.Date(paste('28', RecMonth, lubridate::year(Sys.Date()), sep = '/'),
                           format = '%d/%B/%Y')
@@ -197,6 +198,9 @@ climwin_proc <- function(biol_data, clim_data,
         refDay <- as.Date(paste('30', RecMonth, lubridate::year(Sys.Date()), sep = '/'),
                           format = '%d/%B/%Y')
       }
+      } else {
+        refDay <- NA
+        }
       print(refDay)
     }
   }
