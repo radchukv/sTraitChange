@@ -49,49 +49,53 @@
 #'
 #' # fit the model
 #' test <- fit_mod(biol_data = data_GR, ID =1,
-#'                 DD = FALSE, weights = FALSE,
+#'                 DD = FALSE, weight = FALSE,
 #'                 correlation = FALSE)  ## does not work for corr = TRUE yet
 
 fit_mod <- function(biol_data, ID,
                     DD = 'none',
-                    weights = FALSE,
+                    weight = FALSE,
                     correlation = FALSE,
                     ...){
 
   data <- droplevels(biol_data[biol_data$ID == ID, ])
 
   ## this will have to be taken care of at the data cleaning step...
-  if(! any(is.na(data$Demog_rate_SE))){
-  data <- data[data$Demog_rate_SE != 0, ]
- }
+ #  if(! any(is.na(data$Demog_rate_SE))){
+ #  data <- data[data$Demog_rate_SE != 0, ]
+ # }
+
+
   # formulas
   if(DD == 'n_effectGR'){
-    formGR <<- 'GR ~ Clim + Demog_rate_mean + Pop_mean'
-    formDemRate <<- 'Demog_rate_mean ~ Clim + Trait_mean'
+    formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
+    formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
   }
   if(DD == 'n_effectD'){
-    formGR <<- 'GR ~ Clim + Demog_rate_mean'
-    formDemRate <<- 'Demog_rate_mean ~ Clim + Trait_mean + Pop_mean'
+    formGR <<- 'GR ~ det_Clim + Demog_rate_mean'
+    formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
   }
   if(DD == 'n_effectDGR'){
-    formGR <<- 'GR ~ Clim + Demog_rate_mean + Pop_mean'
-    formDemRate <<- 'Demog_rate_mean ~ Clim + Trait_mean + Pop_mean'
+    formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
+    formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
   }
   if(DD == 'none'){
-    formGR <<- 'GR ~ Clim + Demog_rate_mean'   ## gls have problmes with environment...
-    formDemRate <<- 'Demog_rate_mean ~ Clim + Trait_mean'
+    formGR <<- 'GR ~ det_Clim + Demog_rate_mean'   ## gls have problmes with environment...
+    formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
   }
 
-  formTrait <<- 'Trait_mean ~ Clim'
+  formTrait <<- 'Trait_mean ~ det_Clim'
 
-  # weights
-  if (weights) {
+  # weights - what to do if only a few SEs are missing??? (we need weights)
+  # + if all SEs are missing weights should be set to 1s
+  if (weight) {
     if(! any(is.na(data$Demog_rate_SE))){
     data$weights_DemRate <- 1 / data$Demog_rate_SE^2
     } else {
-      data$weights_DemRate <- 1  ## temporary fix - for studies with NAs in DemRate_SE
+      data$weights_DemRate[is.na(data$Demog_rate_SE)] <- median(data$Demog_rate_SE, na.rm = T)  ## setting to 1 only makes sense if the analyses are run on standardized data
+      data$weights_DemRate[!is.na(data$Demog_rate_SE)] <- 1 / data$Demog_rate_SE[!is.na(data$Demog_rate_SE)]^2
     }
-    data$weights_Trait <-  1 / data$Trait_SE^2
+    data$weights_Trait <-  1 / data$Trait_SE^2  ## do same as for SE on Dem.rates?
 
   } else {
     data$weights_DemRate <- rep(1, nrow(data))

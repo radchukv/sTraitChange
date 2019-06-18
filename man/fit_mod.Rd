@@ -4,7 +4,7 @@
 \alias{fit_mod}
 \title{Fit structural equation model with requested specifications}
 \usage{
-fit_mod(biol_data, ID, DD = "none", weights = FALSE,
+fit_mod(biol_data, ID, DD = "none", weight = FALSE,
   correlation = FALSE, ...)
 }
 \arguments{
@@ -21,12 +21,12 @@ of population size on growth rate, 'n_effectD' - effect of population size
 on demographic rate, 'n_effectDGR' - effect of population size on demographic
 rate and growth rate.}
 
+\item{correlation}{Logical (TRUE/FALSE) specifying whether to include
+temporal autocorrelation with AR(1) structure.}
+
 \item{weights}{Logical (TRUE/FALSE) specifying whether to use inverse of
 variances for traits and demographic rates as weights in the respective
 models.}
-
-\item{correlation}{Logical (TRUE/FALSE) specifying whether to include
-temporal autocorrelation with AR(1) structure.}
 }
 \value{
 A fitted object of class psem (see
