@@ -4,7 +4,7 @@
 \alias{fit_SEM}
 \title{Fit structural equation model and return the results}
 \usage{
-fit_SEM(biol_data, ID, out_SEM, DD = "none", weights = FALSE,
+fit_SEM(biol_data, ID, out_SEM, DD = "none", weight = FALSE,
   correlation = FALSE, standardize = FALSE, detrend = FALSE)
 }
 \arguments{
@@ -21,15 +21,15 @@ the results of structural equation analysis are stored.}
 dependence by including population size as additional explanatory of
 population growth rate.}
 
-\item{weights}{Logical (TRUE/FALSE) specifying whether to use inverse of
-variances for traits and demographic rates as weights in the respective
-models.}
-
 \item{correlation}{Logical (TRUE/FALSE) specifying whether to include
 temporal autocorrelation with AR(1) structure.}
 
 \item{standardize}{Logical (TRUE/FALSE) specifying whether to
 standardize (using z scores) the variables prior to fitting the model.}
+
+\item{weights}{Logical (TRUE/FALSE) specifying whether to use inverse of
+variances for traits and demographic rates as weights in the respective
+models.}
 }
 \value{
 A tibble with 15 columns that represent the metadata for a
@@ -56,4 +56,5 @@ test <- fit_SEM(biol_data = dat, ID = 1,
                 DD = FALSE, weights = FALSE,
                 correlation = FALSE,
                 standardize = FALSE)  ## does not work for corr = TRUE yet
+
 }

@@ -42,43 +42,56 @@
 #'                 DD = FALSE, weights = FALSE,
 #'                 correlation = FALSE,
 #'                 standardize = FALSE)  ## does not work for corr = TRUE yet
-
+#'
 fit_SEM <- function(biol_data, ID, out_SEM,
                     DD = 'none',
-                    weights = FALSE,
+                    weight = FALSE,
                     correlation = FALSE,
                     standardize = FALSE,
                     detrend = FALSE){
   # select one study
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
 
-  ## impute the DR
-  subs <- impute_ma(data = subs, column = 'Demog_rate_mean')
-  subs <- impute_median(data = subs, column = 'Demog_rate_SE')
-  ## impute the Pop Size
-  subs <- impute_ma(data = subs, column = 'Pop_mean')
-  if(unique(subs$Count) == 'N'){
-    subs <- impute_median(data = subs, column = 'Pop_SE')
-  }
+  full_NA <- data.frame(Year = seq(min(subs$Year), max(subs$Year), by = 1))
+  consec_yrs <- merge(full_NA, subs, by = 'Year', all= T)
+
+  ## no imputation to be used, drop the missing values
+  # ## impute the DR
+  # subs <- impute_ma(data = subs, column = 'Demog_rate_mean')
+  # subs <- impute_median(data = subs, column = 'Demog_rate_SE')
+  # ## impute the Pop Size
+  # subs <- impute_ma(data = subs, column = 'Pop_mean')
+  # if(unique(subs$Count) == 'N'){
+  #   subs <- impute_median(data = subs, column = 'Pop_SE')
+  # }
 
   ## calculate GR
-  data_GR <- subs %>%
+  data_GR <- consec_yrs %>%
     dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) %>%
     dplyr::mutate(., GR = Pop_mean_lag / Pop_mean) %>%
-    dplyr::filter(., !is.na(GR))
+    dplyr::filter(., !is.na(GR) & !is.na(Trait_mean) &
+                    !is.na(Demog_rate_mean) & !is.na(Pop_mean)) %>%
+    dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
+                                                    data = .)))  ## detrend clim (by year as a trend)
+  ## I may need to revise this - for studies with all SE missing...
+  ## so for now exclude the cases where SEs are missing
+
 
   # exploratory plots
   pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
              data_GR$Species[1], '_', data_GR$Location[1],
              '_', data_GR$Trait[1], '_relations.pdf'))
-  psych::pairs.panels(subset(data_GR, select = c(Clim, Trait_mean,
-                                                 Demog_rate_mean, Pop_mean, GR)),
+  psych::pairs.panels(subset(data_GR, select = c(Clim, det_Clim, Year,
+                                                 Trait_mean, Demog_rate_mean,
+                                                 Pop_mean, GR)),
                       ellipses = FALSE, hist.col = 'grey', lm = TRUE)
   mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
         line = 3)
   mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
         line = 4)
   dev.off()
+
+
 
   if(standardize){
     data_GR <- data_GR %>%
@@ -101,7 +114,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
     mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
           line = 4)
     dev.off()
-     }
+  }
 
   if(detrend){
     data_GR$weights_Trait <-  1 / data_GR$Trait_SE^2
@@ -126,23 +139,23 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
   SEM_mod <- fit_mod(biol_data = data_GR, ID = ID,
                      DD = DD,
-                     weights = weights,
+                     weight = weight,
                      correlation = correlation) ## there is another problem with gls
   ## it does not return the object if called from within psem()
 
 
   ## then get output from the results of fitting the function
-  res_SEM <- get_res_SEM(SEM_mod)
+  SEM_results <- get_res_SEM(SEM_mod)
 
-  res_SEM$DD <- DD
-  res_SEM$weights <- weights
-  res_SEM$corr <- correlation
+  SEM_results$DD <- DD
+  SEM_results$weights <- weight
+  SEM_results$corr <- correlation
 
   # write output
-  saveRDS(object = res_SEM,
-          file = paste0('./', out_SEM, '/', res_SEM$ID[1], '_',
-                        res_SEM$Species[1], '_', res_SEM$Location[1],
-                        '_', res_SEM$Trait[1], '_',
-                        res_SEM$Demog_rate[1], '_ResultsSEM',  '.RDS'))
-  return(res_SEM)
+  saveRDS(object = SEM_results,
+          file = paste0('./', out_SEM, '/', SEM_results$ID[1], '_',
+                        SEM_results$Species[1], '_', SEM_results$Location[1],
+                        '_', SEM_results$Trait[1], '_',
+                        SEM_results$Demog_rate[1], '_ResultsSEM',  '.RDS'))
+  return(SEM_results)
 }
