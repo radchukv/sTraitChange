@@ -121,12 +121,22 @@ analyse_climwin <- function(ID, biol_data,
                               clim = climdata,
                               biol_data = biol_data_noNA,
                               MinDur = MinDur, MaxDur = MaxDur,
-                              deltaThresh = deltaThresh)
+                              deltaThresh = deltaThresh,
+                              Pvalue = pval_rand,
+                              oneGrid = oneGrid,
+                              explanYear = explanYear,
+                              endWindow = endWindow,
+                              RefMon = RefMon)
     } else {
       dat_out <- cbind(biol_data_noNA, Clim =
                          climwin_out$BestModelData[, c('climate')],
                        WinDur = data_climwin$WindowDur[1],
-                       deltaAIC = round(data_climwin$deltaAICc[1], 2))
+                       deltaAIC = round(data_climwin$deltaAICc[1], 2),
+                       Pvalue = pval_rand,
+                       oneGrid = oneGrid,
+                       explanYear = explanYear,
+                       endWindow = endWindow,
+                       RefMon = RefMon)
     }
     if(! is.null(dat_out)){
       res <- tibble::tibble(ID = biol$ID[1],
