@@ -49,11 +49,17 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                     correlation = FALSE,
                     standardize = FALSE,
                     detrend = FALSE){
+
+
   # select one study
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
 
   full_NA <- data.frame(Year = seq(min(subs$Year), max(subs$Year), by = 1))
   consec_yrs <- merge(full_NA, subs, by = 'Year', all= T)
+
+  message(paste('Currently fitting SEM for study',
+                ID, 'for species', subs$Species[1],
+                'in', subs$Location[1], 'for', subs$Trait[1]))
 
   ## no imputation to be used, drop the missing values
   # ## impute the DR
