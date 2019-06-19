@@ -13,7 +13,7 @@ prep_subset(data, Seabird = FALSE)
 sea birds in the subset or not.}
 }
 \value{
-Returns a tibble with four columns: "Sel" - a data frame where
+Returns a tibble with three columns: "Sel" - a data frame where
 each row represents a unique record per study ID for which climwin analyses
 have to be conducted; "biol_NY" - a data frame with all the information as in
 original study (longitudinal data per each study ID) and, additionally, NYears

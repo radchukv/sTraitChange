@@ -28,6 +28,12 @@
 #' five cells: the focal one and four neighbours.
 #' @param explanYear Logical (TRUE/FALSE). Whether to include year as an
 #' explanatory variable in the baseline formula for window analysis.
+#' @param endWindow A numeric specifying the furtherst number of time intervals
+#' (set by cinterval) back from the reference day. See also the option range in
+#' the function \code{\link[climwin]{slidingwin}}.
+#' @param startWindow A numeric specifying the closest number of time intervals
+#' (set by cinterval) back from the reference day. See also the option range in
+#' the function \code{\link[climwin]{slidingwin}}.
 #' @param RefMon A numeric specifying the month for the absolute window
 #' to be used for all species. If NA is specified then a species-specific window is used for
 #' each dataset using the available data on phenology and the period when morphology

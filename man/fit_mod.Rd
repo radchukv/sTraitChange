@@ -61,6 +61,6 @@ dplyr::filter(., !is.na(GR))
 
 # fit the model
 test <- fit_mod(biol_data = data_GR, ID =1,
-                DD = FALSE, weights = FALSE,
+                DD = FALSE, weight = FALSE,
                 correlation = FALSE)  ## does not work for corr = TRUE yet
 }
