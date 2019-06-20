@@ -112,6 +112,7 @@ analyse_climwin <- function(ID, biol_data,
     if(pval_rand < 0.05){
       message('Results of slidingwin() are unlikely an issue of overfitting.\n',
               'Randomization pvalue = ', round(pval_rand, 5), '\n')
+
     } else {
       message('Results of slidingwin() are likely an issue of overfitting.\n',
               'Randomization pvalue = ', round(pval_rand, 5), '\n')
@@ -122,6 +123,9 @@ analyse_climwin <- function(ID, biol_data,
                               biol_data = biol_data_noNA,
                               MinDur = MinDur, MaxDur = MaxDur,
                               deltaThresh = deltaThresh,
+                              WindowClose = data_climwin$WindowClose[1],
+                              Ref.day = data_climwin$Reference.day[1],
+                              Ref.month = data_climwin$Reference.month[1],
                               Pvalue = pval_rand,
                               oneGrid = oneGrid,
                               explanYear = explanYear,
@@ -131,6 +135,9 @@ analyse_climwin <- function(ID, biol_data,
       dat_out <- cbind(biol_data_noNA, Clim =
                          climwin_out$BestModelData[, c('climate')],
                        WinDur = data_climwin$WindowDur[1],
+                       WindowClose = data_climwin$WindowClose[1],
+                       Ref.day = data_climwin$Reference.day[1],
+                       Ref.month = data_climwin$Reference.month[1],
                        deltaAIC = round(data_climwin$deltaAICc[1], 2),
                        Pvalue = pval_rand,
                        oneGrid = oneGrid,
