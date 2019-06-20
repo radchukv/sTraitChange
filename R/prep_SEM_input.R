@@ -44,7 +44,7 @@ prep_SEM_input <- function(prep_subset_climwin,
                            selIDs = unique(prep_subset_climwin$Sel[[1]]$ID)){
   data_all <- NULL
   for(j in selIDs){
-
+    # cat('id (J) checked is', j, '\n')
 
     # save biol_NY as a dataset
     biol_NY <- prep_subset_climwin$biol_NY[[1]]
@@ -71,15 +71,13 @@ prep_SEM_input <- function(prep_subset_climwin,
       all_ID <- all_ID[all_ID != j]
       for(i in all_ID){
         sub_NY <- droplevels(subset(biol_NY, ID == i))
-        # cat('ID checked is', i, '\n', 'Study_authors in dat',
-        #        unique(dat$Study_Authors), '\n', 'Study_Authors in sub_NY',
-        #        unique(sub_NY$Study_Authors), '\n')
+        # cat('ID (i) checked is', i, '\n')
         if(unique(dat$Study_Authors) == unique(sub_NY$Study_Authors) &
            unique(dat$Species) == unique(sub_NY$Species) &
            unique(dat$Location) == unique(sub_NY$Location) &
            unique(dat$Trait) == unique(sub_NY$Trait) &
            unique(dat$NYears) == unique(sub_NY$NYears)){
-          data_new_sub <- cbind(sub_NY[, c(1:33)], dat[, c(34:43)])
+          data_new_sub <- cbind(sub_NY[, c(1:33)], dat[, c(34:46)])
           data_all <- rbind(data_all, data_new_sub)
         }
       }
