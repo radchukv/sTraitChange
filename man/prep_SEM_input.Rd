@@ -4,13 +4,16 @@
 \alias{prep_SEM_input}
 \title{Prepare a dataset for SEM based on the output of window analyses}
 \usage{
-prep_SEM_input(prep_subset_climwin, oneGrid = FALSE, explanYear = TRUE,
-  endWindow = 104, RefMon = NA,
+prep_SEM_input(prep_subset_climwin, out_for_SEM, oneGrid = FALSE,
+  explanYear = TRUE, endWindow = 104, RefMon = NA,
   selIDs = unique(prep_subset_climwin$Sel[[1]]$ID))
 }
 \arguments{
 \item{prep_subset_climwin}{The object returned by \code{\link{prep_subset}}
 and that was used for window analyses.}
+
+\item{out_for_SEM}{Character specifying the library on the path where
+to store the results that are to be used as input for SEM.}
 
 \item{oneGrid}{Logical (TRUE/FALSE). Whether climatic data for window analyses
 were extracted from a single grid cell into which the study location falls or

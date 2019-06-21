@@ -5,6 +5,8 @@
 #'
 #' @param prep_subset_climwin The object returned by \code{\link{prep_subset}}
 #' and that was used for window analyses.
+#' @param out_for_SEM Character specifying the library on the path where
+#' to store the results that are to be used as input for SEM.
 #' @param oneGrid Logical (TRUE/FALSE). Whether climatic data for window analyses
 #' were extracted from a single grid cell into which the study location falls or
 #' if the mean of five cells (the focal one and four neighbours) was used.
@@ -37,6 +39,7 @@
 #' selIDs = 152)
 
 prep_SEM_input <- function(prep_subset_climwin,
+                           out_for_SEM,
                            oneGrid = FALSE,
                            explanYear = TRUE,
                            endWindow = 104,
@@ -52,7 +55,7 @@ prep_SEM_input <- function(prep_subset_climwin,
     subs <- droplevels(biol_NY[biol_NY$ID == j, ])
 
     ## check whether the file exists
-    fileName <- paste0('./output_forSEM_temp/', subs$ID[1], '_',
+    fileName <- paste0('./', out_for_SEM, '/', subs$ID[1], '_',
                        subs$Species[1], '_', subs$Location[1],
                        '_', subs$Trait[1],
                        '_OneGrid_', oneGrid,
