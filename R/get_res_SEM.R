@@ -61,6 +61,7 @@ get_res_SEM <- function(mod_obj){
                         Species = unique(data$Species),
                         Location = unique(data$Location),
                         Country = unique(data$Country),
+                        Continent = unique(data$Continent),
                         Longitude = unique(data$Longitude),
                         Latitude = unique(data$Latitude),
                         Taxon = unique(data$Taxon),
