@@ -93,8 +93,17 @@ fit_mod <- function(biol_data, ID,
       data$weights_DemRate <- 1
     } else {
       if(! any(is.na(data$Demog_rate_SE))){
+        # replace SE of 0 with min values observed, otherwise weights are Inf
+        if(sum(data$Demog_rate_SE == 0) != 0){
+          data$Demog_rate_SE[data$Demog_rate_SE == 0] <-
+            min(data$Demog_rate_SE[data$Demog_rate_SE != 0], na.rm = T)
+          }
         data$weights_DemRate <- 1 / data$Demog_rate_SE^2
       } else {
+        if(sum(data$Demog_rate_SE == 0) != 0){
+          data$Demog_rate_SE[data$Demog_rate_SE == 0] <-
+            min(data$Demog_rate_SE[data$Demog_rate_SE != 0], na.rm = T)
+        }
         data$weights_DemRate[is.na(data$Demog_rate_SE)] <- median(data$Demog_rate_SE, na.rm = T)  ## setting to 1 only makes sense if the analyses are run on standardized data
         data$weights_DemRate[!is.na(data$Demog_rate_SE)] <- 1 / data$Demog_rate_SE[!is.na(data$Demog_rate_SE)]^2
       }
