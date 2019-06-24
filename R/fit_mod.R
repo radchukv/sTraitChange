@@ -58,7 +58,7 @@ fit_mod <- function(biol_data, ID,
                     correlation = FALSE,
                     ...){
 
-  data <- droplevels(biol_data[biol_data$ID == ID, ])
+  dat <- droplevels(biol_data[biol_data$ID == ID, ])
 
   ## this will have to be taken care of at the data cleaning step...
  #  if(! any(is.na(data$Demog_rate_SE))){
@@ -89,61 +89,65 @@ fit_mod <- function(biol_data, ID,
   # weights - what to do if only a few SEs are missing??? (we need weights)
   # + if all SEs are missing weights should be set to 1s
   if (weight) {
-    if (sum(is.na(data$Demog_rate_SE)) == nrow(data)){
-      data$weights_DemRate <- 1
+    if (sum(is.na(dat$Demog_rate_SE)) == nrow(dat)){
+      dat$weights_DemRate <- 1
     } else {
-      if(! any(is.na(data$Demog_rate_SE))){
+      if(! any(is.na(dat$Demog_rate_SE))){
         # replace SE of 0 with min values observed, otherwise weights are Inf
-        if(sum(data$Demog_rate_SE == 0) != 0){
-          data$Demog_rate_SE[data$Demog_rate_SE == 0] <-
-            min(data$Demog_rate_SE[data$Demog_rate_SE != 0], na.rm = T)
+        if(sum(dat$Demog_rate_SE == 0) != 0){
+          dat$Demog_rate_SE[dat$Demog_rate_SE == 0] <-
+            min(dat$Demog_rate_SE[dat$Demog_rate_SE != 0], na.rm = T)
           }
-        data$weights_DemRate <- 1 / data$Demog_rate_SE^2
+        dat$weights_DemRate <- 1 / dat$Demog_rate_SE^2
       } else {
-        if(sum(data$Demog_rate_SE == 0) != 0){
-          data$Demog_rate_SE[data$Demog_rate_SE == 0] <-
-            min(data$Demog_rate_SE[data$Demog_rate_SE != 0], na.rm = T)
+        if(sum(dat$Demog_rate_SE == 0) != 0){
+          dat$Demog_rate_SE[dat$Demog_rate_SE == 0] <-
+            min(dat$Demog_rate_SE[dat$Demog_rate_SE != 0], na.rm = T)
         }
-        data$weights_DemRate[is.na(data$Demog_rate_SE)] <- median(data$Demog_rate_SE, na.rm = T)  ## setting to 1 only makes sense if the analyses are run on standardized data
-        data$weights_DemRate[!is.na(data$Demog_rate_SE)] <- 1 / data$Demog_rate_SE[!is.na(data$Demog_rate_SE)]^2
+        dat$weights_DemRate[is.na(dat$Demog_rate_SE)] <- median(dat$Demog_rate_SE, na.rm = T)  ## setting to 1 only makes sense if the analyses are run on standardized data
+        dat$weights_DemRate[!is.na(dat$Demog_rate_SE)] <- 1 / dat$Demog_rate_SE[!is.na(dat$Demog_rate_SE)]^2
       }
     }
-    data$weights_Trait <-  1 / data$Trait_SE^2  ## do same as for SE on Dem.rates?
+    dat$weights_Trait <-  1 / dat$Trait_SE^2  ## do same as for SE on Dem.rates?
 
   } else {
-    data$weights_DemRate <- rep(1, nrow(data))
-    data$weights_Trait <- rep(1, nrow(data))
+    dat$weights_DemRate <- rep(1, nrow(dat))
+    dat$weights_Trait <- rep(1, nrow(dat))
   }
 
-  #data <<- data  ## for autocorrelation, otherwise gls does not wok within psem
+
   if(correlation){
+    dat <<- dat  ## for autocorrelation, otherwise gls does not wok within psem
+    formGR <<- formGR
+    formDemRate <<- formDemRate
+    formTrait <<- formTrait
     models_list <- piecewiseSEM::psem(
       nlme::gls(stats::as.formula(formGR),  ## maybe try to go not with gls but another model that allows for weights and autocor
-                data = data,
+                data = dat,
                 method = 'REML', ...),
       nlme::gls(stats::as.formula(formDemRate),
                 weights = nlme::varFixed(~1/weights_DemRate),
-                data = data,
+                data = dat,
                 method = 'REML', ...),
       nlme::gls(stats::as.formula(formTrait),
                 weights = nlme::varFixed(~1/weights_Trait),
-                data = data,
+                data = dat,
                 method = 'REML', ...),
-      data = data)
+      data = dat)
   } else {
     models_list <- piecewiseSEM::psem(
       stats::lm(stats::as.formula(formGR),
-                data = data,
+                data = dat,
                 method = 'qr', ...),
       stats::lm(stats::as.formula(formDemRate),
                 weights = weights_DemRate,
-                data = data,
+                data = dat,
                 method = 'qr', ...),
       stats::lm(stats::as.formula(formTrait),
                 weights = weights_Trait,
-                data = data,
+                data = dat,
                 method = 'qr', ...),
-      data = data)
+      data = dat)
   }
   return(models_list)
 
