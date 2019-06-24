@@ -89,11 +89,15 @@ fit_mod <- function(biol_data, ID,
   # weights - what to do if only a few SEs are missing??? (we need weights)
   # + if all SEs are missing weights should be set to 1s
   if (weight) {
-    if(! any(is.na(data$Demog_rate_SE))){
-    data$weights_DemRate <- 1 / data$Demog_rate_SE^2
+    if (sum(is.na(data$Demog_rate_SE)) == nrow(data)){
+      data$weights_DemRate <- 1
     } else {
-      data$weights_DemRate[is.na(data$Demog_rate_SE)] <- median(data$Demog_rate_SE, na.rm = T)  ## setting to 1 only makes sense if the analyses are run on standardized data
-      data$weights_DemRate[!is.na(data$Demog_rate_SE)] <- 1 / data$Demog_rate_SE[!is.na(data$Demog_rate_SE)]^2
+      if(! any(is.na(data$Demog_rate_SE))){
+        data$weights_DemRate <- 1 / data$Demog_rate_SE^2
+      } else {
+        data$weights_DemRate[is.na(data$Demog_rate_SE)] <- median(data$Demog_rate_SE, na.rm = T)  ## setting to 1 only makes sense if the analyses are run on standardized data
+        data$weights_DemRate[!is.na(data$Demog_rate_SE)] <- 1 / data$Demog_rate_SE[!is.na(data$Demog_rate_SE)]^2
+      }
     }
     data$weights_Trait <-  1 / data$Trait_SE^2  ## do same as for SE on Dem.rates?
 
