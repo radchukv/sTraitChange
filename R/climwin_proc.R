@@ -109,11 +109,10 @@ climwin_proc <- function(biol_data, clim_data,
     ## if weather comes from a single station
     Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 2, sep = '/'), format = '%d/%m/%Y'),
                                   as.Date(paste('01', '12', max(biol_data$Year) + 1, sep = '/'), format = '%d/%m/%Y'), 'day'))
-    if(unique(biol_data$Study_Authors) %in% c('Lewis_et_al',
-                                              'Catry&Campioni', 'Cheng_et_al')){
-      clim_data$Date <- as.Date(clim_data$DATE, format = '%Y-%m-%d')
+    if(unique(biol_data$Study_Authors) %in% c('Tarwater&Beissinger')){
+      clim_data$Date <- as.Date(clim_data$DATE, format = '%d/%m/%Y')
     }else{
-    clim_data$Date <- as.Date(clim_data$DATE, format = '%d/%m/%Y')
+    clim_data$Date <- as.Date(clim_data$DATE, format = '%Y-%m-%d')
     }
     subs_clim <- clim_data[, c('Date', weatherVar)]
     Clim <- merge(subs_clim, Clim, by = 'Date')
