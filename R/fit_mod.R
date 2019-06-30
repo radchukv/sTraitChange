@@ -80,27 +80,26 @@ fit_mod <- function(biol_data, ID,
     formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
   }
   if(DD == 'none'){
-    formGR <<- 'GR ~ det_Clim + Demog_rate_mean'   ## gls have problmes with environment...
+    formGR <<- 'GR ~ det_Clim + Demog_rate_mean'
     formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
   }
 
   formTrait <<- 'Trait_mean ~ det_Clim'
 
-  # weights - what to do if only a few SEs are missing??? (we need weights)
-  # + if all SEs are missing weights should be set to 1s
+
   if (weight) {
     if (sum(is.na(dat$Demog_rate_SE)) == nrow(dat)){
       dat$weights_DemRate <- 1
     } else {
       if(! any(is.na(dat$Demog_rate_SE))){
         # replace SE of 0 with min values observed, otherwise weights are Inf
-        if(sum(dat$Demog_rate_SE == 0) != 0){
+        if(sum(dat$Demog_rate_SE == 0, na.rm = TRUE) != 0){
           dat$Demog_rate_SE[dat$Demog_rate_SE == 0] <-
             min(dat$Demog_rate_SE[dat$Demog_rate_SE != 0], na.rm = T)
           }
         dat$weights_DemRate <- 1 / dat$Demog_rate_SE^2
       } else {
-        if(sum(dat$Demog_rate_SE == 0) != 0){
+        if(sum(dat$Demog_rate_SE == 0, na.rm = TRUE) != 0){
           dat$Demog_rate_SE[dat$Demog_rate_SE == 0] <-
             min(dat$Demog_rate_SE[dat$Demog_rate_SE != 0], na.rm = T)
         }
@@ -138,16 +137,13 @@ fit_mod <- function(biol_data, ID,
   } else {
     models_list <- piecewiseSEM::psem(
       stats::lm(stats::as.formula(formGR),
-                data = dat,
-                method = 'qr', ...),
+                data = dat, ...),
       stats::lm(stats::as.formula(formDemRate),
                 weights = weights_DemRate,
-                data = dat,
-                method = 'qr', ...),
+                data = dat, ...),
       stats::lm(stats::as.formula(formTrait),
                 weights = weights_Trait,
-                data = dat,
-                method = 'qr', ...),
+                data = dat, ...),
       data = dat)
   }
   return(models_list)
