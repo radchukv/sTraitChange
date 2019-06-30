@@ -103,7 +103,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
     data_GR <- data_GR %>%
       dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean, na.rm = T),
                     Demog_rate_SE = Demog_rate_SE /sd(Demog_rate_mean, na.rm = T),
-                    Clim = scale(Clim),
+                    det_Clim = scale(det_Clim),
                     Trait_mean = scale(Trait_mean),
                     Demog_rate_mean = scale(Demog_rate_mean),
                     Pop_mean = scale(Pop_mean),
@@ -112,8 +112,9 @@ fit_SEM <- function(biol_data, ID, out_SEM,
     pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
                data_GR$Species[1], '_', data_GR$Location[1],
                '_', data_GR$Trait[1], '_z_score_relations.pdf'))
-    psych::pairs.panels(subset(data_GR, select = c(Clim, Trait_mean,
-                                                   Demog_rate_mean, Pop_mean, GR)),
+    psych::pairs.panels(subset(data_GR, select = c(Clim, det_Clim, Year,
+                                                   Trait_mean, Demog_rate_mean,
+                                                   Pop_mean, GR)),
                         ellipses = FALSE, hist.col = 'grey', lm = TRUE)
     mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
           line = 3)
