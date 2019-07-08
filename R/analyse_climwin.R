@@ -80,6 +80,8 @@ analyse_climwin <- function(ID, biol_data,
 
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
+    biol_data_noNA <- biol %>%
+      filter(!is.na(Trait_mean) & !is.na(Trait_SE))
     data_climwin <- climwin_out$Dataset
     data_climwin$WindowDur <- data_climwin$WindowOpen - data_climwin$WindowClose
     climdata <- dat$clim_data[[1]]
