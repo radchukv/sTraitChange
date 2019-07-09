@@ -118,22 +118,38 @@ fit_mod <- function(biol_data, ID,
   if(correlation){
 
     dat <<- dat  ## for autocorrelation, otherwise gls does not wok within psem
-    formGR <<- formGR
-    formDemRate <<- formDemRate
-    formTrait <<- formTrait
-    models_list <- piecewiseSEM::psem(
-      nlme::gls(stats::as.formula(formGR),  ## maybe try to go not with gls but another model that allows for weights and autocor
-                data = dat,
-                method = 'REML', ...),
-      nlme::gls(stats::as.formula(formDemRate),
-                weights = nlme::varFixed(~1/weights_DemRate),
-                data = dat,
-                method = 'REML', ...),
-      nlme::gls(stats::as.formula(formTrait),
-                weights = nlme::varFixed(~1/weights_Trait),
-                data = dat,
-                method = 'REML', ...),
-      data = dat)
+    # formGR <<- formGR
+    # formDemRate <<- formDemRate
+    # formTrait <<- formTrait
+
+
+    # trying with Alex's suggestion
+    script <- paste0("models_list <- piecewiseSEM::psem(nlme::gls(",
+                     formGR, ", method = 'REML', data = dat),
+                     nlme::gls(", formDemRate, ",
+                     weights = nlme::varFixed(~1/weights_DemRate),
+                     method = 'REML', data = dat),
+                     nlme::gls(", formTrait, ",
+                     weights = nlme::varFixed(~1/weights_Trait),
+                     method = 'REML', data = dat),
+                     data = dat)")
+
+    eval(parse(text = script))
+
+
+    # models_list <- piecewiseSEM::psem(
+    #   nlme::gls(stats::as.formula(formGR),  ## maybe try to go not with gls but another model that allows for weights and autocor
+    #             data = dat,
+    #             method = 'REML', ...),
+    #   nlme::gls(stats::as.formula(formDemRate),
+    #             weights = nlme::varFixed(~1/weights_DemRate),
+    #             data = dat,
+    #             method = 'REML', ...),
+    #   nlme::gls(stats::as.formula(formTrait),
+    #             weights = nlme::varFixed(~1/weights_Trait),
+    #             data = dat,
+    #             method = 'REML', ...),
+    #   data = dat)
   } else {
     models_list <- piecewiseSEM::psem(
       stats::lm(stats::as.formula(formGR),
