@@ -117,15 +117,7 @@ fit_mod <- function(biol_data, ID,
 
   if(correlation){
 
-<<<<<<< HEAD
     dat <<- dat  ## for autocorrelation, otherwise gls does not wok within psem
-=======
-<<<<<<< HEAD
-    dat <<- dat  ## for autocorrelation, otherwise gls does not wok within psem
-=======
-    # dat <<- dat  ## for autocorrelation, otherwise gls does not wok within psem
->>>>>>> cd735a441f1d66bc99af956c15596b7ed3d6d7fd
->>>>>>> e64be79143cd04ac04d85a974416ef87c9ba337e
     # formGR <<- formGR
     # formDemRate <<- formDemRate
     # formTrait <<- formTrait
