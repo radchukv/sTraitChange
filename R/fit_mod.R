@@ -125,14 +125,19 @@ fit_mod <- function(biol_data, ID,
 
     # trying with Alex's suggestion
     script <- paste0("models_list <- piecewiseSEM::psem(nlme::gls(",
-                     formGR, ", method = 'REML', data = dat),
+                     formGR, ", correlation = nlme::corAR1(form = ~ Year | ID),
+                     method = 'REML', data = dat),
                      nlme::gls(", formDemRate, ",
                      weights = nlme::varFixed(~1/weights_DemRate),
+                     correlation = nlme::corAR1(form = ~ Year | ID),
                      method = 'REML', data = dat),
                      nlme::gls(", formTrait, ",
                      weights = nlme::varFixed(~1/weights_Trait),
+                     correlation = nlme::corAR1(form = ~ Year | ID),
                      method = 'REML', data = dat),
                      data = dat)")
+
+    ## Should still add a catch here to get the errors in case of non-convergence with gls
 
     eval(parse(text = script))
 
@@ -140,13 +145,16 @@ fit_mod <- function(biol_data, ID,
     # models_list <- piecewiseSEM::psem(
     #   nlme::gls(stats::as.formula(formGR),  ## maybe try to go not with gls but another model that allows for weights and autocor
     #             data = dat,
+    #             correlation = corAR1(form = ~ year | id),
     #             method = 'REML', ...),
     #   nlme::gls(stats::as.formula(formDemRate),
     #             weights = nlme::varFixed(~1/weights_DemRate),
+    #             correlation = corAR1(form = ~ year | id),
     #             data = dat,
     #             method = 'REML', ...),
     #   nlme::gls(stats::as.formula(formTrait),
     #             weights = nlme::varFixed(~1/weights_Trait),
+    #             correlation = corAR1(form = ~ year | id),
     #             data = dat,
     #             method = 'REML', ...),
     #   data = dat)
