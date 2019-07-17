@@ -19,8 +19,9 @@
 #' @export
 #'
 #' @return Returns a tibble. If no categorical explanatory variables are included in the model,
-#' then this tibble includes the data frame with the estimate of the global
-#' effect size, its standard error, its significance and the AIC of the fitted model.
+#' then this tibble includes two data frames: the data frame with the estimate of the global
+#' effect size, its standard error, its significance and the AIC of the fitted model, and the
+#' data frame with the effect sizes and their standard errors for each study.
 #' If a categorical explanatory variable is included in the model, then the tibble
 #' additionally contains the estimates of effect sizes for each level of the categorical variable,
 #' as well as their standard errors, the p value indicating whether the categorical variable is
@@ -137,13 +138,15 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                           mod_ML$pval, AIC_EfS_across = AIC(mod_ML))
   if(! is.null(Covar)){
     out_tib <- tibble::tibble(data = list(out_dat),
+                              data_EfS = list(subs_data),
                               EfS_Covar = list(mod_REML_Cov$beta),
                               EfS_Covar_SE = list(mod_REML_Cov$se),
                               EfS_Covar_Low = list(mod_REML_Cov$ci.lb),
                               EfS_Covar_High = list(mod_REML_Cov$ci.ub),
                               pval_Covar = LRT_test$pval, AIC_EfS_Covar = AIC(mod_ML_Cov))
   }else{
-    out_tib <- tibble::tibble(data = list(out_dat))
+    out_tib <- tibble::tibble(data = list(out_dat),
+                              data_EfS = list(subs_data))
   }
   return(out_tib)
 }
