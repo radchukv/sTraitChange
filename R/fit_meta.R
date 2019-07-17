@@ -33,11 +33,7 @@
 #'                           Covar = NULL)
 #' check_TraitCateg <- fit_meta(data_MA = Coefs_Aut, Type_EfS = 'Trait_mean<-det_Clim',
 #'                              Covar = 'Trait_Categ')
-<<<<<<< HEAD
 #' check_TraitCateg
-=======
-check_TraitCateg
->>>>>>> f002d270c7de109d9fa1bb9f8541e4a4a0779ba1
 fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                      Covar = NULL){
   ## calculating indirect effects, total effects and their SEs
