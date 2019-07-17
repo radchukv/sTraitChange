@@ -74,6 +74,7 @@ get_res_SEM <- function(mod_obj){
                         Nyears = unique(data$NYears),
                         WinDur = unique(data$WinDur),
                         deltaAIC = unique(data$deltaAIC),
+                        Pvalue = unique(data$Pvalue),
                         dTable = list(dTable),
                         Cstat = list(Cstat),
                         R2 = list(R2_Relation),

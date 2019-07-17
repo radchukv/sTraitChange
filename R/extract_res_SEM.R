@@ -25,7 +25,7 @@ extract_res_SEM <- function(list_fitSEM, stat_extr){
                       'Taxon', 'Trait_Categ', 'Trait',
                       'Demog_rate_Categ', 'Demog_rate_Categ1',  ## later remove Demog_rate_categ1
                       'Demog_rate', 'Count',
-                      'Nyears', 'WinDur', 'deltaAIC',
+                      'Nyears', 'WinDur', 'deltaAIC', 'Pvalue',
                       'weights', 'DD', 'corr')]
     test <- elem[[stat_extr]][[1]]
 
