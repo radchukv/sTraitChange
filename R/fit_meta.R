@@ -133,16 +133,18 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
     LRT_test <- metafor::anova.rma(mod_ML_Cov, mod_ML)
   }
 
-  out_dat <- data.frame(EfS_across = as.numeric(mod_REML$beta), SE_across = mod_REML$se,
+  out_dat <- data.frame(Estimate = as.numeric(mod_REML$beta), SError = mod_REML$se,
                         EfS_Low = mod_REML$ci.lb, EfS_Upper = mod_REML$ci.ub, pval_across =
                           mod_ML$pval, AIC_EfS_across = AIC(mod_ML))
   if(! is.null(Covar)){
     out_tib <- tibble::tibble(data = list(out_dat),
                               data_EfS = list(subs_data),
-                              EfS_Covar = list(mod_REML_Cov$beta),
-                              EfS_Covar_SE = list(mod_REML_Cov$se),
-                              EfS_Covar_Low = list(mod_REML_Cov$ci.lb),
-                              EfS_Covar_High = list(mod_REML_Cov$ci.ub),
+                              data_Covar = list(data.frame(
+                                Levels_Covar = rownames(mod_REML_Cov$beta),
+                                Estimate = as.numeric(mod_REML_Cov$beta),
+                                SError = mod_REML_Cov$se,
+                                EfS_Low = mod_REML_Cov$ci.lb,
+                                EfS_Upper = mod_REML_Cov$ci.ub)),
                               pval_Covar = LRT_test$pval, AIC_EfS_Covar = AIC(mod_ML_Cov))
   }else{
     out_tib <- tibble::tibble(data = list(out_dat),

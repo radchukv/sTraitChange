@@ -24,8 +24,9 @@ categorical variables are included and the overall global effect size is estimat
 }
 \value{
 Returns a tibble. If no categorical explanatory variables are included in the model,
-then this tibble includes the data frame with the estimate of the global
-effect size, its standard error, its significance and the AIC of the fitted model.
+then this tibble includes two data frames: the data frame with the estimate of the global
+effect size, its standard error, its significance and the AIC of the fitted model, and the
+data frame with the effect sizes and their standard errors for each study.
 If a categorical explanatory variable is included in the model, then the tibble
 additionally contains the estimates of effect sizes for each level of the categorical variable,
 as well as their standard errors, the p value indicating whether the categorical variable is
