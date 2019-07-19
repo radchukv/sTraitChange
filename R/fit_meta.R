@@ -135,7 +135,7 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
 
   out_dat <- data.frame(Estimate = as.numeric(mod_REML$beta), SError = mod_REML$se,
                         EfS_Low = mod_REML$ci.lb, EfS_Upper = mod_REML$ci.ub, pval_across =
-                          mod_ML$pval, AIC_EfS_across = AIC(mod_ML))
+                          mod_ML$pval, AIC_EfS_across = AIC(mod_ML), Chi2 = mod_ML$zval)
   if(! is.null(Covar)){
     out_tib <- tibble::tibble(data = list(out_dat),
                               data_EfS = list(subs_data),
@@ -145,7 +145,8 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                 SError = mod_REML_Cov$se,
                                 EfS_Low = mod_REML_Cov$ci.lb,
                                 EfS_Upper = mod_REML_Cov$ci.ub)),
-                              pval_Covar = LRT_test$pval, AIC_EfS_Covar = AIC(mod_ML_Cov))
+                              pval_Covar = LRT_test$pval, AIC_EfS_Covar = AIC(mod_ML_Cov),
+                              Chi2 = LRT_test$LRT, df = LRT_test$p.f - LRT_test$p.r)
   }else{
     out_tib <- tibble::tibble(data = list(out_dat),
                               data_EfS = list(subs_data))
