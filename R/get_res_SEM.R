@@ -65,6 +65,7 @@ get_res_SEM <- function(mod_obj){
                         Longitude = unique(data$Longitude),
                         Latitude = unique(data$Latitude),
                         Taxon = unique(data$Taxon),
+                        BirdType = unique(data$BirdType),
                         Trait_Categ = unique(data$Trait_Categ),
                         Trait = unique(data$Trait),
                         Demog_rate_Categ = unique(data$Demog_rate_Categ),
