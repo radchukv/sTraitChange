@@ -94,11 +94,13 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   subs_merge <- droplevels(subset(data_MA,
                                   select = c(ID, Country, Continent,
                                              Longitude, Latitude, Taxon,
+                                             BirdType,
                                              Trait_Categ, Trait, Demog_rate_Categ,
                                              Demog_rate_Categ1, Demog_rate, Count,
                                              Nyears, WinDur, deltaAIC, Pvalue)) %>%
                              dplyr::distinct(., ID, Country, Continent,
                                              Longitude, Latitude, Taxon,
+                                             BirdType,
                                              Trait_Categ, Trait, Demog_rate_Categ,
                                              Demog_rate_Categ1, Demog_rate, Count,
                                              Nyears, WinDur, deltaAIC, .keep_all = T))
@@ -135,7 +137,11 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
 
   out_dat <- data.frame(Estimate = as.numeric(mod_REML$beta), SError = mod_REML$se,
                         EfS_Low = mod_REML$ci.lb, EfS_Upper = mod_REML$ci.ub, pval_across =
-                          mod_ML$pval, AIC_EfS_across = AIC(mod_ML), Chi2 = mod_ML$zval)
+                          mod_ML$pval, AIC_EfS_across = AIC(mod_ML), Chi2 = mod_ML$zval,
+                        Species.SD = mod_REML$sigma2[1],  ## this part still has to be more general, make the hard-coded names be read from the mod_REML$s.names
+                        ID.SD = mod_REML$sigma2[2],
+                        Location.SD = mod_REML$sigma2[3])
+
   if(! is.null(Covar)){
     out_tib <- tibble::tibble(data = list(out_dat),
                               data_EfS = list(subs_data),
@@ -146,7 +152,10 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                 EfS_Low = mod_REML_Cov$ci.lb,
                                 EfS_Upper = mod_REML_Cov$ci.ub)),
                               pval_Covar = LRT_test$pval, AIC_EfS_Covar = AIC(mod_ML_Cov),
-                              Chi2 = LRT_test$LRT, df = LRT_test$p.f - LRT_test$p.r)
+                              Chi2 = LRT_test$LRT, df = LRT_test$p.f - LRT_test$p.r,
+                              Species.SD = mod_REML_Cov$sigma2[1],  ## this part still has to be more general, make the hard-coded names be read from the mod_REML$s.names
+                              ID.SD = mod_REML_Cov$sigma2[2],
+                              Location.SD = mod_REML_Cov$sigma2[3])
   }else{
     out_tib <- tibble::tibble(data = list(out_dat),
                               data_EfS = list(subs_data))
