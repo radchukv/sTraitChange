@@ -78,7 +78,7 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
 
   ## prepare the limits of the plot
   ylim_plot <- c(1, ymax)
-  xlim_max <-  ceiling(max(c(abs(data_ES$lwr), data_ES$upr), na.rm = TRUE))
+  xlim_max <-  ceiling(max(c(abs(data_ES$lwr), abs(data_ES$upr)), na.rm = TRUE))
   xlim_plot <- c(-xlim_max, xlim_max)
 
 
@@ -183,7 +183,7 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
   }
 
 
-  ## start pdf if name of file defined
+  ## end pdf if name of file defined
   if (!is.null(pdf_basename)) {
     grDevices::dev.off()
     message(paste0('a pdf named', paste0(pdf_basename, '.pdf'), ' has been created and saved!'))
