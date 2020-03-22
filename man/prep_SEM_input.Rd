@@ -4,9 +4,15 @@
 \alias{prep_SEM_input}
 \title{Prepare a dataset for SEM based on the output of window analyses}
 \usage{
-prep_SEM_input(prep_subset_climwin, out_for_SEM, oneGrid = FALSE,
-  explanYear = TRUE, endWindow = 104, RefMon = NA,
-  selIDs = unique(prep_subset_climwin$Sel[[1]]$ID))
+prep_SEM_input(
+  prep_subset_climwin,
+  out_for_SEM,
+  oneGrid = FALSE,
+  explanYear = TRUE,
+  endWindow = 104,
+  RefMon = NA,
+  selIDs = unique(prep_subset_climwin$Sel[[1]]$ID)
+)
 }
 \arguments{
 \item{prep_subset_climwin}{The object returned by \code{\link{prep_subset}}

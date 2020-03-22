@@ -4,8 +4,16 @@
 \alias{fit_SEM}
 \title{Fit structural equation model and return the results}
 \usage{
-fit_SEM(biol_data, ID, out_SEM, DD = "none", weight = FALSE,
-  correlation = FALSE, standardize = FALSE, detrend = FALSE)
+fit_SEM(
+  biol_data,
+  ID,
+  out_SEM,
+  DD = "none",
+  weight = FALSE,
+  correlation = FALSE,
+  standardize = FALSE,
+  detrend = FALSE
+)
 }
 \arguments{
 \item{biol_data}{Data frame with climate, trait and demographic rate

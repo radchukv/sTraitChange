@@ -4,8 +4,7 @@
 \alias{check_winDur}
 \title{Check whether the window duration is within realistic range}
 \usage{
-check_winDur(climwin_out, clim, biol_data, MinDur, MaxDur,
-  deltaThresh = -7)
+check_winDur(climwin_out, clim, biol_data, MinDur, MaxDur, deltaThresh = -7)
 }
 \arguments{
 \item{climwin_out}{A list containing the results of climatic window analyses,

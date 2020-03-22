@@ -4,11 +4,22 @@
 \alias{analyse_climwin}
 \title{Analyze the results of climate window analysis}
 \usage{
-analyse_climwin(ID, biol_data, out_clim = "output_climwin_test",
-  randwin = FALSE, metric = "AIC", MinDur = 1, MaxDur = 40,
-  deltaThresh = -7, test_winDur = FALSE,
-  out_for_SEM = "output_SEM_test", oneGrid = TRUE, explanYear = TRUE,
-  endWindow, RefMon = NA)
+analyse_climwin(
+  ID,
+  biol_data,
+  out_clim = "output_climwin_test",
+  randwin = FALSE,
+  metric = "AIC",
+  MinDur = 1,
+  MaxDur = 40,
+  deltaThresh = -7,
+  test_winDur = FALSE,
+  out_for_SEM = "output_SEM_test",
+  oneGrid = TRUE,
+  explanYear = TRUE,
+  endWindow,
+  RefMon = NA
+)
 }
 \arguments{
 \item{ID}{Numeric giving a unique ID of the current dataset for

@@ -4,11 +4,16 @@
 \alias{plot_forest}
 \title{Forest plot of effect sizes per each study and global effect sizes across studies}
 \usage{
-plot_forest(data_ES = check_DemCateg$data_EfS[[1]],
-  data_globES = check_DemCateg$data_Covar[[1]], Covar = NULL,
-  xlab = "Effect of temperature on trait", colr = c("blue", "green",
-  "black"), pdf_basename = NULL, mar = c(4, 10, 2, 2),
-  labels_ES = TRUE)
+plot_forest(
+  data_ES = check_DemCateg$data_EfS[[1]],
+  data_globES = check_DemCateg$data_Covar[[1]],
+  Covar = NULL,
+  xlab = "Effect of temperature on trait",
+  colr = c("blue", "green", "black"),
+  pdf_basename = NULL,
+  mar = c(4, 10, 2, 2),
+  labels_ES = TRUE
+)
 }
 \arguments{
 \item{data_ES}{Data frame containing, for each study, the effect size estimates and their
