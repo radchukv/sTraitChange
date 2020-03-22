@@ -16,7 +16,7 @@ that are needed to fit the mixed-effect model.}
 These types of effect sizes reflect different pathways in the fitted SEM. Possible are:
 'Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean', 'Demog_rate_mean<-Trait_mean',
 'GR<-Demog_rate_mean',  'GR<-det_Clim', 'GR<-Pop_mean', 'Ind_DemRate<-det_Clim',
-'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-Clim', and 'Trait_mean<-det_Clim'.}
+'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim', and 'Trait_mean<-det_Clim'.}
 
 \item{Covar}{Categorical specifying the name of the categorical variable to be included
 as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no

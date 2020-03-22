@@ -4,11 +4,24 @@
 \alias{climwin_proc}
 \title{Conduct climate window analysis}
 \usage{
-climwin_proc(biol_data, clim_data, ID, randwin = FALSE, seednum = 1302,
-  repeats = 200, plot_check = FALSE, cinterval = "week",
-  out_clim = "output_climwin_test", stat = "mean", oneGrid = TRUE,
-  explanYear = TRUE, startWindow = 0, endWindow = 52, RefMon = NA,
-  weatherVar = NA)
+climwin_proc(
+  biol_data,
+  clim_data,
+  ID,
+  randwin = FALSE,
+  seednum = 1302,
+  repeats = 200,
+  plot_check = FALSE,
+  cinterval = "week",
+  out_clim = "output_climwin_test",
+  stat = "mean",
+  oneGrid = TRUE,
+  explanYear = TRUE,
+  startWindow = 0,
+  endWindow = 52,
+  RefMon = NA,
+  weatherVar = NA
+)
 }
 \arguments{
 \item{biol_data}{Data frame with trait data for a given population and species.}

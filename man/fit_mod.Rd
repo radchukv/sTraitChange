@@ -4,8 +4,7 @@
 \alias{fit_mod}
 \title{Fit structural equation model with requested specifications}
 \usage{
-fit_mod(biol_data, ID, DD = "none", weight = FALSE,
-  correlation = FALSE, ...)
+fit_mod(biol_data, ID, DD = "none", weight = FALSE, correlation = FALSE, ...)
 }
 \arguments{
 \item{biol_data}{Data frame with climate, trait and demographic rate
