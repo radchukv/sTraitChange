@@ -11,7 +11,7 @@
 #' These types of effect sizes reflect different pathways in the fitted SEM. Possible are:
 #' 'Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean', 'Demog_rate_mean<-Trait_mean',
 #' 'GR<-Demog_rate_mean',  'GR<-det_Clim', 'GR<-Pop_mean', 'Ind_DemRate<-det_Clim',
-#' 'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-Clim', and 'Trait_mean<-det_Clim'.
+#' 'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim', and 'Trait_mean<-det_Clim'.
 #' @param Covar Categorical specifying the name of the categorical variable to be included
 #' as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no
 #' categorical variables are included and the overall global effect size is estimated.
@@ -55,7 +55,7 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
     met_wide$`Demog_rate_mean<-Trait_mean/Estimate` * met_wide$`GR<-Demog_rate_mean/Estimate`
   met_wide$`Tot_DemRate<-det_Clim/Estimate` <- met_wide$`Ind_DemRate<-det_Clim/Estimate` +
     met_wide$`Demog_rate_mean<-det_Clim/Estimate`
-  met_wide$`Tot_GR<-Clim/Estimate` <- met_wide$`Ind_GR<-det_Clim/Estimate` + met_wide$`GR<-det_Clim/Estimate` +
+  met_wide$`Tot_GR<-det_Clim/Estimate` <- met_wide$`Ind_GR<-det_Clim/Estimate` + met_wide$`GR<-det_Clim/Estimate` +
     met_wide$`Demog_rate_mean<-det_Clim/Estimate` * met_wide$`GR<-Demog_rate_mean/Estimate`
 
   ## calculation of SE for those composite Ef sizes (like indirect effect and the total effect)
@@ -80,7 +80,7 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   ## the VAR of the sum of idnependent random vars is the sum of the variances
   met_wide$`Tot_DemRate<-det_Clim/SError` <- sqrt(met_wide$`Demog_rate_mean<-det_Clim/SError`^2 +
                                                     met_wide$`Ind_DemRate<-det_Clim/SError`^2)
-  met_wide$`Tot_GR<-Clim/SError` <- sqrt(met_wide$`GR<-det_Clim/SError`^2 + met_wide$`Ind_GR<-det_Clim/SError`^2 +
+  met_wide$`Tot_GR<-det_Clim/SError` <- sqrt(met_wide$`GR<-det_Clim/SError`^2 + met_wide$`Ind_GR<-det_Clim/SError`^2 +
                                            (met_wide$`Demog_rate_mean<-det_Clim/Estimate`^2*met_wide$`GR<-Demog_rate_mean/SError`^2 +
                                               met_wide$`GR<-Demog_rate_mean/Estimate`^2*met_wide$`Demog_rate_mean<-det_Clim/SError`^2 +
                                               met_wide$`GR<-Demog_rate_mean/SError`^2*met_wide$`Demog_rate_mean<-det_Clim/SError`^2))
@@ -115,11 +115,39 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
 
 
   ## if no categorical explanatories included
-  mod_ML <- metafor::rma.mv(Estimate ~ 1, V = SError^2, #W = 1 / Pvalue,  ## works just as well as yi = Estimate
+  tt.error.ML <- tryCatch(mod_ML <- metafor::rma.mv(Estimate ~ 1, V = SError^2,
+                                                 random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                                 data = subs_data,
+                                                 method = 'ML'),
+                       error=function(e) e)
+  if(! is(tt.error.ML,"error")){
+  mod_ML <- metafor::rma.mv(Estimate ~ 1, V = SError^2,  ## works just as well as yi = Estimate
                             random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'ML')
-  mod_REML <- metafor::rma.mv(yi = Estimate, V = SError^2, #W = 1 / Pvalue,
-                              random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'REML')
-  ## now trying to add another weight based on inverse of the p value - works, but has to be checked properly
+  } else {
+  warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
+              'demographic rate category is ', unique(subs_data$Demog_rate_Categ1), '\n',
+              'fitted relation is ', unique(subs_data$Relation), '\n',
+              'error when fitting the model with ML \n',
+              tt.error.ML[1]$message, '\n'))
+  }
+
+  tt.error.REML <- tryCatch(mod_REML <- metafor::rma.mv(yi = Estimate, V = SError^2, #W = 1 / Pvalue,
+                              random = list(~ 1|Species, ~1|ID, ~1|Location),
+                              data = subs_data,
+                              method = 'REML'),
+                            error=function(e) e)
+  if(! is(tt.error.REML,"error")){
+
+    mod_REML <- metafor::rma.mv(yi = Estimate, V = SError^2, #W = 1 / Pvalue,
+                                random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'REML')
+  }else {
+    warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
+                'demographic rate category is ', unique(subs_data$Demog_rate_Categ1), '\n',
+                'fitted relation is ', unique(subs_data$Relation), '\n',
+                'error when fitting the model with REML \n',
+                tt.error.REML[1]$message, '\n'))
+  }
+    ## now trying to add another weight based on inverse of the p value - works, but has to be checked properly
   #mod_test_W <- metafor::rma.mv(yi = Estimate, V = SError^2, W = 1 / Pvalue,
   #                            random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'ML')
   ## this still has to be finished
@@ -128,19 +156,49 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   ## including the covariate
   if(! is.null(Covar)){
     formul <- paste0('Estimate ~ ', Covar, ' - 1')
-    mod_ML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
-                                  random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'ML')
-    mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
-                                    random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'ML')
-    LRT_test <- metafor::anova.rma(mod_ML_Cov, mod_ML)
+    ttCovar.error.ML <- tryCatch(mod_ML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
+                                                               random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                                               data = subs_data, method = 'ML'),
+                                 error=function(e) e)
+    if(! is(ttCovar.error.ML,"error")){
+      mod_ML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
+                                    random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                    data = subs_data, method = 'ML'
+    } else {
+      warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
+                  'demographic rate category is ', unique(subs_data$Demog_rate_Categ1), '\n',
+                  'fitted relation is ', unique(subs_data$Relation), '\n',
+                  'error when fitting the model with covariate with ML \n',
+                  ttCovar.error.ML[1]$message, '\n'))
+    }
+    ttCovar.error.REML <- tryCatch(mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
+                                                                   random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                                                   data = subs_data, method = 'REML'),
+                                   error=function(e) e)
+    if(! is(ttCovar.error.REML,"error")){
+      mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
+                                      random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                      data = subs_data, method = 'REML')
+    } else {
+      warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
+                  'demographic rate category is ', unique(subs_data$Demog_rate_Categ1), '\n',
+                  'fitted relation is ', unique(subs_data$Relation), '\n',
+                  'error when fitting the model with covariate with REML \n',
+                  ttCovar.error.REML[1]$message, '\n'))
+    }
+    if(! is(tt.error.ML,'error') & ! is(ttCovar.error.ML, 'error')) {
+      LRT_test <- metafor::anova.rma(mod_ML_Cov, mod_ML)
+    }
   }
 
+  if(! is(tt.error.ML,'error') & ! is(tt.error.REML, 'error')){
   out_dat <- data.frame(Estimate = as.numeric(mod_REML$beta), SError = mod_REML$se,
                         EfS_Low = mod_REML$ci.lb, EfS_Upper = mod_REML$ci.ub, pval_across =
                           mod_ML$pval, AIC_EfS_across = AIC(mod_ML), Chi2 = mod_ML$zval,
                         Species.SD = mod_REML$sigma2[1],  ## this part still has to be more general, make the hard-coded names be read from the mod_REML$s.names
                         ID.SD = mod_REML$sigma2[2],
                         Location.SD = mod_REML$sigma2[3])
+}
 
   if(! is.null(Covar)){
     out_tib <- tibble::tibble(data = list(out_dat),
@@ -153,12 +211,15 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                 EfS_Upper = mod_REML_Cov$ci.ub)),
                               pval_Covar = LRT_test$pval, AIC_EfS_Covar = AIC(mod_ML_Cov),
                               Chi2 = LRT_test$LRT, df = LRT_test$p.f - LRT_test$p.r,
-                              Species.SD = mod_REML_Cov$sigma2[1],  ## this part still has to be more general, make the hard-coded names be read from the mod_REML$s.names
+                              Species.SD = mod_REML_Cov$sigma2[1],  ## this part still has to be made more general, make the hard-coded names be read from the mod_REML$s.names
                               ID.SD = mod_REML_Cov$sigma2[2],
                               Location.SD = mod_REML_Cov$sigma2[3])
-  }else{
+    }
+  else{
     out_tib <- tibble::tibble(data = list(out_dat),
                               data_EfS = list(subs_data))
-  }
+    }
+
   return(out_tib)
+  }
 }
