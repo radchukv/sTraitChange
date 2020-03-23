@@ -7,8 +7,9 @@ for a specified subselection of demographic rate and trait}
 \usage{
 fit_all_meta(
   data_MA,
-  Demog_rate = "Survival",
-  Trait_categ = "Phenological",
+  Demog_rate = "survival",
+  Trait_categ = "phenological",
+  Clim = "temperature",
   tab = "Taxon",
   Covar = NULL,
   sel = "Phen_Surv",
@@ -25,6 +26,9 @@ that are needed to fit the mixed-effect model.}
 to subset the data.}
 
 \item{Trait_categ}{Character specifying the level of the trait on which to subset the data.}
+
+\item{Clim}{Character specifying the level of the climatic variable on which to subset
+the data.}
 
 \item{tab}{Categorical specifying the name of the categorical variable for which
 to produce the frequency table.}

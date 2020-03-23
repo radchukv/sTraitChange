@@ -12,6 +12,8 @@
 #' @param Demog_rate Character specifying the level of the demographic rate on which
 #' to subset the data.
 #' @param Trait_categ Character specifying the level of the trait on which to subset the data.
+#' @param Clim Character specifying the level of the climatic variable on which to subset
+#' the data.
 #' @param tab Categorical specifying the name of the categorical variable for which
 #'  to produce the frequency table.
 #' @param Covar Categorical specifying the name of the categorical variable to be included
@@ -44,8 +46,9 @@
 #' meta_Phen_Surv
 
 fit_all_meta <- function(data_MA,
-                         Demog_rate = 'Survival',
-                         Trait_categ = 'Phenological',
+                         Demog_rate = 'survival',
+                         Trait_categ = 'phenological',
+                         Clim = 'temperature',
                          tab = 'Taxon',
                          Covar = NULL,
                          sel = 'Phen_Surv',
@@ -76,13 +79,21 @@ fit_all_meta <- function(data_MA,
 
   ## a plot per each model
   lapply(1:length(unlist(rel_realized)), FUN = function(x){
-    xlab <- plot_lab_name(Relation = stat_meta$names[[x]], sel = sel)$xlab
-    coef <- plot_lab_name(Relation = stat_meta$names[[x]], sel = sel)$pref_pdf
+    xlab <- plot_lab_name(Relation = stat_meta$names[[x]],
+                          Covar = Covar,
+                          Demog_rate = Demog_rate,
+                          Trait_categ = Trait_categ,
+                          Clim = Clim)$xlab
+    coef <- plot_lab_name(Relation = stat_meta$names[[x]],
+                          Covar = Covar,
+                          Demog_rate = Demog_rate,
+                          Trait_categ = Trait_categ,
+                          Clim = Clim)$pref_pdf
     plot_forest(data_ES = stat_meta$data_EfS[[x]],
                 data_globES = stat_meta$data[[x]],
                 Covar = NULL, xlab = xlab,
                 colr = c('black'),
-                pdf_basename = paste0(folder_name, sel, '_Coef', coef),
+                pdf_basename = paste0(folder_name, sel, '_Coef_', coef),
                 mar = c(4, 10, 2, 2),
                 labels_ES = TRUE)
 
