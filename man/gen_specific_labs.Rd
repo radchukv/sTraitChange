@@ -6,9 +6,9 @@
 \usage{
 gen_specific_labs(
   vect,
-  Clim = "temperature",
-  Demog_rate = "survival",
-  Trait_categ = "phenology"
+  Clim = "Temperature",
+  Demog_rate = "Survival",
+  Trait_categ = "Phenology"
 )
 }
 \arguments{

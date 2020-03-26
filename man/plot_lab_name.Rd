@@ -7,9 +7,9 @@
 plot_lab_name(
   Relation = "GR<-det_Clim",
   Covar = NULL,
-  Demog_rate = "survival",
-  Trait_categ = "phenological",
-  Clim = "temperature"
+  Demog_rate = "Survival",
+  Trait_categ = "Phenological",
+  Clim = "Temperature"
 )
 }
 \arguments{

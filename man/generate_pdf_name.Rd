@@ -6,9 +6,9 @@
 \usage{
 generate_pdf_name(
   Relation = "GR<-det_Clim",
-  Clim = "temperature",
-  Demog_rate = "survival",
-  Trait_categ = "phenology"
+  Clim = "Temperature",
+  Demog_rate = "Survival",
+  Trait_categ = "Phenology"
 )
 }
 \arguments{

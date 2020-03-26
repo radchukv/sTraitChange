@@ -7,13 +7,14 @@ for a specified subselection of demographic rate and trait}
 \usage{
 fit_all_meta(
   data_MA,
-  Demog_rate = "survival",
-  Trait_categ = "phenological",
-  Clim = "temperature",
+  Demog_rate = "Survival",
+  Trait_categ = "Phenological",
+  Clim = "Temperature",
   tab = "Taxon",
   Covar = NULL,
   sel = "Phen_Surv",
-  folder_name = "./output_overall/"
+  folder_name = NULL,
+  colr = c("black")
 )
 }
 \arguments{
@@ -41,6 +42,11 @@ categorical variables are included and the overall global effect size is estimat
 the levels of demographic rate and trait for which the subsetting was done.}
 
 \item{folder_name}{Character specifyng the path to the directory in which the results will be saved.}
+
+\item{colr}{Vector specifying the colours to be used for the data points. The length of the
+vector should correspond to the number of the levels in the categorical explanatory variable
+included in the meta-analytical model, or should be one (if the single global effect size
+across all studies is to be plotted).}
 }
 \value{
 Returns a tibble that includes one data frame, one tibble and a table. A data frame
@@ -62,9 +68,22 @@ of data as defined by a demographic rate and a trait
 \examples{
 Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
 meta_Phen_Surv <- fit_all_meta(data_MA = Coefs_Aut,
-                               Demog_rate = 'Survival',
-                               Trait_categ = 'Phenological',
+                               Demog_rate = 'survival',
+                               Trait_categ = 'phenological',
+                               Clim = 'temperature',
                                tab = 'Taxon',
-                               Covar = NULL)
+                               Covar = NULL,
+                               sel = 'Phen_Surv',
+                               folder_name = './output_overall/',
+                               colr = c('black'))
 meta_Phen_Surv
+meta_Phen_Surv_byCont <- fit_all_meta(data_MA = Coefs_Aut,
+                                      Demog_rate = 'survival',
+                                      Trait_categ = 'phenological',
+                                      Clim = 'temperature',
+                                      tab = 'Continent',
+                                      Covar = 'Continent',
+                                      sel = 'Phen_Surv',
+                                      folder_name = './output_overall/',
+                                      colr = c('black', 'green', 'blue', 'red'))
 }
