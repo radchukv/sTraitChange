@@ -108,13 +108,18 @@ plot_relation <- function(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[1]],
     abline(a = 0, b = data_ES$Estimate[i], col = 'grey')
   }
 
+  if(as.numeric(data_globES[, 'pval_across']) < 0.05){
+    LineT <- 1
+  } else {
+    LineT <- 2
+  }
   if(is.null(data_CovarES)){
 
     yval <- 0 + as.numeric(data_globES[, 'Estimate'])*xax
     yvalU <- yval + as.numeric(data_globES[, 'SError'])
     yvalL <- yval - as.numeric(data_globES[, 'SError'])
     polygon(c(xax, rev(xax)), c(yvalL, rev(yvalU)), col = hsv(0,0,0.4, alpha = 0.4), border = FALSE)
-    abline(a = 0, b = data_globES[, 'Estimate'], lwd = 6, col = colr, lty = 2)
+    abline(a = 0, b = data_globES[, 'Estimate'], lwd = 6, col = colr, lty = LineT)
 
     #abline(a = as.numeric(data_globES[, 'SError']),
     #       b = data_globES[, 'Estimate'] , lwd = 2, col = colr, lty = 1)
@@ -131,7 +136,8 @@ plot_relation <- function(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[1]],
       yvalL <- yval - as.numeric(data_CovarES[i, 'SError'])
       polygon(c(xax, rev(xax)), c(yvalL, rev(yvalU)), col = hsv(as.numeric(rgb2hsv(col2rgb(i))), alpha = 0.4),
               border = FALSE)
-      abline(a = 0, b = data_CovarES[i, 'Estimate'], lwd = 6, col = colr[i], lty = 2)
+
+      abline(a = 0, b = data_CovarES[i, 'Estimate'], lwd = 6, col = colr[i], lty = LineT)
 
       # abline(a = as.numeric(data_CovarES[i, 'SError']), b = data_CovarES[i, 'Estimate'],
       #         lwd = 2, col = colr[i], lty = 1)
