@@ -22,6 +22,10 @@
 #' @param sel Character specifying the name to be included in the .pdf name, which indicates
 #' the levels of demographic rate and trait for which the subsetting was done.
 #' @param folder_name Character specifyng the path to the directory in which the results will be saved.
+#' @param colr Vector specifying the colours to be used for the data points. The length of the
+#' vector should correspond to the number of the levels in the categorical explanatory variable
+#' included in the meta-analytical model, or should be one (if the single global effect size
+#' across all studies is to be plotted).
 #'
 #' @export
 #'
@@ -39,20 +43,33 @@
 #' @examples
 #' Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
 #' meta_Phen_Surv <- fit_all_meta(data_MA = Coefs_Aut,
-#'                                Demog_rate = 'Survival',
-#'                                Trait_categ = 'Phenological',
+#'                                Demog_rate = 'survival',
+#'                                Trait_categ = 'phenological',
+#'                                Clim = 'temperature',
 #'                                tab = 'Taxon',
-#'                                Covar = NULL)
+#'                                Covar = NULL,
+#'                                sel = 'Phen_Surv',
+#'                                folder_name = './output_overall/',
+#'                                colr = c('black'))
 #' meta_Phen_Surv
-
+#' meta_Phen_Surv_byCont <- fit_all_meta(data_MA = Coefs_Aut,
+#'                                       Demog_rate = 'survival',
+#'                                       Trait_categ = 'phenological',
+#'                                       Clim = 'temperature',
+#'                                       tab = 'Continent',
+#'                                       Covar = 'Continent',
+#'                                       sel = 'Phen_Surv',
+#'                                       folder_name = './output_overall/',
+#'                                       colr = c('black', 'green', 'blue', 'red'))
 fit_all_meta <- function(data_MA,
-                         Demog_rate = 'survival',
-                         Trait_categ = 'phenological',
-                         Clim = 'temperature',
+                         Demog_rate = 'Survival',
+                         Trait_categ = 'Phenological',
+                         Clim = 'Temperature',
                          tab = 'Taxon',
                          Covar = NULL,
                          sel = 'Phen_Surv',
-                         folder_name = './output_overall/'){
+                         folder_name = './output_overall/',
+                         colr = c('black')){
 
   ### subs_data <- droplevels(base::subset(data_MA, Demog_rate_Categ1 == Demog_rate & Trait_Categ == Trait_categ))  ## weird, why this is not working as intended???
 
@@ -62,7 +79,7 @@ fit_all_meta <- function(data_MA,
                      'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim', 'Trait_mean<-det_Clim')
 
   stat_meta <- do.call('rbind', lapply(all_Relations, FUN = function(x){
-    fit_meta(data_MA = subs_data, Type_EfS = x, Covar = NULL)}))
+    fit_meta(data_MA = subs_data, Type_EfS = x, Covar = Covar)}))
 
   rel_realized <- lapply(1:length(stat_meta$data_EfS), FUN = function(x){
     unique(stat_meta$data_EfS[[x]]$Relation)
@@ -89,13 +106,23 @@ fit_all_meta <- function(data_MA,
                           Demog_rate = Demog_rate,
                           Trait_categ = Trait_categ,
                           Clim = Clim)$pref_pdf
+    if(is.null(Covar)){
     plot_forest(data_ES = stat_meta$data_EfS[[x]],
                 data_globES = stat_meta$data[[x]],
-                Covar = NULL, xlab = xlab,
+                Covar = Covar, xlab = xlab,
                 colr = c('black'),
                 pdf_basename = paste0(folder_name, sel, '_Coef_', coef),
                 mar = c(4, 10, 2, 2),
                 labels_ES = TRUE)
+    }else {
+      plot_forest(data_ES = stat_meta$data_EfS[[x]],
+                  data_globES = stat_meta$data_Covar[[x]],
+                  Covar = Covar, xlab = xlab,
+                  colr = colr,
+                  pdf_basename = paste0(folder_name, sel, '_Coef_', coef),
+                  mar = c(4, 10, 2, 2),
+                  labels_ES = TRUE)
+    }
 
   })
 
