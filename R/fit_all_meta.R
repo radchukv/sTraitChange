@@ -68,7 +68,7 @@ fit_all_meta <- function(data_MA,
                          tab = 'Taxon',
                          Covar = NULL,
                          sel = 'Phen_Surv',
-                         folder_name = './output_overall/',
+                         folder_name = NULL,
                          colr = c('black')){
 
   ### subs_data <- droplevels(base::subset(data_MA, Demog_rate_Categ1 == Demog_rate & Trait_Categ == Trait_categ))  ## weird, why this is not working as intended???
@@ -106,6 +106,7 @@ fit_all_meta <- function(data_MA,
                           Demog_rate = Demog_rate,
                           Trait_categ = Trait_categ,
                           Clim = Clim)$pref_pdf
+    if(! is.null(folder_name)){
     if(is.null(Covar)){
     plot_forest(data_ES = stat_meta$data_EfS[[x]],
                 data_globES = stat_meta$data[[x]],
@@ -122,6 +123,7 @@ fit_all_meta <- function(data_MA,
                   pdf_basename = paste0(folder_name, sel, '_Coef_', coef),
                   mar = c(4, 10, 2, 2),
                   labels_ES = TRUE)
+    }
     }
 
   })
