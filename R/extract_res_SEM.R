@@ -18,7 +18,7 @@
 #' still add the example
 
 extract_res_SEM <- function(list_fitSEM, stat_extr){
-  res <- bind_rows(lapply(1:length(list_fitSEM), FUN = function(x){
+  res <- dplyr::bind_rows(lapply(1:length(list_fitSEM), FUN = function(x){
     elem <- list_fitSEM[[x]]
     metadat <- elem[c('ID', 'Species', 'Location', 'Country',
                       'Continent', 'Longitude', 'Latitude',
@@ -32,11 +32,11 @@ extract_res_SEM <- function(list_fitSEM, stat_extr){
     if(stat_extr == 'coefs'){
       test <- test[, -ncol(test)]
     }
-    test <- test %>% mutate_if(is.factor, as.character)
+    test <- test %>% dplyr::mutate_if(is.factor, as.character)
     ret_dat <- cbind(test,
                      metadat[rep(seq_len(nrow(metadat)), nrow(test)), ])
     # to avoid coersion to character when binding the rows by bind_rows
-    ret_dat <- ret_dat %>% mutate_if(is.factor, as.character)
+    ret_dat <- ret_dat %>% dplyr::mutate_if(is.factor, as.character)
   }
   ))
   return(res)
