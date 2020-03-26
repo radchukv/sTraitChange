@@ -32,16 +32,16 @@
 #'
 plot_lab_name <- function(Relation = 'GR<-det_Clim',
                           Covar = NULL,
-                          Demog_rate = 'survival',
-                          Trait_categ = 'phenological',
-                          Clim = 'temperature'){
+                          Demog_rate = 'Survival',
+                          Trait_categ = 'Phenological',
+                          Clim = 'Temperature'){
 
   # to have suitable word for the axes labels
   if(Trait_categ == 'Phenological'){
-    Trait_categ = 'phenology'
+    Trait_categ = 'Phenology'
   } else {
     if (Trait_categ == 'Morphological'){
-      Trait_categ = 'morphology'
+      Trait_categ = 'Morphology'
     }
   }
 
@@ -142,21 +142,21 @@ plot_lab_name <- function(Relation = 'GR<-det_Clim',
 #' @export
 #'
 gen_specific_labs <- function(vect,
-                              Clim = 'temperature',
-                              Demog_rate = 'survival',
-                              Trait_categ = 'phenology'){
-  if(length(grep(pattern = ' ', x = vect)) > 1) {  # to accommodate for 'demographi rate'
-    converted <- sub(pattern = 'trait', replacement = Trait_categ,
-                     x = sub(pattern = 'climate', replacement = Clim,
-                             x = sub(pattern = 'demographic rate', replacement = Demog_rate,
+                              Clim = 'Temperature',
+                              Demog_rate = 'Survival',
+                              Trait_categ = 'Phenology'){
+  if(length(unlist(gregexpr(" ", vect))) > 1) {  # to accommodate for 'demographi rate'
+    converted <- sub(pattern = 'trait', replacement = tolower(Trait_categ),
+                     x = sub(pattern = 'climate', replacement = tolower(Clim),
+                             x = sub(pattern = 'demographic rate', replacement = tolower(Demog_rate),
                                      x = vect, ignore.case = TRUE),
                              ignore.case = TRUE), ignore.case = TRUE)
   } else {
-    converted <- capitalize(sub(pattern = 'trait', replacement = Trait_categ,
+    converted <- sub(pattern = 'trait', replacement = Trait_categ,
                       x = sub(pattern = 'climate', replacement = Clim,
                               x = sub(pattern = 'demographic rate', replacement = Demog_rate,
                                       x = vect, ignore.case = TRUE),
-                              ignore.case = TRUE), ignore.case = TRUE))
+                              ignore.case = TRUE), ignore.case = TRUE)
   }
   return(converted)
 }
@@ -174,18 +174,18 @@ gen_specific_labs <- function(vect,
 #' @export
 #'
 generate_pdf_name <- function(Relation = 'GR<-det_Clim',
-                              Clim = 'temperature',
-                              Demog_rate = 'survival',
-                              Trait_categ = 'phenology'){
+                              Clim = 'Temperature',
+                              Demog_rate = 'Survival',
+                              Trait_categ = 'Phenology'){
 
 pdf_name <- gsub(pattern = "_|<|-", replacement = "",
   x = sub(pattern = 'Pop_mean', replacement = 'Pop',
             x = sub(pattern = 'Trait_mean',
-                    replacement = capitalize(substr(Trait_categ, 1, 4)),
+                    replacement = substr(Trait_categ, 1, 4),
             x = gsub(pattern = "Demog_rate_mean|DemRate",
-                    replacement = capitalize(substr(Demog_rate, 1, 4)),
+                    replacement = substr(Demog_rate, 1, 4),
             x = sub(pattern = 'det_Clim',
-                    replacement = capitalize(substr(Clim, 1, 4)),
+                    replacement = substr(Clim, 1, 4),
                     x = Relation, ignore.case = TRUE), ignore.case = TRUE),
             ignore.case = TRUE), ignore.case = TRUE))
 return(pdf_name)
