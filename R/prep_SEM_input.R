@@ -78,12 +78,12 @@ prep_SEM_input <- function(prep_subset_climwin,
 
         if (sum(is.na(sub_NY$Trait_SE)) != nrow(sub_NY)){
         sub_NY_noNA <- sub_NY %>%
-          filter(!is.na(Trait_mean) & !is.na(Trait_SE)) %>%
-          dplyr::mutate(., NYears = n())
+          dplyr::filter(!is.na(Trait_mean) & !is.na(Trait_SE)) %>%
+          dplyr::mutate(., NYears = dplyr::n())
         }else{
           sub_NY_noNA <- sub_NY %>%
-            filter(!is.na(Trait_mean)) %>%
-            dplyr::mutate(., NYears = n())
+            dplyr::filter(!is.na(Trait_mean)) %>%
+            dplyr::mutate(., NYears = dplyr::n())
         }
 
          # cat('ID (i) checked is', i, '\n')
