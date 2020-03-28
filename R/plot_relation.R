@@ -126,7 +126,7 @@ plot_relation <- function(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[1]],
     # abline(a = -(as.numeric(data_globES[, 'SError'])),
     #       b = data_globES[, 'Estimate'] , lwd = 2, col = colr, lty = 1)
     graphics::mtext(paste0('Slope = ', round(data_globES[, 'Estimate'], 3)),
-                    side = 3, line = 1, cex = 1.5, col = colr)
+                    side = 3, line = 1, cex = 1.7, col = colr)
   } else {
     len_Covar <- length(unique(data_ES[, Covar]))
     for (i in 1:len_Covar){
@@ -145,16 +145,25 @@ plot_relation <- function(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[1]],
       #         lwd = 2, col = colr[i], lty = 1)
       graphics::mtext(paste0(gsub(pattern = 'Continent', replacement = '', x= data_CovarES$Levels_Covar[i]),
                              ' slope = ', round(data_CovarES[i, 'Estimate'], 3)),
-                      side = 3, line = 1 + i, cex = 1.5, col = colr[i])
+                      side = 3, line = 1 + i, cex = 1.7, col = colr[i])
     }
     legend('topright', legend = gsub(pattern = 'Continent', replacement = '', x= data_CovarES$Levels_Covar),
            col = colr, lwd= 3)
   }
   if(as.numeric(data_globES[, 'pval_across']) < 0.0001){
-    graphics::mtext(paste0('p < 0.0001'), side = 3, line = 0, cex = 1.5)
+    graphics::mtext(paste0('p < 0.0001'), side = 3, line = 0, cex = 1.7)
   }else{
-    graphics::mtext(paste0('p = ', round(data_globES[, 'pval_across'], 4)), side = 3, line = 0, cex = 1.5)
+    graphics::mtext(paste0('p = ', round(data_globES[, 'pval_across'], 4)), side = 3, line = 0, cex = 1.7)
   }
+
+  # Plot the value for Median R2
+  if(regexpr(pattern = 'Tot', text = unique(data_ES$Relation)) < 0 &
+     regexpr(pattern = 'Ind', text = unique(data_ES$Relation)) < 0){
+    MedianR2 <- round(median(data_ES$R.squared, na.rm = TRUE), 2)
+    graphics::text(x = -0.1, y = 0.7,
+                   label = bquote(paste('Median R'^'2'*' = ', .(MedianR2))), cex = 1.7)
+  }
+
   graphics::mtext(plot_lab_name(Relation = data_globES[, 'Relation'],
                                 Covar = Covar, Trait_categ = Trait_categ,
                                 Clim = Clim, Demog_rate = Demog_rate)$xlab_slope,
