@@ -91,22 +91,27 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
     tidyr::separate(., key, into = c('Relation', 'Metric'), sep = "/") %>%
     tidyr::spread(., Metric, value)
 
-  subs_merge <- droplevels(subset(data_MA,
+  trans_allEfS$Response <- unlist(lapply(1:nrow(trans_allEfS), FUN = function(x){
+    strsplit(x = trans_allEfS$Relation[x], split = '<')[[1]][1]
+  }))
+
+  subs_merge <- droplevels(data_MA %>%
+                             dplyr::distinct(., ID, Country, Continent,
+                                           Longitude, Latitude, Taxon,
+                                           BirdType,
+                                           Trait_Categ, Trait, Demog_rate_Categ,
+                                           Demog_rate_Categ1, Demog_rate, Response,
+                                           Count, Nyears, WinDur, deltaAIC,
+                                           .keep_all = T) %>%
+                             subset(.,
                                   select = c(ID, Country, Continent,
                                              Longitude, Latitude, Taxon,
-                                             BirdType,
-                                             Trait_Categ, Trait, Demog_rate_Categ,
-                                             Demog_rate_Categ1, Demog_rate, Count,
-                                             Nyears, WinDur, deltaAIC, Pvalue)) %>%
-                             dplyr::distinct(., ID, Country, Continent,
-                                             Longitude, Latitude, Taxon,
-                                             BirdType,
-                                             Trait_Categ, Trait, Demog_rate_Categ,
-                                             Demog_rate_Categ1, Demog_rate, Count,
-                                             Nyears, WinDur, deltaAIC, .keep_all = T))
+                                             BirdType, Trait_Categ, Trait,
+                                             Demog_rate_Categ, Demog_rate_Categ1,
+                                             Demog_rate, Count, Nyears, Response,
+                                             WinDur, deltaAIC, Pvalue, R.squared)))
 
-  tot <- merge(trans_allEfS, subs_merge, by = 'ID')
-
+  tot <- merge(trans_allEfS, subs_merge, by = c('ID', 'Response'), all.x = TRUE)  ## check if NAs won't cause problems later on
 
 
   ## subset a specified effect size only
