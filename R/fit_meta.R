@@ -47,43 +47,54 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
     tidyr::unite(temp, Relation, variable, sep = '/') %>%
     tidyr::spread(temp, value)
 
+  ## use bootstrap to obtain the coefficients and SEs for combined pathways
+  Ind_GR.df <- purrr::pmap_dfr(list(x = met_wide$`Trait_mean<-det_Clim/Estimate`,
+                   y = met_wide$`Demog_rate_mean<-Trait_mean/Estimate`,
+                   z = met_wide$`GR<-Demog_rate_mean/Estimate`,
+                   x.se = met_wide$`Trait_mean<-det_Clim/SError`,
+                   y.se = met_wide$`Demog_rate_mean<-Trait_mean/SError`,
+                   z.se = met_wide$`GR<-Demog_rate_mean/SError`),
+              ind_path) %>%
+    dplyr::rename(., `Ind_GR<-det_Clim/Estimate` = Median,
+                  `Ind_GR<-det_Clim/SError` = SE,
+                  `Ind_GR<-det_Clim/lCI` = lCI,
+                  `Ind_GR<-det_Clim/uCI` = uCI)
 
+  Ind_DemRate.df <- purrr::pmap_dfr(list(x = met_wide$`Trait_mean<-det_Clim/Estimate`,
+                                         y = met_wide$`Demog_rate_mean<-Trait_mean/Estimate`,
+                                         x.se = met_wide$`Trait_mean<-det_Clim/SError`,
+                                         y.se = met_wide$`Demog_rate_mean<-Trait_mean/SError`),
+                                    ind_path) %>%
+    dplyr::rename(., `Ind_DemRate<-det_Clim/Estimate` = Median,
+                  `Ind_DemRate<-det_Clim/SError` = SE,
+                  `Ind_DemRate<-det_Clim/lCI` = lCI,
+                  `Ind_DemRate<-det_Clim/uCI` = uCI)
 
-  met_wide$`Ind_DemRate<-det_Clim/Estimate` <- met_wide$`Trait_mean<-det_Clim/Estimate` *
-    met_wide$`Demog_rate_mean<-Trait_mean/Estimate`
-  met_wide$`Ind_GR<-det_Clim/Estimate` <- met_wide$`Trait_mean<-det_Clim/Estimate` *
-    met_wide$`Demog_rate_mean<-Trait_mean/Estimate` * met_wide$`GR<-Demog_rate_mean/Estimate`
-  met_wide$`Tot_DemRate<-det_Clim/Estimate` <- met_wide$`Ind_DemRate<-det_Clim/Estimate` +
-    met_wide$`Demog_rate_mean<-det_Clim/Estimate`
-  met_wide$`Tot_GR<-det_Clim/Estimate` <- met_wide$`Ind_GR<-det_Clim/Estimate` + met_wide$`GR<-det_Clim/Estimate` +
-    met_wide$`Demog_rate_mean<-det_Clim/Estimate` * met_wide$`GR<-Demog_rate_mean/Estimate`
+  Tot_DemRate.df <- purrr::pmap_dfr(list(direct = met_wide$`Demog_rate_mean<-det_Clim/Estimate`,
+                                         indir = Ind_DemRate.df$`Ind_DemRate<-det_Clim/Estimate`,
+                                         direct.se = met_wide$`Demog_rate_mean<-det_Clim/SError`,
+                                         indir.se = Ind_DemRate.df$`Ind_DemRate<-det_Clim/SError`),
+                                    tot_path) %>%
+    dplyr::rename(., `Tot_DemRate<-det_Clim/Estimate` = Median,
+                  `Tot_DemRate<-det_Clim/SError` = SE,
+                  `Tot_DemRate<-det_Clim/lCI` = lCI,
+                  `Tot_DemRate<-det_Clim/uCI` = uCI)
 
-  ## calculation of SE for those composite Ef sizes (like indirect effect and the total effect)
-  ## using the formula from https://www.stata.com/statalist/archive/2005-12/msg00165.html
-  ## implement later on as a funciton for a better use
-  met_wide$`Ind_DemRate<-det_Clim/SError` <-  sqrt(met_wide$`Trait_mean<-det_Clim/Estimate`^2*met_wide$`Demog_rate_mean<-Trait_mean/SError`^2 +
-                                                     met_wide$`Demog_rate_mean<-Trait_mean/Estimate`^2*met_wide$`Trait_mean<-det_Clim/SError`^2 +
-                                                     met_wide$`Demog_rate_mean<-Trait_mean/SError`^2*met_wide$`Trait_mean<-det_Clim/SError`^2)  #a^2*V(b) + b^2*V(a) + V(a)*V(b)
+  Tot_GR.df <- purrr::pmap_dfr(list(direct = met_wide$`GR<-det_Clim/Estimate`,
+                                    indir = Ind_GR.df$`Ind_GR<-det_Clim/Estimate`,
+                                    ClDem = met_wide$`Demog_rate_mean<-det_Clim/Estimate`,
+                                    DemGR = met_wide$`GR<-Demog_rate_mean/Estimate`,
+                                    direct.se = met_wide$`GR<-det_Clim/SError`,
+                                    indir.se = Ind_GR.df$`Ind_GR<-det_Clim/SError`,
+                                    ClDem.se = met_wide$`Demog_rate_mean<-det_Clim/SError`,
+                                    DemGR.se = met_wide$`GR<-Demog_rate_mean/SError`),
+                               tot_path)  %>%
+    dplyr::rename(., `Tot_GR<-det_Clim/Estimate` = Median,
+                  `Tot_GR<-det_Clim/SError` = SE,
+                  `Tot_GR<-det_Clim/lCI` = lCI,
+                  `Tot_GR<-det_Clim/uCI` = uCI)
 
-  ## check this formula by calculating the SE also using the general formula- produces exactly the same result as above formula
-  # met_wide$`Ind_Demrate<-Clim/SECheck` <- sqrt((met_wide$`Trait_mean<-det_Clim/SError`^2 + met_wide$`Trait_mean<-det_Clim/Estimate`^2)*
-  #                                                (met_wide$`Demog_rate_mean<-Trait_mean/SError`^2 + met_wide$`Demog_rate_mean<-Trait_mean/Estimate`^2) -
-  #                                                (met_wide$`Trait_mean<-det_Clim/Estimate`^2*met_wide$`Demog_rate_mean<-Trait_mean/Estimate`^2))
-
-  ## I use this formula: https://stats.stackexchange.com/questions/52646/variance-of-product-of-multiple-random-variables
-  met_wide$`Ind_GR<-det_Clim/SError` <- sqrt((met_wide$`Trait_mean<-det_Clim/SError`^2 + met_wide$`Trait_mean<-det_Clim/Estimate`^2)*
-                                               (met_wide$`Demog_rate_mean<-Trait_mean/SError`^2 + met_wide$`Demog_rate_mean<-Trait_mean/Estimate`^2)*
-                                               (met_wide$`GR<-Demog_rate_mean/SError`^2 + met_wide$`GR<-Demog_rate_mean/Estimate`^2) -
-                                               (met_wide$`Trait_mean<-det_Clim/Estimate`^2 * met_wide$`Demog_rate_mean<-Trait_mean/Estimate`^2 *
-                                                  met_wide$`GR<-Demog_rate_mean/Estimate`^2))
-
-  ## the VAR of the sum of idnependent random vars is the sum of the variances
-  met_wide$`Tot_DemRate<-det_Clim/SError` <- sqrt(met_wide$`Demog_rate_mean<-det_Clim/SError`^2 +
-                                                    met_wide$`Ind_DemRate<-det_Clim/SError`^2)
-  met_wide$`Tot_GR<-det_Clim/SError` <- sqrt(met_wide$`GR<-det_Clim/SError`^2 + met_wide$`Ind_GR<-det_Clim/SError`^2 +
-                                               (met_wide$`Demog_rate_mean<-det_Clim/Estimate`^2*met_wide$`GR<-Demog_rate_mean/SError`^2 +
-                                                  met_wide$`GR<-Demog_rate_mean/Estimate`^2*met_wide$`Demog_rate_mean<-det_Clim/SError`^2 +
-                                                  met_wide$`GR<-Demog_rate_mean/SError`^2*met_wide$`Demog_rate_mean<-det_Clim/SError`^2))
+ met_wide <- cbind(met_wide, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df)
 
 
   trans_allEfS <- met_wide %>%
@@ -109,7 +120,9 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                              BirdType, Trait_Categ, Trait,
                                              Demog_rate_Categ, Demog_rate_Categ1,
                                              Demog_rate, Count, Nyears, Response,
-                                             WinDur, deltaAIC, Pvalue, R.squared)))
+                                             WinDur, deltaAIC, Pvalue, R.squared,
+                                             LM_std_estimate, LM_std_std.error,
+                                             Trend)))
 
   tot <- merge(trans_allEfS, subs_merge, by = c('ID', 'Response'), all.x = TRUE)  ## check if NAs won't cause problems later on
 
