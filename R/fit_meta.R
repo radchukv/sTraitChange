@@ -96,6 +96,7 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
 
  met_wide <- cbind(met_wide, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df)
 
+prop_data <- prop_path(data = met_wide, data_MA = data_MA)
 
   trans_allEfS <- met_wide %>%
     tidyr::gather(key, value, -c(Species:ID)) %>%
@@ -233,13 +234,15 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                 Chi2 = LRT_test$LRT, df = LRT_test$p.f - LRT_test$p.r,
                                 Species.SD = mod_REML_Cov$sigma2[1],  ## this part still has to be made more general, make the hard-coded names be read from the mod_REML$s.names
                                 ID.SD = mod_REML_Cov$sigma2[2],
-                                Location.SD = mod_REML_Cov$sigma2[3])
+                                Location.SD = mod_REML_Cov$sigma2[3],
+                                prop_data = list(prop_data))
       return(out_tib)
     }
   } else {
     if(! is(tt.error.ML,'error') & ! is(tt.error.REML, 'error')){
       out_tib <- tibble::tibble(data = list(out_dat),
-                                data_EfS = list(subs_data))
+                                data_EfS = list(subs_data),
+                                prop_data = list(prop_data))
       return(out_tib)
     }
   }
