@@ -71,9 +71,9 @@ fit_all_meta <- function(data_MA,
                          folder_name = NULL,
                          colr = c('black')){
 
-  ### subs_data <- droplevels(base::subset(data_MA, Demog_rate_Categ1 == Demog_rate & Trait_Categ == Trait_categ))  ## weird, why this is not working as intended???
+  ### subs_data <- droplevels(base::subset(data_MA, Demog_rate_Categ == Demog_rate & Trait_Categ == Trait_categ))  ## weird, why this is not working as intended???
 
-  subs_data <- droplevels(data_MA[data_MA$Demog_rate_Categ1 == Demog_rate & data_MA$Trait_Categ == Trait_categ,])
+  subs_data <- droplevels(data_MA[data_MA$Demog_rate_Categ == Demog_rate & data_MA$Trait_Categ == Trait_categ,])
   all_Relations <- c('Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean', 'Demog_rate_mean<-Trait_mean',
                      'GR<-Demog_rate_mean',  'GR<-det_Clim', 'GR<-Pop_mean', 'Ind_DemRate<-det_Clim',
                      'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim', 'Trait_mean<-det_Clim')

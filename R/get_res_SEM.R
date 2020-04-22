@@ -69,7 +69,6 @@ get_res_SEM <- function(mod_obj){
                         Trait_Categ = unique(data$Trait_Categ),
                         Trait = unique(data$Trait),
                         Demog_rate_Categ = unique(data$Demog_rate_Categ),
-                        Demog_rate_Categ1 = unique(data$Demog_rate_Categ1),  ## later on remove?
                         Demog_rate = unique(data$Demog_rate),
                         Count = unique(data$Count),
                         Nyears = unique(data$NYears),

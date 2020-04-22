@@ -112,15 +112,15 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                            Longitude, Latitude, Taxon,
                                            BirdType,
                                            Trait_Categ, Trait, Demog_rate_Categ,
-                                           Demog_rate_Categ1, Demog_rate, Response,
+                                           Demog_rate, Response,
                                            Count, Nyears, WinDur, deltaAIC,
                                            .keep_all = T) %>%
                              subset(.,
                                   select = c(ID, Country, Continent,
                                              Longitude, Latitude, Taxon,
                                              BirdType, Trait_Categ, Trait,
-                                             Demog_rate_Categ, Demog_rate_Categ1,
-                                             Demog_rate, Count, Nyears, Response,
+                                             Demog_rate_Categ, Demog_rate,
+                                             Count, Nyears, Response,
                                              WinDur, deltaAIC, Pvalue, R.squared,
                                              LM_std_estimate, LM_std_std.error,
                                              Trend)))
@@ -144,7 +144,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                               random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'ML')
   } else {
     warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
-                'demographic rate category is ', unique(subs_data$Demog_rate_Categ1), '\n',
+                'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
                 'fitted relation is ', unique(subs_data$Relation), '\n',
                 'error when fitting the model with ML \n',
                 tt.error.ML[1]$message, '\n'))
@@ -161,7 +161,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                 random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'REML')
   }else {
     warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
-                'demographic rate category is ', unique(subs_data$Demog_rate_Categ1), '\n',
+                'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
                 'fitted relation is ', unique(subs_data$Relation), '\n',
                 'error when fitting the model with REML \n',
                 tt.error.REML[1]$message, '\n'))
@@ -185,7 +185,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                     data = subs_data, method = 'ML')
     } else {
       warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
-                  'demographic rate category is ', unique(subs_data$Demog_rate_Categ1), '\n',
+                  'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
                   'fitted relation is ', unique(subs_data$Relation), '\n',
                   'error when fitting the model with covariate with ML \n',
                   ttCovar.error.ML[1]$message, '\n'))
@@ -200,7 +200,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                       data = subs_data, method = 'REML')
     } else {
       warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
-                  'demographic rate category is ', unique(subs_data$Demog_rate_Categ1), '\n',
+                  'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
                   'fitted relation is ', unique(subs_data$Relation), '\n',
                   'error when fitting the model with covariate with REML \n',
                   ttCovar.error.REML[1]$message, '\n'))
