@@ -44,19 +44,18 @@ prop_path <- function(data, data_MA){
                                              BirdType,
                                              Trait_Categ, Trait,
                                              Demog_rate_Categ, Demog_rate,
-                                             Response, Count, Nyears,
-                                             WinDur, deltaAIC,
+                                             Count, Nyears, WinDur, deltaAIC,
                                              .keep_all = T) %>%
                              subset(.,
                                     select = c(ID, Country, Continent,
                                                Longitude, Latitude, Taxon,
                                                BirdType, Trait_Categ, Trait,
                                                Demog_rate_Categ, Demog_rate,
-                                               Count, Nyears, Response,
-                                               WinDur, deltaAIC, Pvalue, R.squared,
+                                               Count, Nyears, WinDur, deltaAIC,
+                                               Pvalue, R.squared,
                                                LM_std_estimate, LM_std_std.error,
                                                Trend)))
-  data_prop <-  merge(data_prop, subs_merge, by = c('ID'), all.x = TRUE)
+  data_prop <-  merge(data_prop, subs_merge, by = c('ID'))
 
   return(data_prop)
 }
