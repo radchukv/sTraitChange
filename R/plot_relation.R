@@ -4,10 +4,10 @@
 #' \code{plot_relation} Plots relations between independent and dependent variables
 #'  displaying the effect sizes per each study and global effect across the studies
 #'
-#' @param data_ES Data frame containing, for each study, the effect size estimates and their
-#' standard errors, returned as 'data_EfS' by the function \code{\link{fit_meta}}.
-#' @param data_globES Data frame containing the global effect size across the studies,
-#' returned by function \code{\link{fit_all_meta}} as the first data frame in the tibble.
+#' @param fit_meta_data Tibble returned by the function \code{\link{fit_meta}}, that
+#' contains in different data frames all the data necessary produce the plot.
+#' @param rel Numeric specifying which relation (specified under the column 'names'
+#' in the input tibble) to produce the plot for.
 #' @param Covar Categorical specifying the name of the categorical variable that was included
 #' as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case the
 #' overall global effect size across all studies is plotted.
@@ -35,51 +35,48 @@
 #'
 #' @examples
 #' Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
-#' meta_Phen_Surv <- fit_all_meta(data_MA = Coefs_Aut,
-#'                                Clim = 'Temperature',
-#'                                Demog_rate = 'Survival',
-#'                                Trait_categ = 'Phenological',
-#'                                tab = 'Continent',
-#'                                Covar = NULL,
-#'                                sel = 'Phen_Surv',
-#'                                folder_name = './output_overall/',
-#'                                colr = c('black'))
-#' plot_relation(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[3]],
-#'               data_globES = meta_Phen_Surv$meta_res[[1]][3, ],
-#'               data_CovarES = NULL,
-#'               Covar = NULL,
-#'               Demog_rate = 'Survival',
-#'               Trait_categ = 'Phenological',
-#'               Clim = 'Temperature',
-#'               sel = 'Phen_surv',
-#'               colr = c('black'),
-#'               folder_name  = './output_overall/',
-#'               mar = c(4, 4, 7, 2))
+#' meta_Phen_Repro <- fit_all_meta(data_MA = Coefs_Aut,
+#'                                 Clim = 'Temperature',
+#'                                 Demog_rate = 'Reproduction',
+#'                                 Trait_categ = 'Phenological',
+#'                                 tab = 'BirdType',
+#'                                 Covar = NULL,
+#'                                 sel = 'Phen_Repro',
+#'                                 folder_name = './output_overall/',
+#'                                 colr = c('black'))
+#' plot_relation(fit_meta_data = meta_Phen_Repro,
+#'                               rel = 1,
+#'                               Covar = NULL,
+#'                               Demog_rate = 'Reproduction',
+#'                               Trait_categ = 'Phenological',
+#'                               Clim = 'Temperature',
+#'                               sel = 'Phen_Repro',
+#'                               colr = c('black'),
+#'                               folder_name  = './output_overall/',
+#'                               mar = c(4, 4, 4, 2))
 #'
-#' meta_Phen_Surv_byCont <- fit_all_meta(data_MA = Coefs_Aut,
-#'                                       Demog_rate = 'Survival',
-#'                                       Trait_categ = 'Phenological',
-#'                                       Clim = 'Temperature',
-#'                                       tab = 'Continent',
-#'                                       Covar = 'Continent',
-#'                                       sel = 'Phen_Surv',
-#'                                       folder_name = './output_overall/',
-#'                                       colr = c('black', 'green', 'blue', 'red'))
-#' plot_relation(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[3]],
-#'               data_globES = meta_Phen_Surv$meta_res[[1]][3, ],
-#'               data_CovarES = NULL,
-#'               Covar = NULL,
-#'               Demog_rate = 'Survival',
-#'               Trait_categ = 'Phenological',
-#'               Clim = 'Temperature',
-#'               sel = 'Phen_surv',
-#'               colr = c('black'),
-#'               folder_name  = './output_overall/',
-#'               mar = c(4, 4, 7, 2))
+#' meta_Phen_Repro_byTax <- fit_all_meta(data_MA = Coefs_Aut,
+#'                                      Demog_rate = 'Reproduction',
+#'                                      Trait_categ = 'Phenological',
+#'                                      Clim = 'Temperature',
+#'                                      tab = 'Taxon',
+#'                                      Covar = 'Taxon',
+#'                                      sel = 'Phen_Repro',
+#'                                      folder_name = './output_overall/',
+#'                                      colr = c('black', 'green', 'red'))
+#' plot_relation(fit_meta_data = meta_Phen_Repro_byTax,
+#'                               rel = x,
+#'                               Covar = 'Taxon',
+#'                               Demog_rate = 'Reproduction',
+#'                               Trait_categ = 'Phenological',
+#'                               Clim = 'Temperature',
+#'                               sel = 'Phen_Repro',
+#'                               colr = c('black', 'green', 'red'),
+#'                               folder_name  = './output_overall/',
+#'                               mar = c(4, 4, 7, 2))
 #'
-plot_relation <- function(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[1]],
-                          data_globES = meta_Phen_Surv$meta_res[[1]][1, ],
-                          data_CovarES = NULL, # meta_Phen_Surv_byCont$data_meta[[1]]$data_Covar[[1]],  ## set NULL as a default
+plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
+                          rel = 1,
                           Covar = NULL,
                           Demog_rate = 'Survival',
                           Trait_categ = 'Phenological',
@@ -89,6 +86,13 @@ plot_relation <- function(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[1]],
                           folder_name = './output_overall/',
                           mar = c(3, 4, 7, 2)){
 
+  ## extract datasets to work with
+  data_ES <- fit_meta_data$data_meta[[1]]$data_EfS[[rel]]
+  data_globES <- fit_meta_data$meta_res[[1]][rel, ]
+  data_R2 <- fit_meta_data$data_meta[[1]]$data_R2[[rel]]
+  if(! is.null(Covar)){
+    data_CovarES <- fit_meta_data$data_meta[[1]]$data_Covar[[rel]]
+  }
   ## start pdf if name if file defined
   coef <- plot_lab_name(Relation = data_globES[, 'Relation'],
                         Covar = Covar, Trait_categ = Trait_categ,
@@ -108,58 +112,61 @@ plot_relation <- function(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[1]],
     abline(a = 0, b = data_ES$Estimate[i], col = 'grey')
   }
 
-  if(as.numeric(data_globES[, 'pval_across']) < 0.05){
-    LineT <- 1
-  } else {
-    LineT <- 2
-  }
-  if(is.null(data_CovarES)){
-
+  if(is.null(Covar)){
+    if(as.numeric(data_globES[, 'pval_across']) < 0.05){
+      LineT <- 1
+    } else {
+      LineT <- 2
+    }
     yval <- 0 + as.numeric(data_globES[, 'Estimate'])*xax
     yvalU <- yval + as.numeric(data_globES[, 'SError'])
     yvalL <- yval - as.numeric(data_globES[, 'SError'])
-    polygon(c(xax, rev(xax)), c(yvalL, rev(yvalU)), col = hsv(0,0,0.4, alpha = 0.4), border = FALSE)
+    polygon(c(xax, rev(xax)), c(yvalL, rev(yvalU)), col = hsv(0.6,0.6,1, alpha = 0.4), border = FALSE)
     abline(a = 0, b = data_globES[, 'Estimate'], lwd = 6, col = colr, lty = LineT)
 
-    #abline(a = as.numeric(data_globES[, 'SError']),
-    #       b = data_globES[, 'Estimate'] , lwd = 2, col = colr, lty = 1)
-    # abline(a = -(as.numeric(data_globES[, 'SError'])),
-    #       b = data_globES[, 'Estimate'] , lwd = 2, col = colr, lty = 1)
     graphics::mtext(paste0('Slope = ', round(data_globES[, 'Estimate'], 3)),
                     side = 3, line = 1, cex = 1.7, col = colr)
+    if(as.numeric(data_globES[, 'pval_across']) < 0.0001){
+      graphics::mtext(paste0('p < 0.0001'), side = 3, line = 0, cex = 1.7)
+    }else{
+      graphics::mtext(paste0('p = ', round(data_globES[, 'pval_across'], 4)), side = 3, line = 0, cex = 1.7)
+    }
   } else {
+    if(fit_meta_data$data_meta[[1]]$pval_Covar[rel] < 0.05){
+      LineT <- 1
+    } else {
+      LineT <- 2
+    }
     len_Covar <- length(unique(data_ES[, Covar]))
     for (i in 1:len_Covar){
 
       yval <- 0 + as.numeric(data_CovarES[i, 'Estimate'])*xax
       yvalU <- yval + as.numeric(data_CovarES[i, 'SError'])
       yvalL <- yval - as.numeric(data_CovarES[i, 'SError'])
-      polygon(c(xax, rev(xax)), c(yvalL, rev(yvalU)), col = hsv(as.numeric(rgb2hsv(col2rgb(i))), alpha = 0.4),
+      polygon(c(xax, rev(xax)), c(yvalL, rev(yvalU)),
+              col = rgb(col2rgb(colr[i])[1], col2rgb(colr[i])[2], col2rgb(colr[i])[3], alpha = 0.6*255, maxColorValue = 255),
               border = FALSE)
 
       abline(a = 0, b = data_CovarES[i, 'Estimate'], lwd = 6, col = colr[i], lty = LineT)
 
-      # abline(a = as.numeric(data_CovarES[i, 'SError']), b = data_CovarES[i, 'Estimate'],
-      #         lwd = 2, col = colr[i], lty = 1)
-      #  abline(a = -(as.numeric(data_CovarES[i, 'SError'])), b = data_CovarES[i, 'Estimate'],
-      #         lwd = 2, col = colr[i], lty = 1)
       graphics::mtext(paste0(gsub(pattern = 'Continent', replacement = '', x= data_CovarES$Levels_Covar[i]),
                              ' slope = ', round(data_CovarES[i, 'Estimate'], 3)),
                       side = 3, line = 1 + i, cex = 1.7, col = colr[i])
     }
     legend('topright', legend = gsub(pattern = 'Continent', replacement = '', x= data_CovarES$Levels_Covar),
            col = colr, lwd= 3)
-  }
-  if(as.numeric(data_globES[, 'pval_across']) < 0.0001){
-    graphics::mtext(paste0('p < 0.0001'), side = 3, line = 0, cex = 1.7)
-  }else{
-    graphics::mtext(paste0('p = ', round(data_globES[, 'pval_across'], 4)), side = 3, line = 0, cex = 1.7)
+    if(fit_meta_data$data_meta[[1]]$pval_Covar[rel] < 0.0001){
+      graphics::mtext(paste0('p < 0.0001'), side = 3, line = 0, cex = 1.7)
+    }else{
+      graphics::mtext(paste0('p = ', round(fit_meta_data$data_meta[[1]]$pval_Covar[rel], 4)), side = 3, line = 0, cex = 1.7)
+    }
   }
 
+
   # Plot the value for Median R2
-  if(regexpr(pattern = 'Tot', text = unique(data_ES$Relation)) < 0 &
-     regexpr(pattern = 'Ind', text = unique(data_ES$Relation)) < 0){
-    MedianR2 <- round(median(data_ES$R.squared, na.rm = TRUE), 2)
+  if(regexpr(pattern = 'Tot', text = unique(data_R2$Relation)) < 0 &
+     regexpr(pattern = 'Ind', text = unique(data_R2$Relation)) < 0){
+    MedianR2 <- round(median(data_R2$R.squared, na.rm = TRUE), 2)
     graphics::text(x = -0.1, y = 0.7,
                    label = bquote(paste('Median R'^'2'*' = ', .(MedianR2))), cex = 1.7)
   }
