@@ -19,14 +19,21 @@
 #' @export
 #'
 #' @return Returns a tibble. If no categorical explanatory variables are included in the model,
-#' then this tibble includes two data frames: the data frame with the estimate of the global
-#' effect size, its standard error, its significance and the AIC of the fitted model, and the
-#' data frame with the effect sizes and their standard errors for each study.
+#' then this tibble includes four data frames: 1. 'data' - the data frame with the estimate
+#' of the global effect size, its standard error, its significance, the AIC of the fitted
+#' mixed-effects model and the variances explained by random effects;
+#' 2. 'data_Efs' - the data frame with the effect sizes and their standard errors for each study;
+#' 3. 'data_R2' - the data frame that includes in addition to the effect size and standard error
+#' per each study also R2 of the fitted relations; and 4. 'prop_data' the data frame with
+#' the proportional contribution of the direct and indirect paths to the total path. Additionally,
+#' the column 'names' contains the names of the fitted relation for each mixed-effects model.
 #' If a categorical explanatory variable is included in the model, then the tibble
-#' additionally contains the estimates of effect sizes for each level of the categorical variable,
-#' as well as their standard errors, the p value indicating whether the categorical variable is
-#' significant and the AIC of the model with categorical variable. The AIC and the p values are obtained
-#' from the models fitted with ML, whereas the parameter estimates from the models fitted using REML.
+#' additionally contains the dara frame with the estimates of effect sizes (and their SEs)
+#' for each level of the categorical variable; and the columns with the p value
+#' indicating whether the categorical variable is significant, the AIC of the mixed-effects model
+#' with categorical variable and the variances explained by random effects.
+#' The AIC and the p values are obtained from the models fitted with ML, whereas
+#' the parameter estimates from the models fitted using REML.
 #'
 #' @examples
 #' Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
@@ -103,34 +110,58 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
     tidyr::separate(., key, into = c('Relation', 'Metric'), sep = "/") %>%
     tidyr::spread(., Metric, value)
 
-  trans_allEfS$Response <- unlist(lapply(1:nrow(trans_allEfS), FUN = function(x){
-    strsplit(x = trans_allEfS$Relation[x], split = '<')[[1]][1]
-  }))
 
   subs_merge <- droplevels(data_MA %>%
                              dplyr::distinct(., ID, Country, Continent,
                                            Longitude, Latitude, Taxon,
-                                           BirdType,
-                                           Trait_Categ, Trait, Demog_rate_Categ,
-                                           Demog_rate, Response,
-                                           Count, Nyears, WinDur, deltaAIC,
+                                           BirdType, Trait_Categ,
+                                           Trait, Demog_rate_Categ,
+                                           Demog_rate, Count,
+                                           Nyears, WinDur, deltaAIC,
                                            .keep_all = T) %>%
                              subset(.,
                                   select = c(ID, Country, Continent,
                                              Longitude, Latitude, Taxon,
                                              BirdType, Trait_Categ, Trait,
                                              Demog_rate_Categ, Demog_rate,
-                                             Count, Nyears, Response,
-                                             WinDur, deltaAIC, Pvalue, R.squared,
+                                             Count, Nyears, WinDur,
+                                             deltaAIC, Pvalue,
                                              LM_std_estimate, LM_std_std.error,
                                              Trend)))
 
-  tot <- merge(trans_allEfS, subs_merge, by = c('ID', 'Response'), all.x = TRUE)  ## check if NAs won't cause problems later on
+  tot <- merge(trans_allEfS, subs_merge, by = c('ID'))
 
 
   ## subset a specified effect size only
-  subs_data <- subset(tot, Relation == Type_EfS)  ## here subset only by the type of effect size, the other subsetting should be done
-  ## before fitting the data to this function(e.g. by taxon, trait categ etc.)
+  subs_data <- subset(tot, Relation == Type_EfS)
+
+  # and now get the R2 per relation, to be used on the plot
+  trans_allEfS$Response <- unlist(lapply(1:nrow(trans_allEfS), FUN = function(x){
+    strsplit(x = trans_allEfS$Relation[x], split = '<')[[1]][1]
+  }))
+
+  subs_merge_R2 <- droplevels(data_MA %>%
+                             dplyr::distinct(., ID, Country, Continent,
+                                             Longitude, Latitude, Taxon,
+                                             BirdType, Trait_Categ, Trait,
+                                             Demog_rate_Categ, Demog_rate,  Response,
+                                             Count, Nyears, WinDur, deltaAIC,
+                                             .keep_all = T) %>%
+                             subset(.,
+                                    select = c(ID, Country, Continent,
+                                               Longitude, Latitude, Taxon,
+                                               BirdType, Trait_Categ, Trait,
+                                               Demog_rate_Categ, Demog_rate,
+                                               Count, Nyears,  Response,
+                                               WinDur, deltaAIC, Pvalue, R.squared,
+                                               LM_std_estimate, LM_std_std.error,
+                                               Trend)))
+
+  tot_R2 <- merge(trans_allEfS, subs_merge_R2, by = c('ID', 'Response'), all.x = TRUE)
+
+
+  ## subset a specified effect size only
+  subs_dataR2 <- subset(tot_R2, Relation == Type_EfS)
 
 
   ## if no categorical explanatories included
@@ -224,6 +255,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
        & ! is(tt.error.ML,'error') & ! is(tt.error.REML, 'error')) {
       out_tib <- tibble::tibble(data = list(out_dat),
                                 data_EfS = list(subs_data),
+                                data_R2 = list(subs_dataR2),
                                 data_Covar = list(data.frame(
                                   Levels_Covar = rownames(mod_REML_Cov$beta),
                                   Estimate = as.numeric(mod_REML_Cov$beta),
@@ -242,6 +274,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
     if(! is(tt.error.ML,'error') & ! is(tt.error.REML, 'error')){
       out_tib <- tibble::tibble(data = list(out_dat),
                                 data_EfS = list(subs_data),
+                                data_R2 = list(subs_dataR2),
                                 prop_data = list(prop_data))
       return(out_tib)
     }
