@@ -24,14 +24,21 @@ categorical variables are included and the overall global effect size is estimat
 }
 \value{
 Returns a tibble. If no categorical explanatory variables are included in the model,
-then this tibble includes two data frames: the data frame with the estimate of the global
-effect size, its standard error, its significance and the AIC of the fitted model, and the
-data frame with the effect sizes and their standard errors for each study.
+then this tibble includes four data frames: 1. 'data' - the data frame with the estimate
+of the global effect size, its standard error, its significance, the AIC of the fitted
+mixed-effects model and the variances explained by random effects;
+2. 'data_Efs' - the data frame with the effect sizes and their standard errors for each study;
+3. 'data_R2' - the data frame that includes in addition to the effect size and standard error
+per each study also R2 of the fitted relations; and 4. 'prop_data' the data frame with
+the proportional contribution of the direct and indirect paths to the total path. Additionally,
+the column 'names' contains the names of the fitted relation for each mixed-effects model.
 If a categorical explanatory variable is included in the model, then the tibble
-additionally contains the estimates of effect sizes for each level of the categorical variable,
-as well as their standard errors, the p value indicating whether the categorical variable is
-significant and the AIC of the model with categorical variable. The AIC and the p values are obtained
-from the models fitted with ML, whereas the parameter estimates from the models fitted using REML.
+additionally contains the dara frame with the estimates of effect sizes (and their SEs)
+for each level of the categorical variable; and the columns with the p value
+indicating whether the categorical variable is significant, the AIC of the mixed-effects model
+with categorical variable and the variances explained by random effects.
+The AIC and the p values are obtained from the models fitted with ML, whereas
+the parameter estimates from the models fitted using REML.
 }
 \description{
 \code{fit_meta} fits mixed-effects meta-analytical model to extract a global
