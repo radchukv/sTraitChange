@@ -6,9 +6,8 @@
 (effect sizes)}
 \usage{
 plot_relation(
-  data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[1]],
-  data_globES = meta_Phen_Surv$meta_res[[1]][1, ],
-  data_CovarES = NULL,
+  fit_meta_data = meta_Phen_Repro_byTax,
+  rel = 1,
   Covar = NULL,
   Demog_rate = "Survival",
   Trait_categ = "Phenological",
@@ -20,11 +19,11 @@ plot_relation(
 )
 }
 \arguments{
-\item{data_ES}{Data frame containing, for each study, the effect size estimates and their
-standard errors, returned as 'data_EfS' by the function \code{\link{fit_meta}}.}
+\item{fit_meta_data}{Tibble returned by the function \code{\link{fit_meta}}, that
+contains in different data frames all the data necessary produce the plot.}
 
-\item{data_globES}{Data frame containing the global effect size across the studies,
-returned by function \code{\link{fit_all_meta}} as the first data frame in the tibble.}
+\item{rel}{Numeric specifying which relation (specified under the column 'names'
+in the input tibble) to produce the plot for.}
 
 \item{Covar}{Categorical specifying the name of the categorical variable that was included
 as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case the
@@ -63,46 +62,44 @@ together with their SE(s) shown with dashed line(s).
 }
 \examples{
 Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
-meta_Phen_Surv <- fit_all_meta(data_MA = Coefs_Aut,
-                               Clim = 'Temperature',
-                               Demog_rate = 'Survival',
-                               Trait_categ = 'Phenological',
-                               tab = 'Continent',
-                               Covar = NULL,
-                               sel = 'Phen_Surv',
-                               folder_name = './output_overall/',
-                               colr = c('black'))
-plot_relation(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[3]],
-              data_globES = meta_Phen_Surv$meta_res[[1]][3, ],
-              data_CovarES = NULL,
-              Covar = NULL,
-              Demog_rate = 'Survival',
-              Trait_categ = 'Phenological',
-              Clim = 'Temperature',
-              sel = 'Phen_surv',
-              colr = c('black'),
-              folder_name  = './output_overall/',
-              mar = c(4, 4, 7, 2))
+meta_Phen_Repro <- fit_all_meta(data_MA = Coefs_Aut,
+                                Clim = 'Temperature',
+                                Demog_rate = 'Reproduction',
+                                Trait_categ = 'Phenological',
+                                tab = 'BirdType',
+                                Covar = NULL,
+                                sel = 'Phen_Repro',
+                                folder_name = './output_overall/',
+                                colr = c('black'))
+plot_relation(fit_meta_data = meta_Phen_Repro,
+                              rel = 1,
+                              Covar = NULL,
+                              Demog_rate = 'Reproduction',
+                              Trait_categ = 'Phenological',
+                              Clim = 'Temperature',
+                              sel = 'Phen_Repro',
+                              colr = c('black'),
+                              folder_name  = './output_overall/',
+                              mar = c(4, 4, 4, 2))
 
-meta_Phen_Surv_byCont <- fit_all_meta(data_MA = Coefs_Aut,
-                                      Demog_rate = 'Survival',
-                                      Trait_categ = 'Phenological',
-                                      Clim = 'Temperature',
-                                      tab = 'Continent',
-                                      Covar = 'Continent',
-                                      sel = 'Phen_Surv',
-                                      folder_name = './output_overall/',
-                                      colr = c('black', 'green', 'blue', 'red'))
-plot_relation(data_ES = meta_Phen_Surv$data_meta[[1]]$data_EfS[[3]],
-              data_globES = meta_Phen_Surv$meta_res[[1]][3, ],
-              data_CovarES = NULL,
-              Covar = NULL,
-              Demog_rate = 'Survival',
-              Trait_categ = 'Phenological',
-              Clim = 'Temperature',
-              sel = 'Phen_surv',
-              colr = c('black'),
-              folder_name  = './output_overall/',
-              mar = c(4, 4, 7, 2))
+meta_Phen_Repro_byTax <- fit_all_meta(data_MA = Coefs_Aut,
+                                     Demog_rate = 'Reproduction',
+                                     Trait_categ = 'Phenological',
+                                     Clim = 'Temperature',
+                                     tab = 'Taxon',
+                                     Covar = 'Taxon',
+                                     sel = 'Phen_Repro',
+                                     folder_name = './output_overall/',
+                                     colr = c('black', 'green', 'red'))
+plot_relation(fit_meta_data = meta_Phen_Repro_byTax,
+                              rel = x,
+                              Covar = 'Taxon',
+                              Demog_rate = 'Reproduction',
+                              Trait_categ = 'Phenological',
+                              Clim = 'Temperature',
+                              sel = 'Phen_Repro',
+                              colr = c('black', 'green', 'red'),
+                              folder_name  = './output_overall/',
+                              mar = c(4, 4, 7, 2))
 
 }
