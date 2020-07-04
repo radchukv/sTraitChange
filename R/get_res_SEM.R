@@ -49,12 +49,13 @@ get_res_SEM <- function(mod_obj){
   R2_Relation <- piecewiseSEM::rsquared(mod_obj)
   coefs <- piecewiseSEM::coefs(mod_obj)
 
+  AIC <- stats::AIC(mod_obj, aicc = TRUE)
   data <- mod_obj$data
 
   # add timeseries duration
   data <- data %>%
     dplyr::group_by(., ID) %>%
-    dplyr::mutate(., NYears = n()) %>%
+    dplyr::mutate(., NYears = dplyr::n()) %>%
     dplyr::ungroup()
 
   res <- tibble::tibble(ID = unique(data$ID),
@@ -78,7 +79,8 @@ get_res_SEM <- function(mod_obj){
                         dTable = list(dTable),
                         Cstat = list(Cstat),
                         R2 = list(R2_Relation),
-                        coefs = list(coefs))
+                        coefs = list(coefs),
+                        AIC = AIC)
 
   return(res)
 }
