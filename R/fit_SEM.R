@@ -48,7 +48,8 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                     weight = FALSE,
                     correlation = FALSE,
                     standardize = FALSE,
-                    detrend = FALSE){
+                    detrend = FALSE,
+                    Trait = TRUE){
 
 
   # select one study
@@ -147,7 +148,8 @@ fit_SEM <- function(biol_data, ID, out_SEM,
   SEM_mod <- fit_mod(biol_data = data_GR, ID = ID,
                      DD = DD,
                      weight = weight,
-                     correlation = correlation) ## there is another problem with gls
+                     correlation = correlation,
+                     Trait = Trait) ## there is another problem with gls
   ## it does not return the object if called from within psem()
 
 
@@ -157,6 +159,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
   SEM_results$DD <- DD
   SEM_results$weights <- weight
   SEM_results$corr <- correlation
+  SEM_results$Tr <- Trait
 
   # write output
   saveRDS(object = SEM_results,

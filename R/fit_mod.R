@@ -50,12 +50,14 @@
 #' # fit the model
 #' test <- fit_mod(biol_data = data_GR, ID =1,
 #'                 DD = FALSE, weight = FALSE,
-#'                 correlation = FALSE)  ## does not work for corr = TRUE yet
+#'                 correlation = FALSE,
+#'                 Trait = TRUE)
 
 fit_mod <- function(biol_data, ID,
                     DD = 'none',
                     weight = FALSE,
                     correlation = FALSE,
+                    Trait = TRUE,
                     ...){
 
   dat <- droplevels(biol_data[biol_data$ID == ID, ])
@@ -67,6 +69,7 @@ fit_mod <- function(biol_data, ID,
 
 
   # formulas
+  if(Trait){
   if(DD == 'n_effectGR'){
     formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
     formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
@@ -85,7 +88,26 @@ fit_mod <- function(biol_data, ID,
   }
 
   formTrait <<- 'Trait_mean ~ det_Clim'
+  } else {
+    if(DD == 'n_effectGR'){
+      formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim'
+    }
+    if(DD == 'n_effectD'){
+      formGR <<- 'GR ~ det_Clim + Demog_rate_mean'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Pop_mean'
+    }
+    if(DD == 'n_effectDGR'){
+      formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Pop_mean'
+    }
+    if(DD == 'none'){
+      formGR <<- 'GR ~ det_Clim + Demog_rate_mean'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim'
+    }
 
+    # formTrait <<- 'Trait_mean ~ 1' not needed
+}
 
   if (weight) {
     if (sum(is.na(dat$Demog_rate_SE)) == nrow(dat)){
@@ -124,6 +146,7 @@ fit_mod <- function(biol_data, ID,
 
 
     # trying with Alex's suggestion
+    if(Trait){
     script <- paste0("models_list <- piecewiseSEM::psem(nlme::gls(",
                      formGR, ", correlation = nlme::corAR1(form = ~ Year | ID),
                      method = 'REML', data = dat),
@@ -136,29 +159,25 @@ fit_mod <- function(biol_data, ID,
                      correlation = nlme::corAR1(form = ~ Year | ID),
                      method = 'REML', data = dat),
                      data = dat)")
+    }else{
+      script <- paste0("models_list <- piecewiseSEM::psem(nlme::gls(",
+                       formGR, ", correlation = nlme::corAR1(form = ~ Year | ID),
+                     method = 'REML', data = dat),
+                     nlme::gls(", formDemRate, ",
+                     weights = nlme::varFixed(~1/weights_DemRate),
+                     correlation = nlme::corAR1(form = ~ Year | ID),
+                     method = 'REML', data = dat),
+                     Trait_mean ~ 1,
+                     data = dat)")
+  }
 
     ## Should still add a catch here to get the errors in case of non-convergence with gls
 
     eval(parse(text = script))
 
 
-    # models_list <- piecewiseSEM::psem(
-    #   nlme::gls(stats::as.formula(formGR),  ## maybe try to go not with gls but another model that allows for weights and autocor
-    #             data = dat,
-    #             correlation = corAR1(form = ~ year | id),
-    #             method = 'REML', ...),
-    #   nlme::gls(stats::as.formula(formDemRate),
-    #             weights = nlme::varFixed(~1/weights_DemRate),
-    #             correlation = corAR1(form = ~ year | id),
-    #             data = dat,
-    #             method = 'REML', ...),
-    #   nlme::gls(stats::as.formula(formTrait),
-    #             weights = nlme::varFixed(~1/weights_Trait),
-    #             correlation = corAR1(form = ~ year | id),
-    #             data = dat,
-    #             method = 'REML', ...),
-    #   data = dat)
   } else {
+    if(Trait){
     models_list <- piecewiseSEM::psem(
       stats::lm(stats::as.formula(formGR),
                 data = dat, ...),
@@ -169,6 +188,16 @@ fit_mod <- function(biol_data, ID,
                 weights = weights_Trait,
                 data = dat, ...),
       data = dat)
+    }else{
+      models_list <- piecewiseSEM::psem(
+        stats::lm(stats::as.formula(formGR),
+                  data = dat, ...),
+        stats::lm(stats::as.formula(formDemRate),
+                  weights = weights_DemRate,
+                  data = dat, ...),
+        Trait_mean ~ 1,
+        data = dat)
+    }
   }
   return(models_list)
 
