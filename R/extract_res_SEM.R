@@ -25,7 +25,7 @@ extract_res_SEM <- function(list_fitSEM, stat_extr){
                       'Taxon', 'BirdType', 'Trait_Categ', 'Trait',
                       'Demog_rate_Categ', 'Demog_rate', 'Count',
                       'Nyears', 'WinDur', 'deltaAIC', 'Pvalue',
-                      'weights', 'DD', 'corr')]
+                      'weights', 'DD', 'corr', 'AIC')]
     test <- elem[[stat_extr]][[1]]
 
     if(stat_extr == 'coefs'){
