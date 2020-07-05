@@ -20,7 +20,7 @@
 extract_res_SEM <- function(list_fitSEM, stat_extr){
   res <- dplyr::bind_rows(lapply(1:length(list_fitSEM), FUN = function(x){
     elem <- list_fitSEM[[x]]
-    metadat <- elem[c('ID', 'Species', 'Location', 'Country',
+    metadat <- elem[c('ID', 'Study_Authors', 'Species', 'Location', 'Country',
                       'Continent', 'Longitude', 'Latitude',
                       'Taxon', 'BirdType', 'Trait_Categ', 'Trait',
                       'Demog_rate_Categ', 'Demog_rate', 'Count',

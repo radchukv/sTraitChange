@@ -59,6 +59,7 @@ get_res_SEM <- function(mod_obj){
     dplyr::ungroup()
 
   res <- tibble::tibble(ID = unique(data$ID),
+                        Study_Authors = unique(data$Study_Authors),
                         Species = unique(data$Species),
                         Location = unique(data$Location),
                         Country = unique(data$Country),
