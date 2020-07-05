@@ -35,7 +35,7 @@ prep_subset <- function(data, Seabird = FALSE){
   ## have to check whether for each ID the trait is not being repeated
   biol_NY <- sub_bird %>%
     dplyr::group_by(., ID) %>%
-    dplyr::mutate(., NYears = n()) %>%
+    dplyr::mutate(., NYears = dplyr::n()) %>%
     dplyr::ungroup()
 
   nodupl <- biol_NY[! duplicated(biol_NY$ID), ]
