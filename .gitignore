@@ -16,4 +16,5 @@ output_forSEM_temp
 output_forSEM_precip
 output_meta
 output_overall
+output_overall_sig
 .DS_Store
