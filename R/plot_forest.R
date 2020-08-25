@@ -74,7 +74,7 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
   } else {
     data_ES$colour <- colr
   }
-  data_ES$label <- paste(data_ES$Species, data_ES$ID, sep = '_')  ## for now this simplified label - later see if more sophisiticated is needed
+  data_ES$label <- paste(data_ES$Species, data_ES$ID, data_ES$Trait, sep = '_')  ## for now this simplified label - later see if more sophisiticated is needed
 
   ## prepare the limits of the plot
   ylim_plot <- c(1, ymax)
