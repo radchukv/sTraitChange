@@ -127,7 +127,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                              Count, Nyears, WinDur,
                                              deltaAIC, Pvalue,
                                              LM_std_estimate, LM_std_std.error,
-                                             Trend)))
+                                             Trend, Trait_ageClass)))
 
   tot <- merge(trans_allEfS, subs_merge, by = c('ID'))
 
@@ -155,7 +155,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                                Count, Nyears,  Response,
                                                WinDur, deltaAIC, Pvalue, R.squared,
                                                LM_std_estimate, LM_std_std.error,
-                                               Trend)))
+                                               Trend, Trait_ageClass)))
 
   tot_R2 <- merge(trans_allEfS, subs_merge_R2, by = c('ID', 'Response'), all.x = TRUE)
 

@@ -77,6 +77,7 @@ get_res_SEM <- function(mod_obj){
                         WinDur = unique(data$WinDur),
                         deltaAIC = unique(data$deltaAIC),
                         Pvalue = unique(data$Pvalue),
+                        Trait_ageClass = unique(data$Trait_ageClass),
                         dTable = list(dTable),
                         Cstat = list(Cstat),
                         R2 = list(R2_Relation),
