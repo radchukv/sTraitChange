@@ -147,14 +147,19 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
     for (j in 1:nrow(data_globES_prep)){
       data_globES_prep$colour[j] <- unique(data_ES$colour[data_ES[, Covar] == data_globES_prep$Level[j]])
     }
+    if(nrow(data_globES_prep) > 1){
+      data_globES_prep$label <- data_globES_prep$Level
+    }
   }else {
-    data_globES_prep$colour <- colr
+    if(nrow(data_globES_prep) > 1){
+      data_globES_prep$label <- data_globES_prep$Variable
+      data_globES_prep$colour <- c(colr, rep('grey', nrow(data_globES_prep)-1))
+    } else {
+      data_globES_prep$label <- 'Global effect size'
+    data_globES_prep$colour <- colr}
   }
 
-  if(nrow(data_globES_prep) > 1){
-    data_globES_prep$label <- data_globES_prep$Level
-  } else {
-    data_globES_prep$label <- 'Global effect size'}
+
 
 
 
