@@ -75,6 +75,9 @@ get_res_SEM <- function(mod_obj){
                         Count = unique(data$Count),
                         Nyears = unique(data$NYears),
                         WinDur = unique(data$WinDur),
+                        Ref.day = unique(data$Ref.day),
+                        Ref.month = unique(data$Ref.month),
+                        WindowClose = unique(data$WindowClose),
                         deltaAIC = unique(data$deltaAIC),
                         Pvalue = unique(data$Pvalue),
                         Trait_ageClass = unique(data$Trait_ageClass),
@@ -82,7 +85,8 @@ get_res_SEM <- function(mod_obj){
                         Cstat = list(Cstat),
                         R2 = list(R2_Relation),
                         coefs = list(coefs),
-                        AIC = AIC)
+                        AIC = AIC,
+                        WeathQ = unique(data$Weather_data_quality))
 
   return(res)
 }

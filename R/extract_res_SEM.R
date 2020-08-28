@@ -24,8 +24,10 @@ extract_res_SEM <- function(list_fitSEM, stat_extr){
                       'Continent', 'Longitude', 'Latitude',
                       'Taxon', 'BirdType', 'Trait_Categ', 'Trait',
                       'Demog_rate_Categ', 'Demog_rate', 'Count',
-                      'Nyears', 'WinDur', 'deltaAIC', 'Pvalue',
-                      'weights', 'DD', 'corr', 'AIC', 'Trait_ageClass')]
+                      'Nyears', 'WinDur',  'Ref.day',
+                      'Ref.month', 'WindowClose', 'deltaAIC', 'Pvalue',
+                      'weights', 'DD', 'corr', 'AIC',
+                      'Trait_ageClass', 'WeathQ')]
     test <- elem[[stat_extr]][[1]]
 
     if(stat_extr == 'coefs'){
