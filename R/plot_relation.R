@@ -88,13 +88,13 @@ plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
 
   ## extract datasets to work with
   data_ES <- fit_meta_data$data_meta[[1]]$data_EfS[[rel]]
-  data_globES <- fit_meta_data$meta_res[[1]][rel, ]
+  data_globES <- fit_meta_data$meta_res[[1]][fit_meta_data$meta_res[[1]]$Relation == fit_meta_data$data_meta[[1]]$names[rel], ]
   data_R2 <- fit_meta_data$data_meta[[1]]$data_R2[[rel]]
   if(! is.null(Covar)){
     data_CovarES <- fit_meta_data$data_meta[[1]]$data_Covar[[rel]]
   }
   ## start pdf if name if file defined
-  coef <- plot_lab_name(Relation = data_globES[, 'Relation'],
+  coef <- plot_lab_name(Relation = unique(data_globES[, 'Relation']),
                         Covar = Covar, Trait_categ = Trait_categ,
                         Clim = Clim, Demog_rate = Demog_rate)$pref_pdf
   if (!is.null(folder_name)) {
@@ -113,23 +113,24 @@ plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
   }
 
   if(is.null(Covar)){
-    if(as.numeric(data_globES[, 'pval_across']) < 0.05){
+    if(as.numeric(data_globES[data_globES$Variable =='intrcpt', 'pval_across']) < 0.05){
       LineT <- 1
     } else {
       LineT <- 2
     }
-    yval <- 0 + as.numeric(data_globES[, 'Estimate'])*xax
-    yvalU <- yval + as.numeric(data_globES[, 'SError'])
-    yvalL <- yval - as.numeric(data_globES[, 'SError'])
+    yval <- 0 + as.numeric(data_globES$Estimate[data_globES$Variable == 'intrcpt'])*xax
+    yvalU <- yval + as.numeric(data_globES$SError[data_globES$Variable == 'intrcpt'])
+    yvalL <- yval - as.numeric(data_globES$SError[data_globES$Variable == 'intrcpt'])
     polygon(c(xax, rev(xax)), c(yvalL, rev(yvalU)), col = hsv(0.6,0.6,1, alpha = 0.4), border = FALSE)
-    abline(a = 0, b = data_globES[, 'Estimate'], lwd = 6, col = colr, lty = LineT)
+    abline(a = 0, b = data_globES$Estimate[data_globES$Variable == 'intrcpt'], lwd = 6, col = colr, lty = LineT)
 
-    graphics::mtext(paste0('Slope = ', round(data_globES[, 'Estimate'], 3)),
+    graphics::mtext(paste0('Slope = ', round(data_globES$Estimate[data_globES$Variable == 'intrcpt'], 3)),
                     side = 3, line = 1, cex = 1.7, col = colr)
-    if(as.numeric(data_globES[, 'pval_across']) < 0.0001){
+    if(as.numeric(data_globES$pval_across[data_globES$Variable == 'intrcpt']) < 0.0001){
       graphics::mtext(paste0('p < 0.0001'), side = 3, line = 0, cex = 1.7)
     }else{
-      graphics::mtext(paste0('p = ', round(data_globES[, 'pval_across'], 4)), side = 3, line = 0, cex = 1.7)
+      graphics::mtext(paste0('p = ', round(data_globES$pval_across[data_globES$Variable == 'intrcpt'], 4)),
+                      side = 3, line = 0, cex = 1.7)
     }
   } else {
     if(fit_meta_data$data_meta[[1]]$pval_Covar[rel] < 0.05){
@@ -171,11 +172,11 @@ plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
                    label = bquote(paste('Median R'^'2'*' = ', .(MedianR2))), cex = 1.7)
   }
 
-  graphics::mtext(plot_lab_name(Relation = data_globES[, 'Relation'],
+  graphics::mtext(plot_lab_name(Relation = unique(data_globES[, 'Relation']),
                                 Covar = Covar, Trait_categ = Trait_categ,
                                 Clim = Clim, Demog_rate = Demog_rate)$xlab_slope,
                   side = 1, line = 2, cex = 1.5)
-  graphics::mtext(plot_lab_name(Relation = data_globES[, 'Relation'],
+  graphics::mtext(plot_lab_name(Relation = unique(data_globES[, 'Relation']),
                                 Covar = Covar, Trait_categ = Trait_categ,
                                 Clim = Clim, Demog_rate = Demog_rate)$ylab_slope,
                   side = 2, line = 2, cex = 1.5)
