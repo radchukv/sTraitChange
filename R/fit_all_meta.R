@@ -65,8 +65,8 @@ fit_all_meta <- function(data_MA,
                          Demog_rate = 'Survival',
                          Trait_categ = 'Phenological',
                          Clim = 'Temperature',
-                         tab = 'Taxon',
                          Covar = NULL,
+                         COV = NULL,
                          sel = 'Phen_Surv',
                          folder_name = NULL,
                          colr = c('black')){
@@ -79,7 +79,7 @@ fit_all_meta <- function(data_MA,
                      'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim', 'Trait_mean<-det_Clim')
 
   stat_meta <- do.call('rbind', lapply(all_Relations, FUN = function(x){
-    fit_meta(data_MA = subs_data, Type_EfS = x, Covar = Covar)}))
+    fit_meta(data_MA = subs_data, Type_EfS = x, Covar = Covar, COV = COV)}))
 
   rel_realized <- lapply(1:length(stat_meta$data_EfS), FUN = function(x){
     unique(stat_meta$data_EfS[[x]]$Relation)
@@ -89,10 +89,17 @@ fit_all_meta <- function(data_MA,
   stat_meta$names <- unlist(rel_realized)
   names(stat_meta$data) <- unlist(rel_realized)
   meta_res <- data.table::rbindlist(stat_meta$data)
-  meta_res$Relation <- unlist(rel_realized)
-  data_fin <- stat_meta$data_EfS[[1]]  ## this may need ot be done cleaner or explain that I only use this subset for the descriptive stats on the factors
+  if(is.null(COV)){
+    meta_res$Relation <- unlist(rel_realized)
+  } else{
+    if(grep('+', COV) == 1){  ## may be improved, to define the number of repetiions based on the number of summed elements (i.e. in case int he future there is > 2 covariates)
+      meta_res$Relation <- rep(unlist(rel_realized), each = 3)
+    } else {
+      meta_res$Relation <- rep(unlist(rel_realized), each = 2)
+    }
+  }
 
-  tab_Taxtable <- table(data_fin[, tab])
+  data_fin <- stat_meta$data_EfS[[1]]  ## this may need ot be done cleaner or explain that I only use this subset for the descriptive stats on the factors
 
   ## a plot per each model
   lapply(1:length(unlist(rel_realized)), FUN = function(x){
@@ -129,6 +136,5 @@ fit_all_meta <- function(data_MA,
   })
 
   return(tibble::tibble(meta_res = list(meta_res),
-                        data_meta = list(stat_meta),
-                        prop_tab = list(tab_Taxtable)))
+                        data_meta = list(stat_meta)))
 }
