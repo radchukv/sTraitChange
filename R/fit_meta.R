@@ -43,7 +43,7 @@
 #'                              Covar = 'Trait_Categ')
 #' check_TraitCateg
 fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
-                     Covar = NULL){
+                     Covar = NULL, COV = NULL){
   ## calculating indirect effects, total effects and their SEs
   forTrans <- subset(data_MA, select = c(Estimate,  Std.Error, Relation, Species, Location, ID))
   forTrans <- forTrans %>%
@@ -125,7 +125,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                              BirdType, Trait_Categ, Trait,
                                              Demog_rate_Categ, Demog_rate,
                                              Count, Nyears, WinDur,
-                                             deltaAIC, Pvalue,
+                                             deltaAIC, Pvalue, WeathQ,
                                              LM_std_estimate, LM_std_std.error,
                                              Trend, Trait_ageClass)))
 
@@ -153,7 +153,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                                BirdType, Trait_Categ, Trait,
                                                Demog_rate_Categ, Demog_rate,
                                                Count, Nyears,  Response,
-                                               WinDur, deltaAIC, Pvalue, R.squared,
+                                               WinDur, deltaAIC, Pvalue, WeathQ, R.squared,
                                                LM_std_estimate, LM_std_std.error,
                                                Trend, Trait_ageClass)))
 
@@ -164,7 +164,43 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
   subs_dataR2 <- subset(tot_R2, Relation == Type_EfS)
 
 
-  ## if no categorical explanatories included
+  ##  preparing a formula depending on the covariates included
+
+  if(! is.null(COV)){
+    formul <- paste0('Estimate ~ ', COV, ' + 1')
+    tt.error.ML <- tryCatch(mod_ML_COV <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
+                                                               random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                                               data = subs_data, method = 'ML'),
+                                 error=function(e) e)
+    if(! is(tt.error.ML,"error")){
+      mod_ML <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
+                                    random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                    data = subs_data, method = 'ML')
+    } else {
+      warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
+                  'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
+                  'fitted relation is ', unique(subs_data$Relation), '\n',
+                  'error when fitting the model with COV ', COV, ' with ML \n',
+                  tt.error.ML[1]$message, '\n'))
+    }
+    tt.error.REML <- tryCatch(mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
+                                                                   random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                                                   data = subs_data, method = 'REML'),
+                                   error=function(e) e)
+    if(! is(tt.error.REML,"error")){
+      mod_REML <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
+                                      random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                      data = subs_data, method = 'REML')
+    } else {
+      warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
+                  'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
+                  'fitted relation is ', unique(subs_data$Relation), '\n',
+                  'error when fitting the model with COV ', COV, ' with REML \n',
+                  tt.error.REML[1]$message, '\n'))
+    }
+  } else {
+
+
   tt.error.ML <- tryCatch(mod_ML <- metafor::rma.mv(Estimate ~ 1, V = SError^2,
                                                     random = list(~ 1|Species, ~1|ID, ~1|Location),
                                                     data = subs_data,
@@ -181,14 +217,14 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                 tt.error.ML[1]$message, '\n'))
   }
 
-  tt.error.REML <- tryCatch(mod_REML <- metafor::rma.mv(yi = Estimate, V = SError^2, #W = 1 / Pvalue,
+  tt.error.REML <- tryCatch(mod_REML <- metafor::rma.mv(yi = Estimate, V = SError^2,
                                                         random = list(~ 1|Species, ~1|ID, ~1|Location),
                                                         data = subs_data,
                                                         method = 'REML'),
                             error=function(e) e)
   if(! is(tt.error.REML,"error")){
 
-    mod_REML <- metafor::rma.mv(yi = Estimate, V = SError^2, #W = 1 / Pvalue,
+    mod_REML <- metafor::rma.mv(yi = Estimate, V = SError^2,
                                 random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'REML')
   }else {
     warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
@@ -197,15 +233,21 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                 'error when fitting the model with REML \n',
                 tt.error.REML[1]$message, '\n'))
   }
+  }
   ## now trying to add another weight based on inverse of the p value - works, but has to be checked properly
   #mod_test_W <- metafor::rma.mv(yi = Estimate, V = SError^2, W = 1 / Pvalue,
   #                            random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'ML')
-  ## this still has to be finished
+  ## this does not seem to work. perhaps the only way to include Pvalue as a weight is by adding it (1/Pvalue ) to the
+  ## study-specific weight, ie. 1/Serror^2
 
 
   ## including the covariate
   if(! is.null(Covar)){
-    formul <- paste0('Estimate ~ ', Covar, ' - 1')
+    if(! is.null(COV)){
+      formul <- paste0('Estimate ~ ', Covar, ' + ', COV, ' - 1')
+    }else{
+      formul <- paste0('Estimate ~ ', Covar, ' - 1')
+    }
     ttCovar.error.ML <- tryCatch(mod_ML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
                                                                random = list(~ 1|Species, ~1|ID, ~1|Location),
                                                                data = subs_data, method = 'ML'),
@@ -242,9 +284,11 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
   }
 
   if(! is(tt.error.ML,'error') & ! is(tt.error.REML, 'error')){
-    out_dat <- data.frame(Estimate = as.numeric(mod_REML$beta), SError = mod_REML$se,
-                          EfS_Low = mod_REML$ci.lb, EfS_Upper = mod_REML$ci.ub, pval_across =
-                            mod_ML$pval, AIC_EfS_across = AIC(mod_ML), Chi2 = mod_ML$zval,
+    out_dat <- data.frame(Variable = rownames(mod_REML$beta),
+                          Estimate = as.numeric(mod_REML$beta), SError = mod_REML$se,
+                          EfS_Low = mod_REML$ci.lb, EfS_Upper = mod_REML$ci.ub,
+                          pval_across = mod_ML$pval, Chi2 = mod_ML$zval,
+                          AIC_EfS_across = rep(AIC(mod_ML), length(as.numeric(mod_REML$beta))),
                           Species.SD = mod_REML$sigma2[1],  ## this part still has to be more general, make the hard-coded names be read from the mod_REML$s.names
                           ID.SD = mod_REML$sigma2[2],
                           Location.SD = mod_REML$sigma2[3])
@@ -261,7 +305,8 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                   Estimate = as.numeric(mod_REML_Cov$beta),
                                   SError = mod_REML_Cov$se,
                                   EfS_Low = mod_REML_Cov$ci.lb,
-                                  EfS_Upper = mod_REML_Cov$ci.ub)),
+                                  EfS_Upper = mod_REML_Cov$ci.ub,
+                                  pval = mod_ML_Cov$pval, Chi2 = mod_ML_Cov$zval)),
                                 pval_Covar = LRT_test$pval, AIC_EfS_Covar = AIC(mod_ML_Cov),
                                 Chi2 = LRT_test$LRT, df = LRT_test$p.f - LRT_test$p.r,
                                 Species.SD = mod_REML_Cov$sigma2[1],  ## this part still has to be made more general, make the hard-coded names be read from the mod_REML$s.names
