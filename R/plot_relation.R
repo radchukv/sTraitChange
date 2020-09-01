@@ -154,7 +154,7 @@ plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
                              ' slope = ', round(data_CovarES[i, 'Estimate'], 3)),
                       side = 3, line = 1 + i, cex = 1.7, col = colr[i])
     }
-    legend('topright', legend = gsub(pattern = 'Continent', replacement = '', x= data_CovarES$Levels_Covar),
+    legend('topright', legend = gsub(pattern = 'Continent', replacement = '', x= sort(unique(data_ES[, Covar]))),
            col = colr, lwd= 3)
     if(fit_meta_data$data_meta[[1]]$pval_Covar[rel] < 0.0001){
       graphics::mtext(paste0('p < 0.0001'), side = 3, line = 0, cex = 1.7)

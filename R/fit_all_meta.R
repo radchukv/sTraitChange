@@ -46,7 +46,7 @@
 #'                                Demog_rate = 'survival',
 #'                                Trait_categ = 'phenological',
 #'                                Clim = 'temperature',
-#'                                tab = 'Taxon',
+#'                                COV = NULL,
 #'                                Covar = NULL,
 #'                                sel = 'Phen_Surv',
 #'                                folder_name = './output_overall/',
@@ -56,7 +56,7 @@
 #'                                       Demog_rate = 'survival',
 #'                                       Trait_categ = 'phenological',
 #'                                       Clim = 'temperature',
-#'                                       tab = 'Continent',
+#'                                       COV = 'Pvalue',
 #'                                       Covar = 'Continent',
 #'                                       sel = 'Phen_Surv',
 #'                                       folder_name = './output_overall/',
@@ -92,7 +92,7 @@ fit_all_meta <- function(data_MA,
   if(is.null(COV)){
     meta_res$Relation <- unlist(rel_realized)
   } else{
-    if(grep('+', COV) == 1){  ## may be improved, to define the number of repetiions based on the number of summed elements (i.e. in case int he future there is > 2 covariates)
+    if(length(grep('\\+', COV)) == 1){  ## may be improved, to define the number of repetiions based on the number of summed elements (i.e. in case int he future there is > 2 covariates)
       meta_res$Relation <- rep(unlist(rel_realized), each = 3)
     } else {
       meta_res$Relation <- rep(unlist(rel_realized), each = 2)
