@@ -69,7 +69,8 @@ fit_all_meta <- function(data_MA,
                          COV = NULL,
                          sel = 'Phen_Surv',
                          folder_name = NULL,
-                         colr = c('black')){
+                         colr = c('black'),
+                         optimize = rep('nlminb', 11)){ ##  a vector of optimizers to circumwent the issue of specifying an optimizer specific for each relation
 
   ### subs_data <- droplevels(base::subset(data_MA, Demog_rate_Categ == Demog_rate & Trait_Categ == Trait_categ))  ## weird, why this is not working as intended???
 
@@ -78,8 +79,9 @@ fit_all_meta <- function(data_MA,
                      'GR<-Demog_rate_mean',  'GR<-det_Clim', 'GR<-Pop_mean', 'Ind_DemRate<-det_Clim',
                      'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim', 'Trait_mean<-det_Clim')
 
-  stat_meta <- do.call('rbind', lapply(all_Relations, FUN = function(x){
-    fit_meta(data_MA = subs_data, Type_EfS = x, Covar = Covar, COV = COV)}))
+  stat_meta <- do.call('rbind', lapply(1:length(all_Relations), FUN = function(x){
+    fit_meta(data_MA = subs_data, Type_EfS = all_Relations[x], Covar = Covar, COV = COV,
+             optimize = optimize[x])}))
 
   rel_realized <- lapply(1:length(stat_meta$data_EfS), FUN = function(x){
     unique(stat_meta$data_EfS[[x]]$Relation)
