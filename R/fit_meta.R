@@ -43,7 +43,7 @@
 #'                              Covar = 'Trait_Categ')
 #' check_TraitCateg
 fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
-                     Covar = NULL, COV = NULL){
+                     Covar = NULL, COV = NULL, optimize = 'nlminb'){
   ## calculating indirect effects, total effects and their SEs
   forTrans <- subset(data_MA, select = c(Estimate,  Std.Error, Relation, Species, Location, ID))
   forTrans <- forTrans %>%
@@ -120,14 +120,16 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                            Nyears, WinDur, deltaAIC,
                                            .keep_all = T) %>%
                              subset(.,
-                                  select = c(ID, Country, Continent,
+                                  select = c(ID, Study_Authors,
+                                             Country, Continent,
                                              Longitude, Latitude, Taxon,
                                              BirdType, Trait_Categ, Trait,
                                              Demog_rate_Categ, Demog_rate,
                                              Count, Nyears, WinDur,
                                              deltaAIC, Pvalue, WeathQ,
+                                             Ref.day, Ref.month, WindowClose,
                                              LM_std_estimate, LM_std_std.error,
-                                             Trend, Trait_ageClass)))
+                                             Trait_ageClass, Trend)))
 
   tot <- merge(trans_allEfS, subs_merge, by = c('ID'))
 
@@ -170,12 +172,14 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
     formul <- paste0('Estimate ~ ', COV, ' + 1')
     tt.error.ML <- tryCatch(mod_ML_COV <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
                                                                random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                                               data = subs_data, method = 'ML'),
+                                                               data = subs_data, method = 'ML',
+                                                          control = list(optimizer = optimize)),
                                  error=function(e) e)
     if(! is(tt.error.ML,"error")){
       mod_ML <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
                                     random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                    data = subs_data, method = 'ML')
+                                    data = subs_data, method = 'ML',
+                                control = list(optimizer = optimize))
     } else {
       warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
                   'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
@@ -185,12 +189,14 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
     }
     tt.error.REML <- tryCatch(mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
                                                                    random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                                                   data = subs_data, method = 'REML'),
+                                                                   data = subs_data, method = 'REML',
+                                                              control = list(optimizer = optimize)),
                                    error=function(e) e)
     if(! is(tt.error.REML,"error")){
       mod_REML <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
                                       random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                      data = subs_data, method = 'REML')
+                                      data = subs_data, method = 'REML',
+                                  control = list(optimizer = optimize))
     } else {
       warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
                   'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
@@ -204,11 +210,13 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
   tt.error.ML <- tryCatch(mod_ML <- metafor::rma.mv(Estimate ~ 1, V = SError^2,
                                                     random = list(~ 1|Species, ~1|ID, ~1|Location),
                                                     data = subs_data,
-                                                    method = 'ML'),
+                                                    method = 'ML', control = list(optimizer = optimize)),
                           error=function(e) e)
   if(! is(tt.error.ML,"error")){
     mod_ML <- metafor::rma.mv(Estimate ~ 1, V = SError^2,  ## works just as well as yi = Estimate
-                              random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'ML')
+                              random = list(~ 1|Species, ~1|ID, ~1|Location),
+                              data = subs_data, method = 'ML',
+                              control = list(optimizer = optimize))
   } else {
     warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
                 'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
@@ -220,12 +228,15 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
   tt.error.REML <- tryCatch(mod_REML <- metafor::rma.mv(yi = Estimate, V = SError^2,
                                                         random = list(~ 1|Species, ~1|ID, ~1|Location),
                                                         data = subs_data,
-                                                        method = 'REML'),
+                                                        method = 'REML',
+                                                        control = list(optimizer = optimize)),
                             error=function(e) e)
   if(! is(tt.error.REML,"error")){
 
     mod_REML <- metafor::rma.mv(yi = Estimate, V = SError^2,
-                                random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'REML')
+                                random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                data = subs_data, method = 'REML',
+                                control = list(optimizer = optimize))
   }else {
     warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
                 'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
@@ -250,12 +261,14 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
     }
     ttCovar.error.ML <- tryCatch(mod_ML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
                                                                random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                                               data = subs_data, method = 'ML'),
+                                                               data = subs_data, method = 'ML',
+                                                               control = list(optimizer = optimize)),
                                  error=function(e) e)
     if(! is(ttCovar.error.ML,"error")){
       mod_ML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
                                     random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                    data = subs_data, method = 'ML')
+                                    data = subs_data, method = 'ML',
+                                    control = list(optimizer = optimize))
     } else {
       warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
                   'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
@@ -265,12 +278,14 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
     }
     ttCovar.error.REML <- tryCatch(mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
                                                                    random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                                                   data = subs_data, method = 'REML'),
+                                                                   data = subs_data, method = 'REML',
+                                                                   control = list(optimizer = optimize)),
                                    error=function(e) e)
     if(! is(ttCovar.error.REML,"error")){
       mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
                                       random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                      data = subs_data, method = 'REML')
+                                      data = subs_data, method = 'REML',
+                                      control = list(optimizer = optimize))
     } else {
       warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
                   'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
