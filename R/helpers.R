@@ -62,3 +62,34 @@ impute_median <- function(data, column){
     return(data)
   }
 }
+
+#' Extract path coefficients from the output of \code{\link{fit_all_meta}} function
+#'
+#' \code{extr_coefs} extracts the path coefficients for a specified relation.
+#'
+#' @param obj An object returned by the  \code{\link{fit_all_meta}} function
+#' @param Type_EfS Character specifying for which relation to extract the path coefficients,
+#' These relations reflect different pathways in the fitted SEM, for example 'Demog_rate_mean<-det_Clim',
+#' 'Demog_rate_mean<-Pop_mean', 'Demog_rate_mean<-Trait_mean'. For more details see \code{\link{fit_meta}}
+#'
+#' @return A dataframe that contains 26 columns including the required path coefficients and
+#' the associated meta-data.
+#' @export
+#'
+#' @examples  ## come up with a simpler example???
+#' Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
+#' meta_Phen_Surv_neg <- fit_all_meta(data_MA = Coefs_Aut_neg,
+#' Clim = 'Temperature',
+#' Demog_rate = 'Survival',
+#' Trait_categ = 'Phenological',
+#' Covar = NULL,
+#' COV = 'Pvalue + WeathQ',
+#' sel = 'Temp_Neg_Phen_Surv_Cov',
+#' folder_name = './output_overall_sig/',
+#' colr = c('black'),
+#' optimize = rep('uobyqa', 11))
+#' test <- extr_coefs(data = meta_Phen_Surv_neg, Relation = 'Tot_DemRate<-det_Clim')
+extr_coefs <- function(obj, Type_EfS){
+  sub <- obj$data_meta[[1]]$data_EfS[data$data_meta[[1]]$names == Type_EfS][[1]]
+  return(sub)
+}
