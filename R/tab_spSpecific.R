@@ -1,11 +1,12 @@
-#' Create a table with statistics for species-specific analyses
+#' Save a table with statistics for species-specific analyses
 #'
-#' \code{tab_spSpecific} saves the table with the results of the
-#' statistics from the model fitted to test the hypothesis about
-#'  the effect of a specified species characteristic on the indirect path.
+#' \code{tab_spSpecific} saves the table with the statistics exracted
+#' from the model fitted to test the hypothesis about the effect of
+#' a specified species characteristic on the indirect path.
 #'
-#' @param mod Model object fitted to test the hypothesis about the
-#' effect of the specified species characteristic on the indirect path.
+#' @param mod_mv Model object of class rma.mv fitted to test the
+#' hypothesis about the effect of the specified species characteristic
+#' on the indirect path.
 #' @param table_name A string specifying the path and the name of the
 #' table to be created.
 #' @param explanatory Character indicating the name of the variable
@@ -29,20 +30,20 @@
 #'                             Pvalue,
 #'                             V = SError^2, random = list(~ 1|Species, ~1|ID, ~1|Location),
 #'                             data = Coefs_Aut_sp, method = 'ML')
-#' tab_spSpecific(mod = mod_genLength, table_name = './tables/GenLength_Temp', explanatory = 'GenLength_y_IUCN')
+#' tab_spSpecific(mod_mv = mod_genLength, table_name = './tables/GenLength_Temp', explanatory = 'GenLength_y_IUCN')
 #'
-tab_spSpecific <- function(mod, table_name,
+tab_spSpecific <- function(mod_mv, table_name,
                            explanatory){
-  stats <- stats::coef(summary(mod))
+  stats <- stats::coef(summary(mod_mv))
   stats$Parameter <- rownames(stats)
   stats <- stats %>%
     dplyr::select(., -c(ci.lb, ci.ub))
   colnames(stats) <- c('Estimate', 'SE', 'Chi2', 'pval', 'Parameter')
 
   ## estimate effects for interactions
-  Inter_trait <- stats::anova(mod, btt = grep(':Trait', stats$Parameter))
-  Inter_DR <- stats::anova(mod, btt = grep(':Demog_rate', stats$Parameter))
-  DR <- stats::anova(mod, btt = which(stats$Parameter %in% stats$Parameter[grepl('Demog_rate', stats$Parameter) & !grepl(':', stats$Parameter)]))
+  Inter_trait <- stats::anova(mod_mv, btt = grep(':Trait', stats$Parameter))
+  Inter_DR <- stats::anova(mod_mv, btt = grep(':Demog_rate', stats$Parameter))
+  DR <- stats::anova(mod_mv, btt = which(stats$Parameter %in% stats$Parameter[grepl('Demog_rate', stats$Parameter) & !grepl(':', stats$Parameter)]))
 
   stats$DF <- rep(1, nrow(stats))
   ## replace the statistics with the  performed omnibus tests
@@ -58,7 +59,7 @@ tab_spSpecific <- function(mod, table_name,
                   stats$Parameter[grepl(explanatory, stats$Parameter)
                                   & !grepl(':', stats$Parameter)])) > 1){
 
-    Explan <- stats::anova(mod, btt = which(stats$Parameter %in%
+    Explan <- stats::anova(mod_mv, btt = which(stats$Parameter %in%
                                               stats$Parameter[grepl(explanatory, stats$Parameter) &
                                                                 !grepl(':', stats$Parameter)]))
     stats <- replace_stats(data = stats, variable = explanatory, stats_out = Explan)
