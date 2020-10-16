@@ -10,11 +10,12 @@ fit_all_meta(
   Demog_rate = "Survival",
   Trait_categ = "Phenological",
   Clim = "Temperature",
-  tab = "Taxon",
   Covar = NULL,
+  COV = NULL,
   sel = "Phen_Surv",
   folder_name = NULL,
-  colr = c("black")
+  colr = c("black"),
+  optimize = rep("nlminb", 11)
 )
 }
 \arguments{
@@ -31,9 +32,6 @@ to subset the data.}
 \item{Clim}{Character specifying the level of the climatic variable on which to subset
 the data.}
 
-\item{tab}{Categorical specifying the name of the categorical variable for which
-to produce the frequency table.}
-
 \item{Covar}{Categorical specifying the name of the categorical variable to be included
 as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no
 categorical variables are included and the overall global effect size is estimated.}
@@ -47,6 +45,9 @@ the levels of demographic rate and trait for which the subsetting was done.}
 vector should correspond to the number of the levels in the categorical explanatory variable
 included in the meta-analytical model, or should be one (if the single global effect size
 across all studies is to be plotted).}
+
+\item{tab}{Categorical specifying the name of the categorical variable for which
+to produce the frequency table.}
 }
 \value{
 Returns a tibble that includes one data frame, one tibble and a table. A data frame
@@ -71,7 +72,7 @@ meta_Phen_Surv <- fit_all_meta(data_MA = Coefs_Aut,
                                Demog_rate = 'survival',
                                Trait_categ = 'phenological',
                                Clim = 'temperature',
-                               tab = 'Taxon',
+                               COV = NULL,
                                Covar = NULL,
                                sel = 'Phen_Surv',
                                folder_name = './output_overall/',
@@ -81,7 +82,7 @@ meta_Phen_Surv_byCont <- fit_all_meta(data_MA = Coefs_Aut,
                                       Demog_rate = 'survival',
                                       Trait_categ = 'phenological',
                                       Clim = 'temperature',
-                                      tab = 'Continent',
+                                      COV = 'Pvalue',
                                       Covar = 'Continent',
                                       sel = 'Phen_Surv',
                                       folder_name = './output_overall/',

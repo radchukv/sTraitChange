@@ -4,7 +4,13 @@
 \alias{fit_meta}
 \title{Fit a meta-analytical model to assess the global effects across the studies}
 \usage{
-fit_meta(data_MA, Type_EfS = "Trait_mean<-det_Clim", Covar = NULL)
+fit_meta(
+  data_MA,
+  Type_EfS = "Trait_mean<-det_Clim",
+  Covar = NULL,
+  COV = NULL,
+  optimize = "nlminb"
+)
 }
 \arguments{
 \item{data_MA}{Data frame containing, for each study, the effect size estimates

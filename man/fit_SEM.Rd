@@ -12,7 +12,8 @@ fit_SEM(
   weight = FALSE,
   correlation = FALSE,
   standardize = FALSE,
-  detrend = FALSE
+  detrend = FALSE,
+  Trait = TRUE
 )
 }
 \arguments{

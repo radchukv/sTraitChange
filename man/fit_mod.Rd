@@ -4,7 +4,15 @@
 \alias{fit_mod}
 \title{Fit structural equation model with requested specifications}
 \usage{
-fit_mod(biol_data, ID, DD = "none", weight = FALSE, correlation = FALSE, ...)
+fit_mod(
+  biol_data,
+  ID,
+  DD = "none",
+  weight = FALSE,
+  correlation = FALSE,
+  Trait = TRUE,
+  ...
+)
 }
 \arguments{
 \item{biol_data}{Data frame with climate, trait and demographic rate
@@ -61,5 +69,6 @@ dplyr::filter(., !is.na(GR))
 # fit the model
 test <- fit_mod(biol_data = data_GR, ID =1,
                 DD = FALSE, weight = FALSE,
-                correlation = FALSE)  ## does not work for corr = TRUE yet
+                correlation = FALSE,
+                Trait = TRUE)
 }
