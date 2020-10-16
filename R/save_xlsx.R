@@ -3,7 +3,10 @@
 #' This function is called internally by other functions. It is a wrapper for
 #' the function \code{\link[openxlsx:write.xlsx]{write.xlsx}} of the package \pkg{openxlsx}.
 #'
-#' @inheritParams parameters_definition
+#' @param table A data frame oject to be saved as .xslx.
+#' @param table_name A string specifying the path and the name of the table to be created.
+#' @param first_column_name A string indicating the name of the first column which is taken from
+#' the row names of the table (DROP???)
 #' @return The table (but the return is invisible).
 #' @export
 #'
@@ -16,7 +19,7 @@
 #' save_xlsx(table = d, table_name = './tables/test1')
 #'
 save_xlsx <- function(table, table_name,
-                      first_column_name = NULL, typeTab){
+                      first_column_name = NULL){
   if (requireNamespace("openxlsx", quietly = TRUE)) {
     tryCatch({## the function can crash if no zip program is known to R
       if (!is.null(first_column_name)) {
@@ -33,18 +36,6 @@ save_xlsx <- function(table, table_name,
       # format of the numeric values
       spec <- list(col1 = 6, fmt = c('TEXT', '0.000', '0.000', '0.00', 'TEXT', '0.0'))
 
-#
-#
-#       if (typeTab == 'efSizes'){
-#         spec <- list(col1 = 5, fmt = c('0.000', '0.000'))
-#       }
-#       if (typeTab == 'LRT'){
-#         spec <- list(col1 = 4, fmt = c('0.00', '0', 'TEXT', 'SCIENTIFIC', 'SCIENTIFIC'))
-#       }
-#       if (typeTab == 'heterog'){
-#         spec <- list(col1 = 3, fmt = c('0.000', '0.0', '0.0', 'TEXT'))
-#       }
-
       generstyle <- openxlsx::createStyle(numFmt = spec$fmt[1], halign = 'right')
       openxlsx::addStyle(wb, sheet = 1, style = generstyle, rows = 2:(nrow(table) + 1),
                          cols = spec$col1, gridExpand = TRUE, stack = TRUE)
@@ -58,12 +49,14 @@ save_xlsx <- function(table, table_name,
                   normalizePath(paste0(table_name, ".xlsx"))))
     },
     error = function(e) {
-      print("Unfortunately, the export as *.xlsx did not work. The package openxlsx requires that a zip program is registered to R. Here is the original error message:")
+      print("Unfortunately, the export as *.xlsx did not work.
+            The package openxlsx requires that a zip program is registered to R.
+            Here is the original error message:")
       print(e)
       cat("\n")
     },
     finally = return(invisible(table)))
   } else {
-    message("to save table in *.xlsx format, you need to run install.packages('openxlsx') !")
+    message("to save table in *.xlsx format, you need to run install.packages('openxlsx')!")
   }
 }
