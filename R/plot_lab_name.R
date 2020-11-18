@@ -113,6 +113,20 @@ plot_lab_name <- function(Relation = 'GR<-det_Clim',
     ylab_slopes <- gen_specific_labs(vect = 'Population GR', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
   }
 
+  if(Relation == 'Ind_GR<-Pop_mean'){
+    xlab <- gen_specific_labs(vect = 'Indirect effect of population size on pop GR',
+                              Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
+    xlab_slopes <- gen_specific_labs(vect = 'Population size', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
+    ylab_slopes <- gen_specific_labs(vect = 'Population GR', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
+  }
+
+  if(Relation == 'Tot_GR<-Pop_mean'){
+    xlab <- gen_specific_labs(vect = 'Total effect of population size on pop GR',
+                              Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
+    xlab_slopes <- gen_specific_labs(vect = 'Population size', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
+    ylab_slopes <- gen_specific_labs(vect = 'Population GR', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
+  }
+
   if(! is.null(Covar)){
     pdf_name <- paste0(generate_pdf_name(Relation = Relation,
                                          Demog_rate = Demog_rate,

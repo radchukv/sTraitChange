@@ -31,12 +31,15 @@ prop_path <- function(data, data_MA){
                     abs(`Demog_rate_mean<-det_Clim/Estimate`),
                   abs_tot_GR = abs(`Ind_GR<-det_Clim/Estimate`) + abs(`GR<-det_Clim/Estimate`) +
                     abs(`Demog_rate_mean<-det_Clim/Estimate` * `GR<-Demog_rate_mean/Estimate`),
+                  abs_tot_DD = abs(`Ind_GR<-Pop_mean/Estimate`) + abs(`GR<-Pop_mean/Estimate`),
                   prop_ind_Dem = abs(`Ind_DemRate<-det_Clim/Estimate`) / abs_tot_Dem,
                   prop_dir_Dem =  abs(`Demog_rate_mean<-det_Clim/Estimate`) / abs_tot_Dem,
                   prop_ind_GR = abs(`Ind_GR<-det_Clim/Estimate`) / abs_tot_GR,
                   prop_dir_GR = abs(`GR<-det_Clim/Estimate`) / abs_tot_GR,
                   prop_DemMed_GR = abs(`Demog_rate_mean<-det_Clim/Estimate` *
-                                         `GR<-Demog_rate_mean/Estimate`) / abs_tot_GR)
+                                         `GR<-Demog_rate_mean/Estimate`) / abs_tot_GR,
+                  prop_ind_DD = abs(`Ind_GR<-Pop_mean/Estimate`) / abs_tot_DD,
+                  prop_dir_DD = abs(`GR<-Pop_mean/Estimate`) / abs_tot_DD)
 
   subs_merge <- droplevels(data_MA %>%
                              dplyr::distinct(., ID, Country, Continent,

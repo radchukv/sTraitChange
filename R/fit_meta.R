@@ -101,7 +101,28 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                   `Tot_GR<-det_Clim/lCI` = lCI,
                   `Tot_GR<-det_Clim/uCI` = uCI)
 
- met_wide <- cbind(met_wide, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df)
+  ## for DD
+  Ind_DD.df <- purrr::pmap_dfr(list(x = met_wide$`Demog_rate_mean<-Pop_mean/Estimate`,
+                                    y = met_wide$`GR<-Demog_rate_mean/Estimate`,
+                                    x.se = met_wide$`Demog_rate_mean<-Pop_mean/SError`,
+                                    y.se = met_wide$`GR<-Demog_rate_mean/SError`),
+                               ind_path) %>%
+    dplyr::rename(., `Ind_GR<-Pop_mean/Estimate` = Median,
+                  `Ind_GR<-Pop_mean/SError` = SE,
+                  `Ind_GR<-Pop_mean/lCI` = lCI,
+                  `Ind_GR<-Pop_mean/uCI` = uCI)
+
+  Tot_DD.df <- purrr::pmap_dfr(list(direct = met_wide$`GR<-Pop_mean/Estimate`,
+                                         indir = Ind_DD.df$`Ind_GR<-Pop_mean/Estimate`,
+                                         direct.se = met_wide$`GR<-Pop_mean/SError`,
+                                         indir.se = Ind_DD.df$`Ind_GR<-Pop_mean/SError`),
+                                    tot_path) %>%
+    dplyr::rename(., `Tot_GR<-Pop_mean/Estimate` = Median,
+                  `Tot_GR<-Pop_mean/SError` = SE,
+                  `Tot_GR<-Pop_mean/lCI` = lCI,
+                  `Tot_GR<-Pop_mean/uCI` = uCI)
+
+ met_wide <- cbind(met_wide, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df, Ind_DD.df, Tot_DD.df)
 
 prop_data <- prop_path(data = met_wide, data_MA = data_MA)
 
