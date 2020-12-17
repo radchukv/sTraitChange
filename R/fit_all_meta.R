@@ -70,15 +70,19 @@ fit_all_meta <- function(data_MA,
                          sel = 'Phen_Surv',
                          folder_name = NULL,
                          colr = c('black'),
-                         optimize = rep('nlminb', 13)){ ##  a vector of optimizers to circumwent the issue of specifying an optimizer specific for each relation
+                         optimize = rep('nlminb', 13),
+                         all_Relations = c('Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean',
+                                           'Demog_rate_mean<-Trait_mean', 'GR<-Demog_rate_mean',
+                                           'GR<-det_Clim', 'GR<-Pop_mean',
+                                           'Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
+                                           'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
+                                           'Trait_mean<-det_Clim', 'Ind_GR<-Pop_mean',
+                                           'Tot_GR<-Pop_mean')){ ##  a vector of optimizers to circumwent the issue of specifying an optimizer specific for each relation
 
   ### subs_data <- droplevels(base::subset(data_MA, Demog_rate_Categ == Demog_rate & Trait_Categ == Trait_categ))  ## weird, why this is not working as intended???
 
   subs_data <- droplevels(data_MA[data_MA$Demog_rate_Categ == Demog_rate & data_MA$Trait_Categ == Trait_categ,])
-  all_Relations <- c('Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean', 'Demog_rate_mean<-Trait_mean',
-                     'GR<-Demog_rate_mean',  'GR<-det_Clim', 'GR<-Pop_mean', 'Ind_DemRate<-det_Clim',
-                     'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim', 'Trait_mean<-det_Clim',
-                     'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')
+
 
   stat_meta <- do.call('rbind', lapply(1:length(all_Relations), FUN = function(x){
     fit_meta(data_MA = subs_data, Type_EfS = all_Relations[x], Covar = Covar, COV = COV,
