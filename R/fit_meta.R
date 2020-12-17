@@ -150,7 +150,8 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
                                              deltaAIC, Pvalue, WeathQ,
                                              Ref.day, Ref.month, WindowClose,
                                              LM_std_estimate, LM_std_std.error,
-                                             Trait_ageClass, Trend)))
+                                             Trait_ageClass, Trend,
+                                             GenLength_y_IUCN)))
 
   tot <- merge(trans_allEfS, subs_merge, by = c('ID'))
 
@@ -319,15 +320,31 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA)
     }
   }
 
+
+
+
   if(! is(tt.error.ML,'error') & ! is(tt.error.REML, 'error')){
+    stats::anova(mod_ML, btt = which(rownames(mod_REML$beta) %in%
+                                       rownames(mod_REML$beta)[1]))$QM
+    stats::anova(mod_ML, btt = which(rownames(mod_REML$beta) %in%
+                                       rownames(mod_REML$beta)[1]))$QMp
     out_dat <- data.frame(Variable = rownames(mod_REML$beta),
                           Estimate = as.numeric(mod_REML$beta), SError = mod_REML$se,
                           EfS_Low = mod_REML$ci.lb, EfS_Upper = mod_REML$ci.ub,
-                          pval_across = mod_ML$pval, Chi2 = mod_ML$zval,
+                          #pval_across = mod_ML$pval, Chi2 = mod_ML$zval,
                           AIC_EfS_across = rep(AIC(mod_ML), length(as.numeric(mod_REML$beta))),
                           Species.SD = mod_REML$sigma2[1],  ## this part still has to be more general, make the hard-coded names be read from the mod_REML$s.names
                           ID.SD = mod_REML$sigma2[2],
                           Location.SD = mod_REML$sigma2[3])
+
+    out_dat$z <- unlist(lapply(1:nrow(out_dat), function(x){
+      stats::anova(mod_ML, btt = which(rownames(mod_REML$beta) %in%
+                                         rownames(mod_REML$beta)[x]))$QM
+    }))
+    out_dat$pval_across <- unlist(lapply(1:nrow(out_dat), function(x){
+      stats::anova(mod_ML, btt = which(rownames(mod_REML$beta) %in%
+                                         rownames(mod_REML$beta)[x]))$QMp
+    }))
   }
 
   if(! is.null(Covar)){
