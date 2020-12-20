@@ -70,6 +70,7 @@ fit_all_meta <- function(data_MA,
                          sel = 'Phen_Surv',
                          folder_name = NULL,
                          colr = c('black'),
+                         DD = 'n_effectDGR',
                          optimize = rep('nlminb', 13),
                          all_Relations = c('Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean',
                                            'Demog_rate_mean<-Trait_mean', 'GR<-Demog_rate_mean',
@@ -86,7 +87,7 @@ fit_all_meta <- function(data_MA,
 
   stat_meta <- do.call('rbind', lapply(1:length(all_Relations), FUN = function(x){
     fit_meta(data_MA = subs_data, Type_EfS = all_Relations[x], Covar = Covar, COV = COV,
-             optimize = optimize[x])}))
+             optimize = optimize[x], DD = DD)}))
 
   rel_realized <- lapply(1:length(stat_meta$data_EfS), FUN = function(x){
     unique(stat_meta$data_EfS[[x]]$Relation)

@@ -43,7 +43,8 @@
 #'                              Covar = 'Trait_Categ')
 #' check_TraitCateg
 fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
-                     Covar = NULL, COV = NULL, optimize = 'nlminb'){
+                     Covar = NULL, COV = NULL, optimize = 'nlminb',
+                     DD = 'n_effectDGR'){
   ## calculating indirect effects, total effects and their SEs
   forTrans <- subset(data_MA, select = c(Estimate,  Std.Error, Relation, Species, Location, ID))
   forTrans <- forTrans %>%
@@ -102,6 +103,7 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                   `Tot_GR<-det_Clim/uCI` = uCI)
 
   ## for DD
+  if (DD != 'none'){
   Ind_DD.df <- purrr::pmap_dfr(list(x = met_wide$`Demog_rate_mean<-Pop_mean/Estimate`,
                                     y = met_wide$`GR<-Demog_rate_mean/Estimate`,
                                     x.se = met_wide$`Demog_rate_mean<-Pop_mean/SError`,
@@ -121,10 +123,14 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                   `Tot_GR<-Pop_mean/SError` = SE,
                   `Tot_GR<-Pop_mean/lCI` = lCI,
                   `Tot_GR<-Pop_mean/uCI` = uCI)
+  met_wide <- cbind(met_wide, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df, Ind_DD.df, Tot_DD.df)
+  }
+ else{
+   met_wide <- cbind(met_wide, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df)
+ }
 
- met_wide <- cbind(met_wide, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df, Ind_DD.df, Tot_DD.df)
 
-prop_data <- prop_path(data = met_wide, data_MA = data_MA)
+prop_data <- prop_path(data = met_wide, data_MA = data_MA, DD = DD)
 
   trans_allEfS <- met_wide %>%
     tidyr::gather(key, value, -c(Species:ID)) %>%
