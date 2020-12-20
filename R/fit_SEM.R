@@ -75,7 +75,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
   ## calculate GR
   data_GR <- consec_yrs %>%
     dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) %>%
-    dplyr::mutate(., GR = Pop_mean_lag / Pop_mean) %>%
+    dplyr::mutate(., GR = log(Pop_mean_lag / Pop_mean)) %>%
     dplyr::filter(., !is.na(GR) & !is.na(Trait_mean) &
                     !is.na(Demog_rate_mean) & !is.na(Pop_mean)) %>%
     dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
