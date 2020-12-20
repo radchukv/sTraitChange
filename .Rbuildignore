@@ -15,4 +15,11 @@
 ^output_climwin_daily$
 ^output_overall$
 ^output_overall_sig$
+^output_fSEM_temp$
+^output_fSEM_noDD_temp$
+^output_fSEM_precip$
+^output_fSEM_noDD_precip$
+^output_all$
+^output_all_nDD$
+^output_all_noPval$
 ^tables

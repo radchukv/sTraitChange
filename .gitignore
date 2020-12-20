@@ -17,5 +17,12 @@ output_forSEM_precip
 output_meta
 output_overall
 output_overall_sig
+output_fSEM_temp
+output_fSEM_noDD_temp
+output_fSEM_precip
+output_fSEM_noDD_precip
+output_all
+output_all_noPval
+output_all_nDD
 .DS_Store
 tables
