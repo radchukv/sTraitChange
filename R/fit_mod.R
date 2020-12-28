@@ -8,16 +8,18 @@
 #' @param ID Numeric giving a unique ID of the current dataset for
 #' a given population and species.
 #' @param DD Character specifying how to account for density dependence by
-#' including population size as additional explanatory in the model. Possibilities
+#' including population size as additional explanatory in the SEM. Possibilities
 #' are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
 #' of population size on growth rate, 'n_effectD' - effect of population size
 #' on demographic rate, 'n_effectDGR' - effect of population size on demographic
 #' rate and growth rate.
-#' @param weights Logical (TRUE/FALSE) specifying whether to use inverse of
+#' @param weight Logical (TRUE/FALSE) specifying whether to use inverse of
 #' variances for traits and demographic rates as weights in the respective
 #' models.
 #' @param correlation Logical (TRUE/FALSE) specifying whether to include
 #' temporal autocorrelation with AR(1) structure.
+#' @param Trait Logical (TRUE/FALSE) specifying whether to include
+#' the direct impact of trait on GR in the SEM.
 #'
 #' @export
 #'
@@ -57,57 +59,52 @@ fit_mod <- function(biol_data, ID,
                     DD = 'none',
                     weight = FALSE,
                     correlation = FALSE,
-                    Trait = TRUE,
+                    Trait = FALSE,
                     ...){
 
   dat <- droplevels(biol_data[biol_data$ID == ID, ])
 
-  ## this will have to be taken care of at the data cleaning step...
- #  if(! any(is.na(data$Demog_rate_SE))){
- #  data <- data[data$Demog_rate_SE != 0, ]
- # }
-
 
   # formulas
   if(Trait){
-  if(DD == 'n_effectGR'){
-    formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
-    formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
-  }
-  if(DD == 'n_effectD'){
-    formGR <<- 'GR ~ det_Clim + Demog_rate_mean'
-    formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
-  }
-  if(DD == 'n_effectDGR'){
-    formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
-    formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
-  }
-  if(DD == 'none'){
-    formGR <<- 'GR ~ det_Clim + Demog_rate_mean'
-    formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
-  }
+    if(DD == 'n_effectGR'){
+      formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean + Trait_mean'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
+    }
+    if(DD == 'n_effectD'){
+      formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Trait_mean'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
+    }
+    if(DD == 'n_effectDGR'){
+      formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean + Trait_mean'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
+    }
+    if(DD == 'none'){
+      formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Trait_mean'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
+    }
 
-  formTrait <<- 'Trait_mean ~ det_Clim'
   } else {
     if(DD == 'n_effectGR'){
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
-      formDemRate <<- 'Demog_rate_mean ~ det_Clim'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
     }
     if(DD == 'n_effectD'){
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean'
-      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Pop_mean'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
     }
     if(DD == 'n_effectDGR'){
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
-      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Pop_mean'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
     }
     if(DD == 'none'){
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean'
-      formDemRate <<- 'Demog_rate_mean ~ det_Clim'
+      formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
     }
 
-    # formTrait <<- 'Trait_mean ~ 1' not needed
 }
+
+  formTrait <<- 'Trait_mean ~ det_Clim'
 
   if (weight) {
     if (sum(is.na(dat$Demog_rate_SE)) == nrow(dat)){
@@ -129,7 +126,7 @@ fit_mod <- function(biol_data, ID,
         dat$weights_DemRate[!is.na(dat$Demog_rate_SE)] <- 1 / dat$Demog_rate_SE[!is.na(dat$Demog_rate_SE)]^2
       }
     }
-    dat$weights_Trait <-  1 / dat$Trait_SE^2  ## do same as for SE on Dem.rates?
+    dat$weights_Trait <-  1 / dat$Trait_SE^2
 
   } else {
     dat$weights_DemRate <- rep(1, nrow(dat))
@@ -144,9 +141,6 @@ fit_mod <- function(biol_data, ID,
     # formDemRate <<- formDemRate
     # formTrait <<- formTrait
 
-
-    # trying with Alex's suggestion
-    if(Trait){
     script <- paste0("models_list <- piecewiseSEM::psem(nlme::gls(",
                      formGR, ", correlation = nlme::corAR1(form = ~ Year | ID),
                      method = 'REML', data = dat),
@@ -159,25 +153,13 @@ fit_mod <- function(biol_data, ID,
                      correlation = nlme::corAR1(form = ~ Year | ID),
                      method = 'REML', data = dat),
                      data = dat)")
-    }else{
-      script <- paste0("models_list <- piecewiseSEM::psem(nlme::gls(",
-                       formGR, ", correlation = nlme::corAR1(form = ~ Year | ID),
-                     method = 'REML', data = dat),
-                     nlme::gls(", formDemRate, ",
-                     weights = nlme::varFixed(~1/weights_DemRate),
-                     correlation = nlme::corAR1(form = ~ Year | ID),
-                     method = 'REML', data = dat),
-                     Trait_mean ~ 1,
-                     data = dat)")
-  }
+
 
     ## Should still add a catch here to get the errors in case of non-convergence with gls
-
     eval(parse(text = script))
 
 
   } else {
-    if(Trait){
     models_list <- piecewiseSEM::psem(
       stats::lm(stats::as.formula(formGR),
                 data = dat, ...),
@@ -188,16 +170,7 @@ fit_mod <- function(biol_data, ID,
                 weights = weights_Trait,
                 data = dat, ...),
       data = dat)
-    }else{
-      models_list <- piecewiseSEM::psem(
-        stats::lm(stats::as.formula(formGR),
-                  data = dat, ...),
-        stats::lm(stats::as.formula(formDemRate),
-                  weights = weights_DemRate,
-                  data = dat, ...),
-        Trait_mean ~ 1,
-        data = dat)
-    }
+
   }
   return(models_list)
 
