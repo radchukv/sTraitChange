@@ -10,16 +10,21 @@
 #' a given population and species.
 #' @param out_SEM Character specifying the library on the path where
 #' the results of structural equation analysis are stored.
-#' @param DD Logical (TRUE/FALSE) specifying whether to account for density
-#' dependence by including population size as additional explanatory of
-#' population growth rate.
-#' @param weights Logical (TRUE/FALSE) specifying whether to use inverse of
+#' @param DD Character specifying how to account for density dependence by
+#' including population size as additional explanatory in the SEM. Possibilities
+#' are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
+#' of population size on growth rate, 'n_effectD' - effect of population size
+#' on demographic rate, 'n_effectDGR' - effect of population size on demographic
+#' rate and growth rate.
+#' @param weight Logical (TRUE/FALSE) specifying whether to use inverse of
 #' variances for traits and demographic rates as weights in the respective
 #' models.
 #' @param correlation Logical (TRUE/FALSE) specifying whether to include
 #' temporal autocorrelation with AR(1) structure.
 #' @param standardize Logical (TRUE/FALSE) specifying whether to
 #' standardize (using z scores) the variables prior to fitting the model.
+#' @param Trait Logical (TRUE/FALSE) specifying whether to include
+#' the direct impact of trait on GR in the SEM.
 #'
 #' @export
 #'
@@ -41,15 +46,14 @@
 #'                 out_SEM = 'output_SEM',
 #'                 DD = FALSE, weights = FALSE,
 #'                 correlation = FALSE,
-#'                 standardize = FALSE)  ## does not work for corr = TRUE yet
+#'                 standardize = FALSE)
 #'
 fit_SEM <- function(biol_data, ID, out_SEM,
                     DD = 'none',
                     weight = FALSE,
                     correlation = FALSE,
                     standardize = FALSE,
-                    detrend = FALSE,
-                    Trait = TRUE){
+                    Trait = FALSE){
 
 
   # select one study
@@ -62,16 +66,6 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                 ID, 'for species', subs$Species[1],
                 'in', subs$Location[1], 'for', subs$Trait[1]))
 
-  ## no imputation to be used, drop the missing values
-  # ## impute the DR
-  # subs <- impute_ma(data = subs, column = 'Demog_rate_mean')
-  # subs <- impute_median(data = subs, column = 'Demog_rate_SE')
-  # ## impute the Pop Size
-  # subs <- impute_ma(data = subs, column = 'Pop_mean')
-  # if(unique(subs$Count) == 'N'){
-  #   subs <- impute_median(data = subs, column = 'Pop_SE')
-  # }
-
   ## calculate GR
   data_GR <- consec_yrs %>%
     dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) %>%
@@ -79,9 +73,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
     dplyr::filter(., !is.na(GR) & !is.na(Trait_mean) &
                     !is.na(Demog_rate_mean) & !is.na(Pop_mean)) %>%
     dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
-                                                    data = .)))  ## detrend clim (by year as a trend)
-  ## I may need to revise this - for studies with all SE missing...
-  ## so for now exclude the cases where SEs are missing
+                                                    data = .)))
 
 
   # exploratory plots
@@ -124,24 +116,6 @@ fit_SEM <- function(biol_data, ID, out_SEM,
     dev.off()
   }
 
-  if(detrend){
-    data_GR$weights_Trait <-  1 / data_GR$Trait_SE^2
-    data_GR <- data_GR %>%
-      dplyr::mutate(Clim = scale(Clim),
-                    Trait_mean = stats::resid(stats::lm(Trait_mean ~ Pop_mean,
-                                                        weights = weights_Trait, data = .)) /
-                      sd(stats::resid(stats::lm(Trait_mean ~ Pop_mean,
-                                                weights = weights_Trait,
-                                                data = .)), na.rm = TRUE),
-                    Demog_rate_mean =
-                      stats::resid(stats::lm(Demog_rate_mean ~ Pop_mean,
-                                             data = .)) /
-                      sd(stats::resid(stats::lm(Demog_rate_mean ~ Pop_mean,
-                                                data = .)), na.rm = TRUE),
-                    GR = stats::resid(stats::lm(GR ~ Pop_mean, data = .)) /
-                      sd(stats::resid(stats::lm(GR ~ Pop_mean, data = .)), na.rm = T))
-  }
-
   ## now call a function fitting a model (depending on the options:
   ## - autocor / no, DD/no/on what element, weights /no)
 
@@ -149,8 +123,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                      DD = DD,
                      weight = weight,
                      correlation = correlation,
-                     Trait = Trait) ## there is another problem with gls
-  ## it does not return the object if called from within psem()
+                     Trait = Trait)
 
 
   ## then get output from the results of fitting the function
