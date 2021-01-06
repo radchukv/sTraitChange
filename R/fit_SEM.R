@@ -4,27 +4,9 @@
 #' requested model structure for the specified study ID and returns
 #' the results to be used in meta-analysis
 #'
-#' @param biol_data Data frame with climate, trait and demographic rate
-#' data for a given population and species.
-#' @param ID Numeric giving a unique ID of the current dataset for
-#' a given population and species.
 #' @param out_SEM Character specifying the library on the path where
 #' the results of structural equation analysis are stored.
-#' @param DD Character specifying how to account for density dependence by
-#' including population size as additional explanatory in the SEM. Possibilities
-#' are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
-#' of population size on growth rate, 'n_effectD' - effect of population size
-#' on demographic rate, 'n_effectDGR' - effect of population size on demographic
-#' rate and growth rate.
-#' @param weight Logical (TRUE/FALSE) specifying whether to use inverse of
-#' variances for traits and demographic rates as weights in the respective
-#' models.
-#' @param correlation Logical (TRUE/FALSE) specifying whether to include
-#' temporal autocorrelation with AR(1) structure.
-#' @param standardize Logical (TRUE/FALSE) specifying whether to
-#' standardize (using z scores) the variables prior to fitting the model.
-#' @param Trait Logical (TRUE/FALSE) specifying whether to include
-#' the direct impact of trait on GR in the SEM.
+#' @inheritParams fit_mod
 #'
 #' @export
 #'
@@ -46,14 +28,16 @@
 #'                 out_SEM = 'output_SEM',
 #'                 DD = FALSE, weights = FALSE,
 #'                 correlation = FALSE,
-#'                 standardize = FALSE)
+#'                 standardize = FALSE,
+#'                 simpleSEM = FALSE)
 #'
 fit_SEM <- function(biol_data, ID, out_SEM,
                     DD = 'none',
                     weight = FALSE,
                     correlation = FALSE,
                     standardize = FALSE,
-                    Trait = FALSE){
+                    Trait = FALSE,
+                    simpleSEM = FALSE){
 
 
   # select one study
@@ -123,7 +107,8 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                      DD = DD,
                      weight = weight,
                      correlation = correlation,
-                     Trait = Trait)
+                     Trait = Trait,
+                     simpleSEM = simpleSEM)
 
 
   ## then get output from the results of fitting the function

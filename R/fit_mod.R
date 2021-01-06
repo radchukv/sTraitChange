@@ -12,14 +12,22 @@
 #' are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
 #' of population size on growth rate, 'n_effectD' - effect of population size
 #' on demographic rate, 'n_effectDGR' - effect of population size on demographic
-#' rate and growth rate.
+#' rate and growth rate. Only options 'n_effectGR' and 'none' are possible for
+#' simple structure of SEM, in which climate effect on GR i sonly mediated by trait
+#' (i.e. \code{simpleSEM = TRUE}).
 #' @param weight Logical (TRUE/FALSE) specifying whether to use inverse of
-#' variances for traits and demographic rates as weights in the respective
-#' models.
+#' variances for traits and demographic rates (if \code{simpleSEM = FALSE})
+#' as weights in the respective models. Defaults to FALSE.
 #' @param correlation Logical (TRUE/FALSE) specifying whether to include
-#' temporal autocorrelation with AR(1) structure.
+#' temporal autocorrelation with AR(1) structure. Defaults to FALSE.
 #' @param Trait Logical (TRUE/FALSE) specifying whether to include
-#' the direct impact of trait on GR in the SEM.
+#' the direct impact of trait on GR in the SEM fitted using a complex
+#' structure, i.e. climate effect on GR is mediated by both trait and
+#' demographic rate. Is applicable only if \code{simpleSEM = FALSE}.
+#' Defaults to FALSE.
+#' @param simpleSEM Logical (TRUE/FALSE) specifying that the simple SEM
+#' structure will be fitted in which climate effect on GR is only mediated
+#' by trait, demographic rates are not considered. Defaults to FALSE.
 #'
 #' @export
 #'
@@ -53,19 +61,34 @@
 #' test <- fit_mod(biol_data = data_GR, ID =1,
 #'                 DD = FALSE, weight = FALSE,
 #'                 correlation = FALSE,
-#'                 Trait = TRUE)
+#'                 Trait = TRUE, simpleSEM = FALSE)
 
 fit_mod <- function(biol_data, ID,
                     DD = 'none',
                     weight = FALSE,
                     correlation = FALSE,
                     Trait = FALSE,
+                    simpleSEM = FALSE,
                     ...){
 
   dat <- droplevels(biol_data[biol_data$ID == ID, ])
 
 
   # formulas
+  if(simpleSEM){
+    if(DD == 'n_effectGR'){
+      formGR <<- 'GR ~ det_Clim  + Pop_mean + Trait_mean'
+    }
+    if(DD == 'n_effectD'){
+      stop("If simpleSEM = TRUE, 'DD' argument must be \"n_effectGR\" or \"none\"")
+    }
+    if(DD == 'n_effectDGR'){
+      stop("If simpleSEM = TRUE, 'DD' argument must be \"n_effectGR\" or \"none\"")
+    }
+    if(DD == 'none'){
+      formGR <<- 'GR ~ det_Clim + Trait_mean'
+    }
+  } else {
   if(Trait){
     if(DD == 'n_effectGR'){
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean + Trait_mean'
@@ -102,28 +125,31 @@ fit_mod <- function(biol_data, ID,
       formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
     }
 
-}
+  }
+  }
 
   formTrait <<- 'Trait_mean ~ det_Clim'
 
   if (weight) {
-    if (sum(is.na(dat$Demog_rate_SE)) == nrow(dat)){
-      dat$weights_DemRate <- 1
-    } else {
-      if(! any(is.na(dat$Demog_rate_SE))){
-        # replace SE of 0 with min values observed, otherwise weights are Inf
-        if(sum(dat$Demog_rate_SE == 0, na.rm = TRUE) != 0){
-          dat$Demog_rate_SE[dat$Demog_rate_SE == 0] <-
-            min(dat$Demog_rate_SE[dat$Demog_rate_SE != 0], na.rm = T)
-          }
-        dat$weights_DemRate <- 1 / dat$Demog_rate_SE^2
+    if (! simpleSEM) {
+      if (sum(is.na(dat$Demog_rate_SE)) == nrow(dat)){
+        dat$weights_DemRate <- 1
       } else {
-        if(sum(dat$Demog_rate_SE == 0, na.rm = TRUE) != 0){
-          dat$Demog_rate_SE[dat$Demog_rate_SE == 0] <-
-            min(dat$Demog_rate_SE[dat$Demog_rate_SE != 0], na.rm = T)
+        if(! any(is.na(dat$Demog_rate_SE))){
+          # replace SE of 0 with min values observed, otherwise weights are Inf
+          if(sum(dat$Demog_rate_SE == 0, na.rm = TRUE) != 0){
+            dat$Demog_rate_SE[dat$Demog_rate_SE == 0] <-
+              min(dat$Demog_rate_SE[dat$Demog_rate_SE != 0], na.rm = T)
+          }
+          dat$weights_DemRate <- 1 / dat$Demog_rate_SE^2
+        } else {
+          if(sum(dat$Demog_rate_SE == 0, na.rm = TRUE) != 0){
+            dat$Demog_rate_SE[dat$Demog_rate_SE == 0] <-
+              min(dat$Demog_rate_SE[dat$Demog_rate_SE != 0], na.rm = T)
+          }
+          dat$weights_DemRate[is.na(dat$Demog_rate_SE)] <- median(dat$Demog_rate_SE, na.rm = T)  ## setting to 1 only makes sense if the analyses are run on standardized data
+          dat$weights_DemRate[!is.na(dat$Demog_rate_SE)] <- 1 / dat$Demog_rate_SE[!is.na(dat$Demog_rate_SE)]^2
         }
-        dat$weights_DemRate[is.na(dat$Demog_rate_SE)] <- median(dat$Demog_rate_SE, na.rm = T)  ## setting to 1 only makes sense if the analyses are run on standardized data
-        dat$weights_DemRate[!is.na(dat$Demog_rate_SE)] <- 1 / dat$Demog_rate_SE[!is.na(dat$Demog_rate_SE)]^2
       }
     }
     dat$weights_Trait <-  1 / dat$Trait_SE^2
@@ -137,12 +163,19 @@ fit_mod <- function(biol_data, ID,
   if(correlation){
 
     dat <<- dat  ## for autocorrelation, otherwise gls does not wok within psem
-    # formGR <<- formGR
-    # formDemRate <<- formDemRate
-    # formTrait <<- formTrait
+    if (simpleSEM){
 
-    script <- paste0("models_list <- piecewiseSEM::psem(nlme::gls(",
-                     formGR, ", correlation = nlme::corAR1(form = ~ Year | ID),
+      script <- paste0("models_list <- piecewiseSEM::psem(nlme::gls(",
+                       formGR, ", correlation = nlme::corAR1(form = ~ Year | ID),
+                     method = 'REML', data = dat),
+                     nlme::gls(", formTrait, ",
+                     weights = nlme::varFixed(~1/weights_Trait),
+                     correlation = nlme::corAR1(form = ~ Year | ID),
+                     method = 'REML', data = dat),
+                     data = dat)")
+    } else {
+      script <- paste0("models_list <- piecewiseSEM::psem(nlme::gls(",
+                       formGR, ", correlation = nlme::corAR1(form = ~ Year | ID),
                      method = 'REML', data = dat),
                      nlme::gls(", formDemRate, ",
                      weights = nlme::varFixed(~1/weights_DemRate),
@@ -153,25 +186,35 @@ fit_mod <- function(biol_data, ID,
                      correlation = nlme::corAR1(form = ~ Year | ID),
                      method = 'REML', data = dat),
                      data = dat)")
-
+    }
 
     ## Should still add a catch here to get the errors in case of non-convergence with gls
     eval(parse(text = script))
 
+  } else {  ## o autocorrelation
 
-  } else {
-    models_list <- piecewiseSEM::psem(
-      stats::lm(stats::as.formula(formGR),
-                data = dat, ...),
-      stats::lm(stats::as.formula(formDemRate),
-                weights = weights_DemRate,
-                data = dat, ...),
-      stats::lm(stats::as.formula(formTrait),
-                weights = weights_Trait,
-                data = dat, ...),
-      data = dat)
+    if(simpleSEM) {
 
+      models_list <- piecewiseSEM::psem(
+        stats::lm(stats::as.formula(formGR),
+                  data = dat, ...),
+        stats::lm(stats::as.formula(formTrait),
+                  weights = weights_Trait,
+                  data = dat, ...),
+        data = dat)
+
+    } else {
+      models_list <- piecewiseSEM::psem(
+        stats::lm(stats::as.formula(formGR),
+                  data = dat, ...),
+        stats::lm(stats::as.formula(formDemRate),
+                  weights = weights_DemRate,
+                  data = dat, ...),
+        stats::lm(stats::as.formula(formTrait),
+                  weights = weights_Trait,
+                  data = dat, ...),
+        data = dat)
+    }
   }
   return(models_list)
-
 }

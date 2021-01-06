@@ -4,7 +4,7 @@
 \alias{prop_path}
 \title{Obtain proportional contributions of each pathway to the total pathway}
 \usage{
-prop_path(data, data_MA)
+prop_path(data, data_MA, DD = "n_effectDGR")
 }
 \arguments{
 \item{data}{Data frame containing, for each study, the effect size estimates of all

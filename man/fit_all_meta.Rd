@@ -15,7 +15,12 @@ fit_all_meta(
   sel = "Phen_Surv",
   folder_name = NULL,
   colr = c("black"),
-  optimize = rep("nlminb", 11)
+  DD = "n_effectDGR",
+  optimize = rep("nlminb", 13),
+  all_Relations = c("Demog_rate_mean<-det_Clim", "Demog_rate_mean<-Pop_mean",
+    "Demog_rate_mean<-Trait_mean", "GR<-Demog_rate_mean", "GR<-det_Clim", "GR<-Pop_mean",
+    "Ind_DemRate<-det_Clim", "Ind_GR<-det_Clim", "Tot_DemRate<-det_Clim",
+    "Tot_GR<-det_Clim", "Trait_mean<-det_Clim", "Ind_GR<-Pop_mean", "Tot_GR<-Pop_mean")
 )
 }
 \arguments{

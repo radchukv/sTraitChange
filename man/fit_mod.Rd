@@ -10,7 +10,8 @@ fit_mod(
   DD = "none",
   weight = FALSE,
   correlation = FALSE,
-  Trait = TRUE,
+  Trait = FALSE,
+  simpleSEM = FALSE,
   ...
 )
 }
@@ -22,18 +23,30 @@ data for a given population and species.}
 a given population and species.}
 
 \item{DD}{Character specifying how to account for density dependence by
-including population size as additional explanatory in the model. Possibilities
+including population size as additional explanatory in the SEM. Possibilities
 are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
 of population size on growth rate, 'n_effectD' - effect of population size
 on demographic rate, 'n_effectDGR' - effect of population size on demographic
-rate and growth rate.}
+rate and growth rate. Only options 'n_effectGR' and 'none' are possible for
+simple structure of SEM, in which climate effect on GR i sonly mediated by trait
+(i.e. \code{simpleSEM = TRUE}).}
+
+\item{weight}{Logical (TRUE/FALSE) specifying whether to use inverse of
+variances for traits and demographic rates (if \code{simpleSEM = FALSE})
+as weights in the respective models. Defaults to FALSE.}
 
 \item{correlation}{Logical (TRUE/FALSE) specifying whether to include
-temporal autocorrelation with AR(1) structure.}
+temporal autocorrelation with AR(1) structure. Defaults to FALSE.}
 
-\item{weights}{Logical (TRUE/FALSE) specifying whether to use inverse of
-variances for traits and demographic rates as weights in the respective
-models.}
+\item{Trait}{Logical (TRUE/FALSE) specifying whether to include
+the direct impact of trait on GR in the SEM fitted using a complex
+structure, i.e. climate effect on GR is mediated by both trait and
+demographic rate. Is applicable only if \code{simpleSEM = FALSE}.
+Defaults to FALSE.}
+
+\item{simpleSEM}{Logical (TRUE/FALSE) specifying that the simple SEM
+structure will be fitted in which climate effect on GR is only mediated
+by trait, demographic rates are not considered. Defaults to FALSE.}
 }
 \value{
 A fitted object of class psem (see
@@ -70,5 +83,5 @@ dplyr::filter(., !is.na(GR))
 test <- fit_mod(biol_data = data_GR, ID =1,
                 DD = FALSE, weight = FALSE,
                 correlation = FALSE,
-                Trait = TRUE)
+                Trait = TRUE, simpleSEM = FALSE)
 }

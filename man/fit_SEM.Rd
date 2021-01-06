@@ -12,8 +12,8 @@ fit_SEM(
   weight = FALSE,
   correlation = FALSE,
   standardize = FALSE,
-  detrend = FALSE,
-  Trait = TRUE
+  Trait = FALSE,
+  simpleSEM = FALSE
 )
 }
 \arguments{
@@ -26,19 +26,31 @@ a given population and species.}
 \item{out_SEM}{Character specifying the library on the path where
 the results of structural equation analysis are stored.}
 
-\item{DD}{Logical (TRUE/FALSE) specifying whether to account for density
-dependence by including population size as additional explanatory of
-population growth rate.}
+\item{DD}{Character specifying how to account for density dependence by
+including population size as additional explanatory in the SEM. Possibilities
+are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
+of population size on growth rate, 'n_effectD' - effect of population size
+on demographic rate, 'n_effectDGR' - effect of population size on demographic
+rate and growth rate. Only options 'n_effectGR' and 'none' are possible for
+simple structure of SEM, in which climate effect on GR i sonly mediated by trait
+(i.e. \code{simpleSEM = TRUE}).}
+
+\item{weight}{Logical (TRUE/FALSE) specifying whether to use inverse of
+variances for traits and demographic rates (if \code{simpleSEM = FALSE})
+as weights in the respective models. Defaults to FALSE.}
 
 \item{correlation}{Logical (TRUE/FALSE) specifying whether to include
-temporal autocorrelation with AR(1) structure.}
+temporal autocorrelation with AR(1) structure. Defaults to FALSE.}
 
-\item{standardize}{Logical (TRUE/FALSE) specifying whether to
-standardize (using z scores) the variables prior to fitting the model.}
+\item{Trait}{Logical (TRUE/FALSE) specifying whether to include
+the direct impact of trait on GR in the SEM fitted using a complex
+structure, i.e. climate effect on GR is mediated by both trait and
+demographic rate. Is applicable only if \code{simpleSEM = FALSE}.
+Defaults to FALSE.}
 
-\item{weights}{Logical (TRUE/FALSE) specifying whether to use inverse of
-variances for traits and demographic rates as weights in the respective
-models.}
+\item{simpleSEM}{Logical (TRUE/FALSE) specifying that the simple SEM
+structure will be fitted in which climate effect on GR is only mediated
+by trait, demographic rates are not considered. Defaults to FALSE.}
 }
 \value{
 A tibble with 15 columns that represent the metadata for a
@@ -64,6 +76,7 @@ test <- fit_SEM(biol_data = dat, ID = 1,
                 out_SEM = 'output_SEM',
                 DD = FALSE, weights = FALSE,
                 correlation = FALSE,
-                standardize = FALSE)  ## does not work for corr = TRUE yet
+                standardize = FALSE,
+                simpleSEM = FALSE)
 
 }

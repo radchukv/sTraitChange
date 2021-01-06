@@ -9,7 +9,8 @@ fit_meta(
   Type_EfS = "Trait_mean<-det_Clim",
   Covar = NULL,
   COV = NULL,
-  optimize = "nlminb"
+  optimize = "nlminb",
+  DD = "n_effectDGR"
 )
 }
 \arguments{
