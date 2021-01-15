@@ -24,5 +24,7 @@
 ^output_all_noPval$
 ^output_fSEM_temp_simpleSEM$
 ^output_fSEM_noDD_temp_simpleSEM$
+^output_fSEM_noDD_precip_simpleSEM$
+^output_fSEM_precip_simpleSEM$
 ^output_all_simpleSEM$
 ^tables
