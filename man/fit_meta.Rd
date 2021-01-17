@@ -10,7 +10,8 @@ fit_meta(
   Covar = NULL,
   COV = NULL,
   optimize = "nlminb",
-  DD = "n_effectDGR"
+  DD = "n_effectDGR",
+  simpleSEM = FALSE
 )
 }
 \arguments{

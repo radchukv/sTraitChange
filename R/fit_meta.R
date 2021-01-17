@@ -12,7 +12,7 @@
 #' 'Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean', 'Demog_rate_mean<-Trait_mean',
 #' 'GR<-Demog_rate_mean',  'GR<-det_Clim', 'GR<-Pop_mean', 'Ind_DemRate<-det_Clim',
 #' 'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim', and 'Trait_mean<-det_Clim'.
-#' @param Covar Categorical specifying the name of the categorical variable to be included
+#' @param Cov_fact Categorical specifying the name of the categorical variable to be included
 #' as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no
 #' categorical variables are included and the overall global effect size is estimated.
 #'
@@ -38,13 +38,13 @@
 #' @examples
 #' Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
 #' check_noCovar <- fit_meta(data_MA = Coefs_Aut, Type_EfS = 'Trait_mean<-det_Clim',
-#'                           Covar = NULL)
+#'                           Cov_fact = NULL)
 #' check_TraitCateg <- fit_meta(data_MA = Coefs_Aut, Type_EfS = 'Trait_mean<-det_Clim',
-#'                              Covar = 'Trait_Categ')
+#'                              Cov_fact = 'Trait_Categ')
 #' check_TraitCateg
 fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
-                     Covar = NULL, COV = NULL, optimize = 'nlminb',
-                     DD = 'n_effectDGR'){
+                     Cov_fact = NULL, COV = NULL, optimize = 'nlminb',
+                     DD = 'n_effectDGR', simpleSEM = FALSE){
   ## calculating indirect effects, total effects and their SEs
   forTrans <- subset(data_MA, select = c(Estimate,  Std.Error, Relation, Species, Location, ID))
   forTrans <- forTrans %>%
@@ -55,82 +55,15 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
     tidyr::unite(temp, Relation, variable, sep = '/') %>%
     tidyr::spread(temp, value)
 
-  ## use bootstrap to obtain the coefficients and SEs for combined pathways
-  Ind_GR.df <- purrr::pmap_dfr(list(x = met_wide$`Trait_mean<-det_Clim/Estimate`,
-                   y = met_wide$`Demog_rate_mean<-Trait_mean/Estimate`,
-                   z = met_wide$`GR<-Demog_rate_mean/Estimate`,
-                   x.se = met_wide$`Trait_mean<-det_Clim/SError`,
-                   y.se = met_wide$`Demog_rate_mean<-Trait_mean/SError`,
-                   z.se = met_wide$`GR<-Demog_rate_mean/SError`),
-              ind_path) %>%
-    dplyr::rename(., `Ind_GR<-det_Clim/Estimate` = Median,
-                  `Ind_GR<-det_Clim/SError` = SE,
-                  `Ind_GR<-det_Clim/lCI` = lCI,
-                  `Ind_GR<-det_Clim/uCI` = uCI)
+  ## I think these should be called only if the Type_EfS is one of the
+  ## indirect or total paths - check if this does not crush
+  if(Type_EfS %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
+                     'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
+                     'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')) {
+    met_wide <- all_combi_paths(data = met_wide, DD = DD, simpleSEM = simpleSEM)
 
-  Ind_DemRate.df <- purrr::pmap_dfr(list(x = met_wide$`Trait_mean<-det_Clim/Estimate`,
-                                         y = met_wide$`Demog_rate_mean<-Trait_mean/Estimate`,
-                                         x.se = met_wide$`Trait_mean<-det_Clim/SError`,
-                                         y.se = met_wide$`Demog_rate_mean<-Trait_mean/SError`),
-                                    ind_path) %>%
-    dplyr::rename(., `Ind_DemRate<-det_Clim/Estimate` = Median,
-                  `Ind_DemRate<-det_Clim/SError` = SE,
-                  `Ind_DemRate<-det_Clim/lCI` = lCI,
-                  `Ind_DemRate<-det_Clim/uCI` = uCI)
-
-  Tot_DemRate.df <- purrr::pmap_dfr(list(direct = met_wide$`Demog_rate_mean<-det_Clim/Estimate`,
-                                         indir = Ind_DemRate.df$`Ind_DemRate<-det_Clim/Estimate`,
-                                         direct.se = met_wide$`Demog_rate_mean<-det_Clim/SError`,
-                                         indir.se = Ind_DemRate.df$`Ind_DemRate<-det_Clim/SError`),
-                                    tot_path) %>%
-    dplyr::rename(., `Tot_DemRate<-det_Clim/Estimate` = Median,
-                  `Tot_DemRate<-det_Clim/SError` = SE,
-                  `Tot_DemRate<-det_Clim/lCI` = lCI,
-                  `Tot_DemRate<-det_Clim/uCI` = uCI)
-
-  Tot_GR.df <- purrr::pmap_dfr(list(direct = met_wide$`GR<-det_Clim/Estimate`,
-                                    indir = Ind_GR.df$`Ind_GR<-det_Clim/Estimate`,
-                                    ClDem = met_wide$`Demog_rate_mean<-det_Clim/Estimate`,
-                                    DemGR = met_wide$`GR<-Demog_rate_mean/Estimate`,
-                                    direct.se = met_wide$`GR<-det_Clim/SError`,
-                                    indir.se = Ind_GR.df$`Ind_GR<-det_Clim/SError`,
-                                    ClDem.se = met_wide$`Demog_rate_mean<-det_Clim/SError`,
-                                    DemGR.se = met_wide$`GR<-Demog_rate_mean/SError`),
-                               tot_path)  %>%
-    dplyr::rename(., `Tot_GR<-det_Clim/Estimate` = Median,
-                  `Tot_GR<-det_Clim/SError` = SE,
-                  `Tot_GR<-det_Clim/lCI` = lCI,
-                  `Tot_GR<-det_Clim/uCI` = uCI)
-
-  ## for DD
-  if (DD != 'none'){
-  Ind_DD.df <- purrr::pmap_dfr(list(x = met_wide$`Demog_rate_mean<-Pop_mean/Estimate`,
-                                    y = met_wide$`GR<-Demog_rate_mean/Estimate`,
-                                    x.se = met_wide$`Demog_rate_mean<-Pop_mean/SError`,
-                                    y.se = met_wide$`GR<-Demog_rate_mean/SError`),
-                               ind_path) %>%
-    dplyr::rename(., `Ind_GR<-Pop_mean/Estimate` = Median,
-                  `Ind_GR<-Pop_mean/SError` = SE,
-                  `Ind_GR<-Pop_mean/lCI` = lCI,
-                  `Ind_GR<-Pop_mean/uCI` = uCI)
-
-  Tot_DD.df <- purrr::pmap_dfr(list(direct = met_wide$`GR<-Pop_mean/Estimate`,
-                                         indir = Ind_DD.df$`Ind_GR<-Pop_mean/Estimate`,
-                                         direct.se = met_wide$`GR<-Pop_mean/SError`,
-                                         indir.se = Ind_DD.df$`Ind_GR<-Pop_mean/SError`),
-                                    tot_path) %>%
-    dplyr::rename(., `Tot_GR<-Pop_mean/Estimate` = Median,
-                  `Tot_GR<-Pop_mean/SError` = SE,
-                  `Tot_GR<-Pop_mean/lCI` = lCI,
-                  `Tot_GR<-Pop_mean/uCI` = uCI)
-  met_wide <- cbind(met_wide, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df, Ind_DD.df, Tot_DD.df)
+    prop_data <- prop_path(data = met_wide, data_MA = data_MA, DD = DD)
   }
- else{
-   met_wide <- cbind(met_wide, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df)
- }
-
-
-prop_data <- prop_path(data = met_wide, data_MA = data_MA, DD = DD)
 
   trans_allEfS <- met_wide %>%
     tidyr::gather(key, value, -c(Species:ID)) %>%
@@ -194,8 +127,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA, DD = DD)
   subs_dataR2 <- subset(tot_R2, Relation == Type_EfS)
 
 
-  ##  preparing a formula depending on the covariates included
-
+  ##  preparing a formula depending on the covariates included: CHECK if these work fine for all the combis
   if(! is.null(COV)){
     formul <- paste0('Estimate ~ ', COV, ' + 1')
     tt.error.ML <- tryCatch(mod_ML_COV <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
@@ -273,27 +205,22 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA, DD = DD)
                 tt.error.REML[1]$message, '\n'))
   }
   }
-  ## now trying to add another weight based on inverse of the p value - works, but has to be checked properly
-  #mod_test_W <- metafor::rma.mv(yi = Estimate, V = SError^2, W = 1 / Pvalue,
-  #                            random = list(~ 1|Species, ~1|ID, ~1|Location), data = subs_data, method = 'ML')
-  ## this does not seem to work. perhaps the only way to include Pvalue as a weight is by adding it (1/Pvalue ) to the
-  ## study-specific weight, ie. 1/Serror^2
 
 
   ## including the covariate
-  if(! is.null(Covar)){
+  if(! is.null(Cov_fact)){
     if(! is.null(COV)){
-      formul <- paste0('Estimate ~ ', Covar, ' + ', COV, ' - 1')
+      formul <- paste0('Estimate ~ ', Cov_fact, ' + ', COV, ' - 1')
     }else{
-      formul <- paste0('Estimate ~ ', Covar, ' - 1')
+      formul <- paste0('Estimate ~ ', Cov_fact, ' - 1')
     }
-    ttCovar.error.ML <- tryCatch(mod_ML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
+    ttCovar.error.ML <- tryCatch(mod_ML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
                                                                random = list(~ 1|Species, ~1|ID, ~1|Location),
                                                                data = subs_data, method = 'ML',
                                                                control = list(optimizer = optimize)),
                                  error=function(e) e)
     if(! is(ttCovar.error.ML,"error")){
-      mod_ML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
+      mod_ML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
                                     random = list(~ 1|Species, ~1|ID, ~1|Location),
                                     data = subs_data, method = 'ML',
                                     control = list(optimizer = optimize))
@@ -304,13 +231,13 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA, DD = DD)
                   'error when fitting the model with covariate with ML \n',
                   ttCovar.error.ML[1]$message, '\n'))
     }
-    ttCovar.error.REML <- tryCatch(mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
+    ttCovar.error.REML <- tryCatch(mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
                                                                    random = list(~ 1|Species, ~1|ID, ~1|Location),
                                                                    data = subs_data, method = 'REML',
                                                                    control = list(optimizer = optimize)),
                                    error=function(e) e)
     if(! is(ttCovar.error.REML,"error")){
-      mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2, #W = 1 / Pvalue,
+      mod_REML_Cov <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
                                       random = list(~ 1|Species, ~1|ID, ~1|Location),
                                       data = subs_data, method = 'REML',
                                       control = list(optimizer = optimize))
@@ -353,7 +280,7 @@ prop_data <- prop_path(data = met_wide, data_MA = data_MA, DD = DD)
     }))
   }
 
-  if(! is.null(Covar)){
+  if(! is.null(Cov_fact)){
     if(! is(ttCovar.error.ML,'error') & ! is(ttCovar.error.REML, 'error')
        & ! is(tt.error.ML,'error') & ! is(tt.error.REML, 'error')) {
       out_tib <- tibble::tibble(data = list(out_dat),
