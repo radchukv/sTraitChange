@@ -19,6 +19,11 @@
 #' the case of the indirect path consisting of two pathways.
 #' @param numrep Numeric for the number of replicates to use in a
 #' bootstrap.
+#' @param omega Numeric reflecting the fourth path coefficient estimate
+#' (applicable only if Trait = TRUE in \code{fit_SEM}). Defaults to NULL.
+#' @param omega.se Numeric reflecting the standard errir for the
+#' fourth path coefficient estimate (applicable only if T
+#' rait = TRUE in \code{fit_SEM}). Defaults to NULL.
 #'
 #' @return A dataframe that contains four columns: a median of the
 #' bootstrap values as an estimate of an indirect path coefficient,
@@ -53,10 +58,14 @@
 ind_path <- function(x, y, z = NULL,
                      x.se, y.se,
                      z.se = NULL,
-                     numrep = 10000){
+                     numrep = 10000,
+                     omega = NULL,
+                     omega.se = NULL){
   if(! is.null(z)){
     path = replicate(numrep, rnorm(1, x, x.se) * rnorm(1, y, y.se) *
-                       rnorm(1, z, z.se))
+                       rnorm(1, z, z.se) +
+                       rnorm(1, x, x.se) * rnorm(1, omega, omega.se))
+
   } else {
     path = replicate(numrep, rnorm(1, x, x.se) * rnorm(1, y, y.se))
   }
