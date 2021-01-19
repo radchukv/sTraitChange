@@ -26,5 +26,10 @@
 ^output_fSEM_noDD_temp_simpleSEM$
 ^output_fSEM_noDD_precip_simpleSEM$
 ^output_fSEM_precip_simpleSEM$
+^output_fSEM_precip_complexSEM$
 ^output_all_simpleSEM$
+^output_all_complexSEM$
+^output_fSEM_noDD_temp_complexSEM$
+^output_fSEM_noDD_precip_complexSEM$
+^output_fSEM_temp_complexSEM$
 ^tables
