@@ -68,6 +68,9 @@ prop_path <- function(data, data_MA, DD = 'n_effectDGR',
 
   }
 
+
+
+
   subs_merge <- droplevels(data_MA %>%
                              dplyr::distinct(., ID, Country, Continent,
                                              Longitude, Latitude, Taxon,
