@@ -4,7 +4,12 @@
 \alias{all_combi_paths}
 \title{Use bootstrap to obtain the coefficients and SEs for all combined pathways}
 \usage{
-all_combi_paths(data_forMA, DD = "n_effectDGR", simpleSEM = FALSE)
+all_combi_paths(
+  data_forMA,
+  DD = "n_effectDGR",
+  simpleSEM = FALSE,
+  Trait = FALSE
+)
 }
 \arguments{
 \item{DD}{Character specifying how to account for density dependence by
@@ -20,10 +25,17 @@ simple structure of SEM, in which climate effect on GR i sonly mediated by trait
 structure will be fitted in which climate effect on GR is only mediated
 by trait, demographic rates are not considered. Defaults to FALSE.}
 
+\item{Trait}{Logical (TRUE/FALSE) specifying whether to include
+the direct impact of trait on GR in the SEM fitted using a complex
+structure, i.e. climate effect on GR is mediated by both trait and
+demographic rate. Is applicable only if \code{simpleSEM = FALSE}.
+Defaults to FALSE.}
+
 \item{data_for_MA}{Data frame containing a subset of data_MA (see
-\code{fit_meta}) in a wide format. This data frame contains for each study
-the effect size estimates along with their SEs for each pathway obtained
-with the SEM analyses. Besides that, some meta-data on each study is included
+\code{fit_meta}) in a wide format, i.e. single column per pathway.
+This data frame contains for each pathway for each study the
+effect size estimates along with their SEs obtained with the SEM
+analyses. Besides that, some meta-data on each study is included
 (e.g. study species, study location, study ID).}
 }
 \value{

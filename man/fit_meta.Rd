@@ -7,11 +7,12 @@
 fit_meta(
   data_MA,
   Type_EfS = "Trait_mean<-det_Clim",
-  Covar = NULL,
+  Cov_fact = NULL,
   COV = NULL,
   optimize = "nlminb",
   DD = "n_effectDGR",
-  simpleSEM = FALSE
+  simpleSEM = FALSE,
+  Trait = FALSE
 )
 }
 \arguments{
@@ -26,9 +27,38 @@ These types of effect sizes reflect different pathways in the fitted SEM. Possib
 'GR<-Demog_rate_mean',  'GR<-det_Clim', 'GR<-Pop_mean', 'Ind_DemRate<-det_Clim',
 'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim', and 'Trait_mean<-det_Clim'.}
 
-\item{Covar}{Categorical specifying the name of the categorical variable to be included
-as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no
+\item{Cov_fact}{A character specifying the name of the categorical variable to be included
+as a fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no
 categorical variables are included and the overall global effect size is estimated.}
+
+\item{COV}{A character specifying the name (or names, separated by '+') of the continuous
+variable to be included as a fixed-effect covariate in the meta-analysis. Defaults to NULl,
+in which case no continuous covariates are included and the overall global effect size
+is estimated.}
+
+\item{optimize}{A character specifying the name of the optimizer to use. For more details
+see argument 'control = ' for the available optimizers in \code{\link[metafor]{rma.mv()}}.
+Defaults to 'nlminb' because this optimizer was the most successful for model convergence
+for our datasets.}
+
+\item{DD}{Character specifying how to account for density dependence by
+including population size as additional explanatory in the SEM. Possibilities
+are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
+of population size on growth rate, 'n_effectD' - effect of population size
+on demographic rate, 'n_effectDGR' - effect of population size on demographic
+rate and growth rate. Only options 'n_effectGR' and 'none' are possible for
+simple structure of SEM, in which climate effect on GR i sonly mediated by trait
+(i.e. \code{simpleSEM = TRUE}).}
+
+\item{simpleSEM}{Logical (TRUE/FALSE) specifying that the simple SEM
+structure will be fitted in which climate effect on GR is only mediated
+by trait, demographic rates are not considered. Defaults to FALSE.}
+
+\item{Trait}{Logical (TRUE/FALSE) specifying whether to include
+the direct impact of trait on GR in the SEM fitted using a complex
+structure, i.e. climate effect on GR is mediated by both trait and
+demographic rate. Is applicable only if \code{simpleSEM = FALSE}.
+Defaults to FALSE.}
 }
 \value{
 Returns a tibble. If no categorical explanatory variables are included in the model,
@@ -55,8 +85,8 @@ effect size across the studies
 \examples{
 Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
 check_noCovar <- fit_meta(data_MA = Coefs_Aut, Type_EfS = 'Trait_mean<-det_Clim',
-                          Covar = NULL)
+                          Cov_fact = NULL)
 check_TraitCateg <- fit_meta(data_MA = Coefs_Aut, Type_EfS = 'Trait_mean<-det_Clim',
-                             Covar = 'Trait_Categ')
+                             Cov_fact = 'Trait_Categ')
 check_TraitCateg
 }

@@ -4,7 +4,17 @@
 \alias{ind_path}
 \title{Provide estimates of median and SE of an indirect (focal) pathway by bootstrap}
 \usage{
-ind_path(x, y, z = NULL, x.se, y.se, z.se = NULL, numrep = 10000)
+ind_path(
+  x,
+  y,
+  z = NULL,
+  x.se,
+  y.se,
+  z.se = NULL,
+  numrep = 10000,
+  omega = NULL,
+  omega.se = NULL
+)
 }
 \arguments{
 \item{x}{Numeric reflecting the first path coefficient estimate
@@ -29,6 +39,13 @@ the case of the indirect path consisting of two pathways.}
 
 \item{numrep}{Numeric for the number of replicates to use in a
 bootstrap.}
+
+\item{omega}{Numeric reflecting the fourth path coefficient estimate
+(applicable only if Trait = TRUE in \code{fit_SEM}). Defaults to NULL.}
+
+\item{omega.se}{Numeric reflecting the standard errir for the
+fourth path coefficient estimate (applicable only if T
+rait = TRUE in \code{fit_SEM}). Defaults to NULL.}
 }
 \value{
 A dataframe that contains four columns: a median of the
