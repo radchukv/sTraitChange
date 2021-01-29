@@ -14,11 +14,6 @@
 #' @param Trait_categ Character specifying the level of the trait on which to subset the data.
 #' @param Clim Character specifying the level of the climatic variable on which to subset
 #' the data.
-#' @param tab Categorical specifying the name of the categorical variable for which
-#'  to produce the frequency table.
-#' @param Covar Categorical specifying the name of the categorical variable to be included
-#' as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no
-#' categorical variables are included and the overall global effect size is estimated.
 #' @param sel Character specifying the name to be included in the .pdf name, which indicates
 #' the levels of demographic rate and trait for which the subsetting was done.
 #' @param folder_name Character specifyng the path to the directory in which the results will be saved.
@@ -26,6 +21,8 @@
 #' vector should correspond to the number of the levels in the categorical explanatory variable
 #' included in the meta-analytical model, or should be one (if the single global effect size
 #' across all studies is to be plotted).
+#' @inheritParams fit_mod
+#' @inheritParams fit_meta
 #'
 #' @export
 #'
@@ -65,20 +62,20 @@ fit_all_meta <- function(data_MA,
                          Demog_rate = 'Survival',
                          Trait_categ = 'Phenological',
                          Clim = 'Temperature',
-                         Covar = NULL,
+                         Cov_fact = NULL,
                          COV = NULL,
                          sel = 'Phen_Surv',
                          folder_name = NULL,
                          colr = c('black'),
                          DD = 'n_effectDGR',
-                         optimize = rep('nlminb', 13),
+                         simpleSEM = FALSE,
                          all_Relations = c('Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean',
                                            'Demog_rate_mean<-Trait_mean', 'GR<-Demog_rate_mean',
                                            'GR<-det_Clim', 'GR<-Pop_mean',
                                            'Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
                                            'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
                                            'Trait_mean<-det_Clim', 'Ind_GR<-Pop_mean',
-                                           'Tot_GR<-Pop_mean')){ ##  a vector of optimizers to circumwent the issue of specifying an optimizer specific for each relation
+                                           'Tot_GR<-Pop_mean')){
 
   ### subs_data <- droplevels(base::subset(data_MA, Demog_rate_Categ == Demog_rate & Trait_Categ == Trait_categ))  ## weird, why this is not working as intended???
 
@@ -86,8 +83,9 @@ fit_all_meta <- function(data_MA,
 
 
   stat_meta <- do.call('rbind', lapply(1:length(all_Relations), FUN = function(x){
-    fit_meta(data_MA = subs_data, Type_EfS = all_Relations[x], Covar = Covar, COV = COV,
-             optimize = optimize[x], DD = DD)}))
+    fit_meta(data_MA = subs_data, Type_EfS = all_Relations[x], Cov_fact = Cov_fact,
+             COV = COV, DD = DD, simpleSEM = simpleSEM)[, c('data','data_EfS')]}))
+
 
   rel_realized <- lapply(1:length(stat_meta$data_EfS), FUN = function(x){
     unique(stat_meta$data_EfS[[x]]$Relation)
@@ -107,25 +105,23 @@ fit_all_meta <- function(data_MA,
     }
   }
 
-  data_fin <- stat_meta$data_EfS[[1]]  ## this may need ot be done cleaner or explain that I only use this subset for the descriptive stats on the factors
-
   ## a plot per each model
   lapply(1:length(unlist(rel_realized)), FUN = function(x){
     xlab <- plot_lab_name(Relation = stat_meta$names[[x]],
-                          Covar = Covar,
+                          Cov_fact = Cov_fact,
                           Demog_rate = Demog_rate,
                           Trait_categ = Trait_categ,
                           Clim = Clim)$xlab
     coef <- plot_lab_name(Relation = stat_meta$names[[x]],
-                          Covar = Covar,
+                          Cov_fact = Cov_fact,
                           Demog_rate = Demog_rate,
                           Trait_categ = Trait_categ,
                           Clim = Clim)$pref_pdf
     if(! is.null(folder_name)){
-    if(is.null(Covar)){
+    if(is.null(Cov_fact)){
     plot_forest(data_ES = stat_meta$data_EfS[[x]],
                 data_globES = stat_meta$data[[x]],
-                Covar = Covar, xlab = xlab,
+                Cov_fact = Cov_fact, xlab = xlab,
                 colr = c('black'),
                 pdf_basename = paste0(folder_name, sel, '_Coef_', coef),
                 mar = c(4, 10, 2, 2),
@@ -133,7 +129,7 @@ fit_all_meta <- function(data_MA,
     }else {
       plot_forest(data_ES = stat_meta$data_EfS[[x]],
                   data_globES = stat_meta$data_Covar[[x]],
-                  Covar = Covar, xlab = xlab,
+                  Cov_fact = Cov_fact, xlab = xlab,
                   colr = colr,
                   pdf_basename = paste0(folder_name, sel, '_Coef_', coef),
                   mar = c(4, 10, 2, 2),
@@ -143,6 +139,23 @@ fit_all_meta <- function(data_MA,
 
   })
 
-  return(tibble::tibble(meta_res = list(meta_res),
-                        data_meta = list(stat_meta)))
+  ## getting prop. contributions
+  if(any(all_Relations %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
+                          'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
+                          'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean'))){
+    prop_data <- fit_meta(data_MA = subs_data, Type_EfS =
+               all_Relations[all_Relations %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
+                                                  'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
+                                                  'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')][1],
+             Cov_fact = Cov_fact, COV = COV, DD = DD, simpleSEM = simpleSEM)[, 'prop_data']
+    return(tibble::tibble(meta_res = list(meta_res),
+                          data_meta = list(stat_meta),
+                          prop_data = list(prop_data[[1]][[1]])))
+  }
+  else{
+    return(tibble::tibble(meta_res = list(meta_res),
+                          data_meta = list(stat_meta)))
+  }
+
+
 }
