@@ -14,9 +14,7 @@
 #' conducted.
 #' @param Clim Character specifying the level of the climatic variable, for which analyses
 #' were conducted.
-#' @param Covar Categorical specifying the name of the categorical variable that was included
-#' as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case the it is
-#' not mentioned in the pdf name.
+#' @inheritParams fit_meta
 #'
 #' @export
 #'
@@ -25,13 +23,13 @@
 #'
 #' @examples
 #' lab_name <- plot_lab_name(Relation = 'GR<-det_Clim',
-#'                           Covar = NULL,
+#'                           Cov_fact = NULL,
 #'                           Demog_rate = 'survival',
 #'                           Trait_categ = 'phenological',
 #'                           Clim = 'temperature')
 #'
 plot_lab_name <- function(Relation = 'GR<-det_Clim',
-                          Covar = NULL,
+                          Cov_fact = NULL,
                           Demog_rate = 'Survival',
                           Trait_categ = 'Phenological',
                           Clim = 'Temperature'){
@@ -54,6 +52,11 @@ plot_lab_name <- function(Relation = 'GR<-det_Clim',
   if(Relation == 'GR<-Demog_rate_mean'){
     xlab <- gen_specific_labs(vect = 'Effect of demographic rate on pop GR', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
     xlab_slopes <- gen_specific_labs(vect = 'Demographic rate', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
+    ylab_slopes <- gen_specific_labs(vect = 'Population GR', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
+  }
+  if(Relation == 'GR<-Trait_mean'){
+    xlab <- gen_specific_labs(vect = 'Effect of trait on pop GR', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
+    xlab_slopes <- gen_specific_labs(vect = 'Trait', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
     ylab_slopes <- gen_specific_labs(vect = 'Population GR', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
   }
   if(Relation == 'GR<-Pop_mean'){
@@ -127,11 +130,11 @@ plot_lab_name <- function(Relation = 'GR<-det_Clim',
     ylab_slopes <- gen_specific_labs(vect = 'Population GR', Clim = Clim, Demog_rate = Demog_rate, Trait_categ = Trait_categ)
   }
 
-  if(! is.null(Covar)){
+  if(! is.null(Cov_fact)){
     pdf_name <- paste0(generate_pdf_name(Relation = Relation,
                                          Demog_rate = Demog_rate,
                                          Trait_categ = Trait_categ,
-                                         Clim = Clim), '_by_', Covar)
+                                         Clim = Clim), '_by_', Cov_fact)
   } else {
     pdf_name <- generate_pdf_name(Relation = Relation, Demog_rate = Demog_rate, Trait_categ = Trait_categ, Clim = Clim)
   }
