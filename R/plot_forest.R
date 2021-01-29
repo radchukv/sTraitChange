@@ -8,9 +8,6 @@
 #' @param data_globES Data frame containing the global effect sizes across the studies,
 #' returned by function {fit_meta} as either 'data_Covar' or 'data' (depending on whether
 #' the explanatory categorical variable was included in the meta-analytical model).
-#' @param Covar Categorical specifying the name of the categorical variable that was included
-#' as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case the
-#' overall global effect size across all studies is plotted.
 #' @param xlab Character specifying the label for the x axis.
 #' @param colr Vector specifying the colours to be used for the data points. The length of the
 #' vector should correspond to the number of the levels in the categorical explanatory variable
@@ -21,6 +18,7 @@
 #' @param mar A vector specifying the plot margins, analogously to \code{\link[graphics]{par}}.
 #' @param labels_ES Boolean specifying whether to plot the labels for all the single studies.
 #' Defaults to TRUE.
+#' @inheritParams fit_meta
 #'
 #' @export
 #'
@@ -51,7 +49,7 @@
 #'             labels_ES = TRUE)
 plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
                         data_globES = check_DemCateg$data_Covar[[1]],
-                        Covar = NULL,
+                        Cov_fact = NULL,
                         xlab = 'Effect of temperature on trait',
                         colr = c('blue', 'green', 'black'),
                         pdf_basename = NULL,
@@ -66,10 +64,10 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
   data_ES$lwr <- data_ES$Estimate - qnorm(0.025)*data_ES$SError
   data_ES$upr <- data_ES$Estimate + qnorm(0.025)*data_ES$SError
 
-  if(! is.null(Covar)){
-    len_Covar <- length(unique(data_ES[, Covar]))
+  if(! is.null(Cov_fact)){
+    len_Covar <- length(unique(data_ES[, Cov_fact]))
     for(j in 1:len_Covar){
-      data_ES$colour[data_ES[, Covar] == unique(data_ES[, Covar])[j]] <- colr[j]
+      data_ES$colour[data_ES[, Cov_fact] == unique(data_ES[, Cov_fact])[j]] <- colr[j]
     }
   } else {
     data_ES$colour <- colr
@@ -139,13 +137,13 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
     dplyr::rename(lwr = EfS_Low, upr = EfS_Upper) %>%
     dplyr::mutate(y = c(1:miny_glob))
 
-  if(! is.null(Covar)){
+  if(! is.null(Cov_fact)){
     data_globES_prep <- data_globES_prep %>%
       tidyr::separate(., Levels_Covar, into = c('Category', 'Level'),
-                      sep = Covar)
+                      sep = Cov_fact)
 
     for (j in 1:nrow(data_globES_prep)){
-      data_globES_prep$colour[j] <- unique(data_ES$colour[data_ES[, Covar] == data_globES_prep$Level[j]])
+      data_globES_prep$colour[j] <- unique(data_ES$colour[data_ES[, Cov_fact] == data_globES_prep$Level[j]])
     }
     if(nrow(data_globES_prep) > 1){
       data_globES_prep$label <- data_globES_prep$Level
@@ -158,9 +156,6 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
       data_globES_prep$label <- 'Global effect size'
     data_globES_prep$colour <- colr}
   }
-
-
-
 
 
   ## plot for the glob effect sizes
