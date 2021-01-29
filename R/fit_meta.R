@@ -52,7 +52,7 @@
 #'                              Cov_fact = 'Trait_Categ')
 #' check_TraitCateg
 fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
-                     Cov_fact = NULL, COV = NULL, optimize = 'nlminb',
+                     Cov_fact = NULL, COV = NULL, optimize = 'uobyqa',
                      DD = 'n_effectDGR', simpleSEM = FALSE,
                      Trait = FALSE){
   ## calculating indirect effects, total effects and their SEs
