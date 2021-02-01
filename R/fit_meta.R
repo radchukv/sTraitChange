@@ -154,6 +154,22 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
     }
   }
 
+  ## drop the data rows with missing covariate
+    if(! is.null(COV)){
+    if(length(grep('[+]', COV)) > 0){
+      for (j in 1:length(strsplit(COV, '[+]')[[1]])){
+        subs_data <- subs_data[! is.na(subs_data[, trimws(strsplit(COV, '[+]')[[1]][j], which = 'both')]), ]
+      }
+    } else {
+      subs_data <- subs_data[! is.na(subs_data[, COV]), ]
+      }
+    }
+    if(! is.null(Cov_fact)){
+      subs_data <- subs_data[! is.na(subs_data[, Cov_fact]), ]
+    }
+
+
+
   ## fitting the models with ML and REML
   tt.error.ML <- tryCatch(mod_ML <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
                                                     random = list(~ 1|Species, ~1|ID, ~1|Location),
@@ -204,7 +220,7 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
           out_dat$z[i] <- stats::anova(mod_ML, btt = grep(Cov_fact, rownames(mod_ML$beta)))$QM
           out_dat$pval_Covar[i] <- stats::anova(mod_ML, btt = grep(Cov_fact, rownames(mod_ML$beta)))$QMp
         }
-        if(grep('+', COV)){  ## in case COV consists of several elements
+        if(length(grep('[+]', COV)) > 0){  ## in case COV consists of several elements
           for(j in (length(grep(Cov_fact, rownames(mod_ML$beta))) + 1):
               (length(grep(Cov_fact, rownames(mod_ML$beta))) + length(strsplit(COV, '[+]')[[1]]))){
             out_dat$z[j] <- stats::anova(mod_ML, btt = j)$QM
