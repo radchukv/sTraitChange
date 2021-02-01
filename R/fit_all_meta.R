@@ -84,7 +84,7 @@ fit_all_meta <- function(data_MA,
 
   stat_meta <- do.call('rbind', lapply(1:length(all_Relations), FUN = function(x){
     fit_meta(data_MA = subs_data, Type_EfS = all_Relations[x], Cov_fact = Cov_fact,
-             COV = COV, DD = DD, simpleSEM = simpleSEM)[, c('data','data_EfS')]}))
+             COV = COV, DD = DD, simpleSEM = simpleSEM)[, c('data','data_EfS', 'data_R2')]}))
 
 
   rel_realized <- lapply(1:length(stat_meta$data_EfS), FUN = function(x){
@@ -93,16 +93,29 @@ fit_all_meta <- function(data_MA,
 
 
   stat_meta$names <- unlist(rel_realized)
+
   names(stat_meta$data) <- unlist(rel_realized)
   meta_res <- data.table::rbindlist(stat_meta$data)
   if(is.null(COV)){
-    meta_res$Relation <- unlist(rel_realized)
-  } else{
-    if(length(grep('\\+', COV)) == 1){  ## may be improved, to define the number of repetiions based on the number of summed elements (i.e. in case int he future there is > 2 covariates)
-      meta_res$Relation <- rep(unlist(rel_realized), each = 3)
+    if(! is.null(Cov_fact)){
+      num_lev <- length(unique(meta_res$Levels_Covar))
+      meta_res$Relation <- rep(unlist(rel_realized), each = num_lev)
     } else {
-      meta_res$Relation <- rep(unlist(rel_realized), each = 2)
+      meta_res$Relation <- unlist(rel_realized)
     }
+  }  else{
+    if(! is.null(Cov_fact)){
+        num_lev <- length(unique(meta_res$Levels_Covar))
+
+      meta_res$Relation <- rep(unlist(rel_realized), each = num_lev)
+    } else {
+      if(length(grep('\\+', COV)) == 1){
+        meta_res$Relation <- rep(unlist(rel_realized), each = 3)
+      } else {
+        meta_res$Relation <- rep(unlist(rel_realized), each = 2)
+      }
+    }
+
   }
 
   ## a plot per each model
@@ -122,15 +135,15 @@ fit_all_meta <- function(data_MA,
     plot_forest(data_ES = stat_meta$data_EfS[[x]],
                 data_globES = stat_meta$data[[x]],
                 Cov_fact = Cov_fact, xlab = xlab,
-                colr = c('black'),
+                colr = c('black'), COV = COV,
                 pdf_basename = paste0(folder_name, sel, '_Coef_', coef),
                 mar = c(4, 10, 2, 2),
                 labels_ES = TRUE)
     }else {
       plot_forest(data_ES = stat_meta$data_EfS[[x]],
-                  data_globES = stat_meta$data_Covar[[x]],
+                  data_globES = stat_meta$data[[x]],
                   Cov_fact = Cov_fact, xlab = xlab,
-                  colr = colr,
+                  colr = colr, COV = COV,
                   pdf_basename = paste0(folder_name, sel, '_Coef_', coef),
                   mar = c(4, 10, 2, 2),
                   labels_ES = TRUE)
