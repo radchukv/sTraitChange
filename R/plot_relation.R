@@ -8,9 +8,6 @@
 #' contains in different data frames all the data necessary produce the plot.
 #' @param rel Numeric specifying which relation (specified under the column 'names'
 #' in the input tibble) to produce the plot for.
-#' @param Covar Categorical specifying the name of the categorical variable that was included
-#' as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case the
-#' overall global effect size across all studies is plotted.
 #' @param Demog_rate Character specifying the level of the demographic rate for which
 #' analyses were conducted.
 #' @param Trait_categ Character specifying the level of the trait, for which analyses were
@@ -77,7 +74,7 @@
 #'
 plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
                           rel = 1,
-                          Covar = NULL,
+                          Cov_fact = NULL,
                           Demog_rate = 'Survival',
                           Trait_categ = 'Phenological',
                           Clim = 'Temperature',
@@ -90,12 +87,12 @@ plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
   data_ES <- fit_meta_data$data_meta[[1]]$data_EfS[[rel]]
   data_globES <- fit_meta_data$meta_res[[1]][fit_meta_data$meta_res[[1]]$Relation == fit_meta_data$data_meta[[1]]$names[rel], ]
   data_R2 <- fit_meta_data$data_meta[[1]]$data_R2[[rel]]
-  if(! is.null(Covar)){
+  if(! is.null(Cov_fact)){
     data_CovarES <- fit_meta_data$data_meta[[1]]$data_Covar[[rel]]
   }
   ## start pdf if name if file defined
   coef <- plot_lab_name(Relation = unique(data_globES[, 'Relation']),
-                        Covar = Covar, Trait_categ = Trait_categ,
+                        Cov_fact = Cov_fact, Trait_categ = Trait_categ,
                         Clim = Clim, Demog_rate = Demog_rate)$pref_pdf
   if (!is.null(folder_name)) {
     grDevices::pdf(file = paste0(folder_name, sel, '_Slopes_', coef, '.pdf'))
@@ -112,7 +109,7 @@ plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
     abline(a = 0, b = data_ES$Estimate[i], col = 'grey')
   }
 
-  if(is.null(Covar)){
+  if(is.null(Cov_fact)){
     if(as.numeric(data_globES[data_globES$Variable =='intrcpt', 'pval_across']) < 0.05){
       LineT <- 1
     } else {
@@ -138,7 +135,7 @@ plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
     } else {
       LineT <- 2
     }
-    len_Covar <- length(unique(data_ES[, Covar]))
+    len_Covar <- length(unique(data_ES[, Cov_fact]))
     for (i in 1:len_Covar){
 
       yval <- 0 + as.numeric(data_CovarES[i, 'Estimate'])*xax
@@ -154,7 +151,7 @@ plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
                              ' slope = ', round(data_CovarES[i, 'Estimate'], 3)),
                       side = 3, line = 1 + i, cex = 1.7, col = colr[i])
     }
-    legend('topright', legend = gsub(pattern = 'Continent', replacement = '', x= sort(unique(data_ES[, Covar]))),
+    legend('topright', legend = gsub(pattern = 'Continent', replacement = '', x= sort(unique(data_ES[, Cov_fact]))),
            col = colr, lwd= 3)
     if(fit_meta_data$data_meta[[1]]$pval_Covar[rel] < 0.0001){
       graphics::mtext(paste0('p < 0.0001'), side = 3, line = 0, cex = 1.7)
@@ -173,11 +170,11 @@ plot_relation <- function(fit_meta_data = meta_Phen_Repro_byTax,
   }
 
   graphics::mtext(plot_lab_name(Relation = unique(data_globES[, 'Relation']),
-                                Covar = Covar, Trait_categ = Trait_categ,
+                                Cov_fact = Cov_fact, Trait_categ = Trait_categ,
                                 Clim = Clim, Demog_rate = Demog_rate)$xlab_slope,
                   side = 1, line = 2, cex = 1.5)
   graphics::mtext(plot_lab_name(Relation = unique(data_globES[, 'Relation']),
-                                Covar = Covar, Trait_categ = Trait_categ,
+                                Cov_fact = Cov_fact, Trait_categ = Trait_categ,
                                 Clim = Clim, Demog_rate = Demog_rate)$ylab_slope,
                   side = 2, line = 2, cex = 1.5)
 

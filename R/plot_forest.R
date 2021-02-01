@@ -49,7 +49,7 @@
 #'             labels_ES = TRUE)
 plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
                         data_globES = check_DemCateg$data_Covar[[1]],
-                        Cov_fact = NULL,
+                        Cov_fact = NULL, COV = NULL,
                         xlab = 'Effect of temperature on trait',
                         colr = c('blue', 'green', 'black'),
                         pdf_basename = NULL,
@@ -65,7 +65,12 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
   data_ES$upr <- data_ES$Estimate + qnorm(0.025)*data_ES$SError
 
   if(! is.null(Cov_fact)){
-    len_Covar <- length(unique(data_ES[, Cov_fact]))
+    if(is.null(COV)){
+      len_Covar <- length(unique(data_ES[, Cov_fact]))
+    } else {
+      len_Covar <- length(unique(data_globES[, 'Levels_Covar']))
+    }
+
     for(j in 1:len_Covar){
       data_ES$colour[data_ES[, Cov_fact] == unique(data_ES[, Cov_fact])[j]] <- colr[j]
     }
@@ -140,14 +145,23 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
   if(! is.null(Cov_fact)){
     data_globES_prep <- data_globES_prep %>%
       tidyr::separate(., Levels_Covar, into = c('Category', 'Level'),
-                      sep = Cov_fact)
+                      sep = Cov_fact, fill = 'right')
 
+    if(is.null(COV)){
     for (j in 1:nrow(data_globES_prep)){
       data_globES_prep$colour[j] <- unique(data_ES$colour[data_ES[, Cov_fact] == data_globES_prep$Level[j]])
     }
     if(nrow(data_globES_prep) > 1){
       data_globES_prep$label <- data_globES_prep$Level
     }
+    } else {
+      for(j in 1:nrow(data_globES_prep)){
+      data_globES_prep$colour[j] <- unique(data_ES$colour[data_ES[, Cov_fact] == data_globES_prep$Level[j]])
+      }
+      data_globES_prep$colour[is.na(data_globES_prep$colour)] <- colr[length(colr)]
+      data_globES_prep$label <- c(data_globES_prep$Level[! is.na(data_globES_prep$Level)],
+                                  data_globES_prep$Category[! (data_globES_prep$Category == '')])
+      }
   }else {
     if(nrow(data_globES_prep) > 1){
       data_globES_prep$label <- data_globES_prep$Variable
