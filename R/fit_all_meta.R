@@ -69,6 +69,7 @@ fit_all_meta <- function(data_MA,
                          colr = c('black'),
                          DD = 'n_effectDGR',
                          simpleSEM = FALSE,
+                         Trait = FALSE,
                          all_Relations = c('Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean',
                                            'Demog_rate_mean<-Trait_mean', 'GR<-Demog_rate_mean',
                                            'GR<-det_Clim', 'GR<-Pop_mean',
@@ -84,7 +85,7 @@ fit_all_meta <- function(data_MA,
 
   stat_meta <- do.call('rbind', lapply(1:length(all_Relations), FUN = function(x){
     fit_meta(data_MA = subs_data, Type_EfS = all_Relations[x], Cov_fact = Cov_fact,
-             COV = COV, DD = DD, simpleSEM = simpleSEM)[, c('data','data_EfS', 'data_R2')]}))
+             COV = COV, DD = DD, simpleSEM = simpleSEM, Trait = Trait)[, c('data','data_EfS', 'data_R2')]}))
 
 
   rel_realized <- lapply(1:length(stat_meta$data_EfS), FUN = function(x){

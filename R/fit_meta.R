@@ -70,7 +70,7 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   if(Type_EfS %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
                      'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
                      'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')) {
-    met_wide <- all_combi_paths(data = met_wide, DD = DD, simpleSEM = simpleSEM, Trait = Trait)
+    met_wide <- all_combi_paths(data_forMA = met_wide, DD = DD, simpleSEM = simpleSEM, Trait = Trait)
 
     prop_data <- prop_path(data = met_wide, data_MA = data_MA, DD = DD, simpleSEM = simpleSEM)
   }
