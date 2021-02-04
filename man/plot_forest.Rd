@@ -7,7 +7,8 @@
 plot_forest(
   data_ES = check_DemCateg$data_EfS[[1]],
   data_globES = check_DemCateg$data_Covar[[1]],
-  Covar = NULL,
+  Cov_fact = NULL,
+  COV = NULL,
   xlab = "Effect of temperature on trait",
   colr = c("blue", "green", "black"),
   pdf_basename = NULL,
@@ -23,9 +24,14 @@ standard errors, returned as 'data_EfS' by the function \code{\link{fit_meta}}.}
 returned by function {fit_meta} as either 'data_Covar' or 'data' (depending on whether
 the explanatory categorical variable was included in the meta-analytical model).}
 
-\item{Covar}{Categorical specifying the name of the categorical variable that was included
-as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case the
-overall global effect size across all studies is plotted.}
+\item{Cov_fact}{A character specifying the name of the categorical variable to be included
+as a fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no
+categorical variables are included and the overall global effect size is estimated.}
+
+\item{COV}{A character specifying the name (or names, separated by '+') of the continuous
+variable to be included as a fixed-effect covariate in the meta-analysis. Defaults to NULl,
+in which case no continuous covariates are included and the overall global effect size
+is estimated.}
 
 \item{xlab}{Character specifying the label for the x axis.}
 

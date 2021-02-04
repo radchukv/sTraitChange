@@ -6,7 +6,7 @@
 \usage{
 plot_lab_name(
   Relation = "GR<-det_Clim",
-  Covar = NULL,
+  Cov_fact = NULL,
   Demog_rate = "Survival",
   Trait_categ = "Phenological",
   Clim = "Temperature"
@@ -19,9 +19,9 @@ was conducted. Possible are: 'Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_
 'Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim',
 'Tot_GR<-det_Clim', and 'Trait_mean<-det_Clim'. For more details see \code{\link{fit_meta}}.}
 
-\item{Covar}{Categorical specifying the name of the categorical variable that was included
-as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case the it is
-not mentioned in the pdf name.}
+\item{Cov_fact}{A character specifying the name of the categorical variable to be included
+as a fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no
+categorical variables are included and the overall global effect size is estimated.}
 
 \item{Demog_rate}{Character specifying the level of the demographic rate for which
 analyses were conducted.}
@@ -42,7 +42,7 @@ names for the pdfs with plots
 }
 \examples{
 lab_name <- plot_lab_name(Relation = 'GR<-det_Clim',
-                          Covar = NULL,
+                          Cov_fact = NULL,
                           Demog_rate = 'survival',
                           Trait_categ = 'phenological',
                           Clim = 'temperature')

@@ -9,7 +9,7 @@ fit_meta(
   Type_EfS = "Trait_mean<-det_Clim",
   Cov_fact = NULL,
   COV = NULL,
-  optimize = "nlminb",
+  optimize = "uobyqa",
   DD = "n_effectDGR",
   simpleSEM = FALSE,
   Trait = FALSE
@@ -37,7 +37,7 @@ in which case no continuous covariates are included and the overall global effec
 is estimated.}
 
 \item{optimize}{A character specifying the name of the optimizer to use. For more details
-see argument 'control = ' for the available optimizers in \code{\link[metafor]{rma.mv()}}.
+see argument 'control = ' for the available optimizers in \code{\link[metafor]{rma.mv}}.
 Defaults to 'nlminb' because this optimizer was the most successful for model convergence
 for our datasets.}
 

@@ -8,7 +8,7 @@
 plot_relation(
   fit_meta_data = meta_Phen_Repro_byTax,
   rel = 1,
-  Covar = NULL,
+  Cov_fact = NULL,
   Demog_rate = "Survival",
   Trait_categ = "Phenological",
   Clim = "Temperature",
@@ -24,10 +24,6 @@ contains in different data frames all the data necessary produce the plot.}
 
 \item{rel}{Numeric specifying which relation (specified under the column 'names'
 in the input tibble) to produce the plot for.}
-
-\item{Covar}{Categorical specifying the name of the categorical variable that was included
-as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case the
-overall global effect size across all studies is plotted.}
 
 \item{Demog_rate}{Character specifying the level of the demographic rate for which
 analyses were conducted.}

@@ -10,13 +10,14 @@ fit_all_meta(
   Demog_rate = "Survival",
   Trait_categ = "Phenological",
   Clim = "Temperature",
-  Covar = NULL,
+  Cov_fact = NULL,
   COV = NULL,
   sel = "Phen_Surv",
   folder_name = NULL,
   colr = c("black"),
   DD = "n_effectDGR",
-  optimize = rep("nlminb", 13),
+  simpleSEM = FALSE,
+  Trait = FALSE,
   all_Relations = c("Demog_rate_mean<-det_Clim", "Demog_rate_mean<-Pop_mean",
     "Demog_rate_mean<-Trait_mean", "GR<-Demog_rate_mean", "GR<-det_Clim", "GR<-Pop_mean",
     "Ind_DemRate<-det_Clim", "Ind_GR<-det_Clim", "Tot_DemRate<-det_Clim",
@@ -37,9 +38,14 @@ to subset the data.}
 \item{Clim}{Character specifying the level of the climatic variable on which to subset
 the data.}
 
-\item{Covar}{Categorical specifying the name of the categorical variable to be included
-as fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no
+\item{Cov_fact}{A character specifying the name of the categorical variable to be included
+as a fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no
 categorical variables are included and the overall global effect size is estimated.}
+
+\item{COV}{A character specifying the name (or names, separated by '+') of the continuous
+variable to be included as a fixed-effect covariate in the meta-analysis. Defaults to NULl,
+in which case no continuous covariates are included and the overall global effect size
+is estimated.}
 
 \item{sel}{Character specifying the name to be included in the .pdf name, which indicates
 the levels of demographic rate and trait for which the subsetting was done.}
@@ -51,8 +57,24 @@ vector should correspond to the number of the levels in the categorical explanat
 included in the meta-analytical model, or should be one (if the single global effect size
 across all studies is to be plotted).}
 
-\item{tab}{Categorical specifying the name of the categorical variable for which
-to produce the frequency table.}
+\item{DD}{Character specifying how to account for density dependence by
+including population size as additional explanatory in the SEM. Possibilities
+are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
+of population size on growth rate, 'n_effectD' - effect of population size
+on demographic rate, 'n_effectDGR' - effect of population size on demographic
+rate and growth rate. Only options 'n_effectGR' and 'none' are possible for
+simple structure of SEM, in which climate effect on GR i sonly mediated by trait
+(i.e. \code{simpleSEM = TRUE}).}
+
+\item{simpleSEM}{Logical (TRUE/FALSE) specifying that the simple SEM
+structure will be fitted in which climate effect on GR is only mediated
+by trait, demographic rates are not considered. Defaults to FALSE.}
+
+\item{Trait}{Logical (TRUE/FALSE) specifying whether to include
+the direct impact of trait on GR in the SEM fitted using a complex
+structure, i.e. climate effect on GR is mediated by both trait and
+demographic rate. Is applicable only if \code{simpleSEM = FALSE}.
+Defaults to FALSE.}
 }
 \value{
 Returns a tibble that includes one data frame, one tibble and a table. A data frame
