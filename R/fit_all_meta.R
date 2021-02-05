@@ -161,7 +161,9 @@ fit_all_meta <- function(data_MA,
                all_Relations[all_Relations %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
                                                   'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
                                                   'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')][1],
-             Cov_fact = Cov_fact, COV = COV, DD = DD, simpleSEM = simpleSEM)[, 'prop_data']
+             Cov_fact = Cov_fact, COV = COV, DD = DD,
+             simpleSEM = simpleSEM, Trait = Trait)[, 'prop_data']
+
     return(tibble::tibble(meta_res = list(meta_res),
                           data_meta = list(stat_meta),
                           prop_data = list(prop_data[[1]][[1]])))
