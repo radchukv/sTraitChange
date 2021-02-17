@@ -31,7 +31,7 @@ for each pathway from the SEM analyses. This data frame also contains meda-data
 that are needed to fit the mixed-effect model.}
 
 \item{Demog_rate}{Character specifying the level of the demographic rate on which
-to subset the data.}
+to subset the data. If NULL no subsetting by demographic rate is performed.}
 
 \item{Trait_categ}{Character specifying the level of the trait on which to subset the data.}
 

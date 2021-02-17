@@ -10,7 +10,7 @@
 #' (e.g. sutdy species, study location, continent, life history traits of the species),
 #' that are needed to fit the mixed-effect model.
 #' @param Demog_rate Character specifying the level of the demographic rate on which
-#' to subset the data.
+#' to subset the data. If NULL no subsetting by demographic rate is performed.
 #' @param Trait_categ Character specifying the level of the trait on which to subset the data.
 #' @param Clim Character specifying the level of the climatic variable on which to subset
 #' the data.
@@ -80,7 +80,11 @@ fit_all_meta <- function(data_MA,
 
   ### subs_data <- droplevels(base::subset(data_MA, Demog_rate_Categ == Demog_rate & Trait_Categ == Trait_categ))  ## weird, why this is not working as intended???
 
+  if(! is.null(Demog_rate)){
   subs_data <- droplevels(data_MA[data_MA$Demog_rate_Categ == Demog_rate & data_MA$Trait_Categ == Trait_categ,])
+  } else {
+    subs_data <- droplevels(data_MA[data_MA$Trait_Categ == Trait_categ,])
+  }
 
 
   stat_meta <- do.call('rbind', lapply(1:length(all_Relations), FUN = function(x){
