@@ -162,6 +162,7 @@ gen_specific_labs <- function(vect,
                               Clim = 'Temperature',
                               Demog_rate = 'Survival',
                               Trait_categ = 'Phenology'){
+  if(!is.null(Demog_rate)){
   if(length(unlist(gregexpr(" ", vect))) > 1) {  # to accommodate for 'demographi rate'
     converted <- sub(pattern = 'trait', replacement = tolower(Trait_categ),
                      x = sub(pattern = 'climate', replacement = tolower(Clim),
@@ -174,6 +175,19 @@ gen_specific_labs <- function(vect,
                               x = sub(pattern = 'demographic rate', replacement = Demog_rate,
                                       x = vect, ignore.case = TRUE),
                               ignore.case = TRUE), ignore.case = TRUE)
+  }
+  }else {
+    if(length(unlist(gregexpr(" ", vect))) > 1) {  # to accommodate for 'demographi rate'
+      converted <- sub(pattern = 'trait', replacement = tolower(Trait_categ),
+                       x = sub(pattern = 'climate', replacement = tolower(Clim),
+                               x = vect, ignore.case = TRUE),
+                               ignore.case = TRUE)
+    } else {
+      converted <- sub(pattern = 'trait', replacement = Trait_categ,
+                       x = sub(pattern = 'climate', replacement = Clim,
+                               x = vect, ignore.case = TRUE),
+                               ignore.case = TRUE)
+    }
   }
   return(converted)
 }
@@ -194,7 +208,7 @@ generate_pdf_name <- function(Relation = 'GR<-det_Clim',
                               Clim = 'Temperature',
                               Demog_rate = 'Survival',
                               Trait_categ = 'Phenology'){
-
+  if(!is.null(Demog_rate)){
 pdf_name <- gsub(pattern = "_|<|-", replacement = "",
   x = sub(pattern = 'Pop_mean', replacement = 'Pop',
             x = sub(pattern = 'Trait_mean',
@@ -205,5 +219,15 @@ pdf_name <- gsub(pattern = "_|<|-", replacement = "",
                     replacement = substr(Clim, 1, 4),
                     x = Relation, ignore.case = TRUE), ignore.case = TRUE),
             ignore.case = TRUE), ignore.case = TRUE))
+  } else {
+    pdf_name <- gsub(pattern = "_|<|-", replacement = "",
+                     x = sub(pattern = 'Pop_mean', replacement = 'Pop',
+                             x = sub(pattern = 'Trait_mean',
+                                     replacement = substr(Trait_categ, 1, 4),
+                                              x = sub(pattern = 'det_Clim',
+                                                      replacement = substr(Clim, 1, 4),
+                                                      x = Relation, ignore.case = TRUE), ignore.case = TRUE),
+                                     ignore.case = TRUE))
+}
 return(pdf_name)
 }
