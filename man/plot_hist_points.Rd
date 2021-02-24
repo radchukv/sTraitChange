@@ -12,7 +12,8 @@ plot_hist_points(
   Traitdem = "Morphology + Recruitment",
   tabC,
   angle_yax_lab = 90,
-  annot = NULL
+  annot = NULL,
+  Trait_categ = NULL
 )
 }
 \arguments{
@@ -26,8 +27,9 @@ per relation, obtained with the meta-analyses fitted using the function
 \item{dataAxis}{A data frame specifying the names of the relations to be plotted on the
 y axis.}
 
-\item{Traitdem}{Character specifying the level of the trait, for which analyses were
-conducted.}
+\item{Traitdem}{Character specifying the combination of the trait and demographic rate
+categories, for which analyses were conducted. In case analyses were conducted separately
+for trait category only, set to NULL.}
 
 \item{tabC}{A data frame containing the number of studies per each combination of
 trait and demographic rate category.}
@@ -41,6 +43,8 @@ estimated with complex or simple SEM (see \code{\link{fit_mod}} for more details
 so that the respective plot panesl will be shaded accordingly. Applicable only if
 the plot combines the relations from simple and complex SEMs, otherwise set to NULL
 (default).}
+
+\item{Trait_categ}{Character specifying the level of the trait on which to subset the data.}
 }
 \value{
 Plots a forest-like plot with, in addition to the overall effect size estimates
