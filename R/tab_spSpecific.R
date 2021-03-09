@@ -12,7 +12,11 @@
 #' @param explanatory Character indicating the name of the variable
 #' corresponding to a species characteristic, for which the
 #' hypothesis is being tested.
+#' @param phen Logical (TRUE/FALSE) specifying whether the model is fitted to
+#' phenological traits only (or only to morphological, if FALSE).
+#' Defaults to TRUE.
 #'
+#' @inheritParams fit_mod
 #' @export
 #'
 #' @return A dataframe with the statistics for the test of the effect of
@@ -33,7 +37,9 @@
 #' tab_spSpecific(mod_mv = mod_genLength, table_name = './tables/GenLength_Temp', explanatory = 'GenLength_y_IUCN')
 #'
 tab_spSpecific <- function(mod_mv, table_name,
-                           explanatory){
+                           explanatory,
+                           simpleSEM = FALSE,
+                           phen = TRUE){
   stats <- stats::coef(summary(mod_mv))
   stats$Parameter <- rownames(stats)
   stats <- stats %>%
@@ -41,29 +47,49 @@ tab_spSpecific <- function(mod_mv, table_name,
   colnames(stats) <- c('Estimate', 'SE', 'Chi2', 'pval', 'Parameter')
 
   ## estimate effects for interactions
+  if(! simpleSEM){
   Inter_trait <- stats::anova(mod_mv, btt = grep(':Trait', stats$Parameter))
   Inter_DR <- stats::anova(mod_mv, btt = grep(':Demog_rate', stats$Parameter))
   DR <- stats::anova(mod_mv, btt = which(stats$Parameter %in% stats$Parameter[grepl('Demog_rate', stats$Parameter) & !grepl(':', stats$Parameter)]))
-
+} else {
+  if (phen){ ## ofr phenological models including migrators, for morphological - endo vs ectotherms
+  Inter_Migrat <- stats::anova(mod_mv, btt = grep(':Migrat', stats$Parameter))}
+  else {
+    Inter_Blood <- stats::anova(mod_mv, btt = grep(':Blood', stats$Parameter))
+    }
+  Inter_GenLen <- stats::anova(mod_mv, btt = grep(':GenLength', stats$Parameter))
+  Inter_Lat <- stats::anova(mod_mv, btt = grep(':Latitude', stats$Parameter))
+}
   stats$DF <- rep(1, nrow(stats))
   ## replace the statistics with the  performed omnibus tests
+
+  if(! simpleSEM){
   ## 1. for the interaction with Trait category
   stats <- replace_stats(data = stats, variable = ':Trait', stats_out = Inter_trait)
   ## 2. for the interaction with dem. rate category
   stats <- replace_stats(data = stats, variable = ':Demog_rate', stats_out = Inter_DR)
   ## 3. for the dem. rate category per se
   stats <- replace_stats(data = stats, variable = 'Demog_rate', stats_out = DR)
+  } else {
+    if (phen){
+    stats <- replace_stats(data = stats, variable = ':Migrat', stats_out = Inter_Migrat)
+    } else {
+      stats <- replace_stats(data = stats, variable = ':Blood', stats_out = Inter_Blood)
+    }
 
-  ## 4. for explanatory if it is not continuous
-  if(length(which(stats$Parameter %in%
-                  stats$Parameter[grepl(explanatory, stats$Parameter)
-                                  & !grepl(':', stats$Parameter)])) > 1){
+    stats <- replace_stats(data = stats, variable = ':GenLength', stats_out = Inter_GenLen)
+    stats <- replace_stats(data = stats, variable = ':Latitude', stats_out = Inter_Lat)
+}
 
+
+  ## 4. for explanatory if it is not continuous - actually the stats on Chi2 has to be updated anyways
+  for(i in 1:length(explanatory)){
     Explan <- stats::anova(mod_mv, btt = which(stats$Parameter %in%
-                                              stats$Parameter[grepl(explanatory, stats$Parameter) &
+                                              stats$Parameter[grepl(explanatory[i], stats$Parameter) &
                                                                 !grepl(':', stats$Parameter)]))
-    stats <- replace_stats(data = stats, variable = explanatory, stats_out = Explan)
+    stats <- replace_stats(data = stats, variable = explanatory[i], stats_out = Explan)
   }
+
 
 
   stats <- stats[c('Parameter', 'Estimate', 'SE', 'Chi2', 'pval', 'DF')]

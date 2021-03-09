@@ -4,7 +4,7 @@
 \alias{tab_spSpecific}
 \title{Save a table with statistics for species-specific analyses}
 \usage{
-tab_spSpecific(mod_mv, table_name, explanatory)
+tab_spSpecific(mod_mv, table_name, explanatory, simpleSEM = FALSE, phen = TRUE)
 }
 \arguments{
 \item{mod_mv}{Model object of class rma.mv fitted to test the
@@ -17,6 +17,14 @@ table to be created.}
 \item{explanatory}{Character indicating the name of the variable
 corresponding to a species characteristic, for which the
 hypothesis is being tested.}
+
+\item{simpleSEM}{Logical (TRUE/FALSE) specifying that the simple SEM
+structure will be fitted in which climate effect on GR is only mediated
+by trait, demographic rates are not considered. Defaults to FALSE.}
+
+\item{phen}{Logical (TRUE/FALSE) specifying whether the model is fitted to
+phenological traits only (or only to morphological, if FALSE).
+Defaults to TRUE.}
 }
 \value{
 A dataframe with the statistics for the test of the effect of
