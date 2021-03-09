@@ -158,6 +158,7 @@ replace_stats <- function(data, variable, stats_out){
         return(data)
       }
     }
+    return(data)
   }
 }
 
