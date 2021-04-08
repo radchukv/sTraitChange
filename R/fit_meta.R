@@ -218,21 +218,21 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                               length(as.numeric(mod_REML$beta))))
       if(! is.null(COV)){
         for(i in grep(Cov_fact, rownames(mod_ML$beta))){
-          out_dat$z[i] <- stats::anova(mod_ML, btt = grep(Cov_fact, rownames(mod_ML$beta)))$QM
+          out_dat$Chi2[i] <- stats::anova(mod_ML, btt = grep(Cov_fact, rownames(mod_ML$beta)))$QM
           out_dat$pval_Covar[i] <- stats::anova(mod_ML, btt = grep(Cov_fact, rownames(mod_ML$beta)))$QMp
         }
         if(length(grep('[+]', COV)) > 0){  ## in case COV consists of several elements
           for(j in (length(grep(Cov_fact, rownames(mod_ML$beta))) + 1):
               (length(grep(Cov_fact, rownames(mod_ML$beta))) + length(strsplit(COV, '[+]')[[1]]))){
-            out_dat$z[j] <- stats::anova(mod_ML, btt = j)$QM
+            out_dat$Chi2[j] <- stats::anova(mod_ML, btt = j)$QM
             out_dat$pval_Covar[j] <- stats::anova(mod_ML, btt = j)$QMp
           }
         } else {
-          out_dat$z[nrow(out_dat)] <- stats::anova(mod_ML, btt = nrow(out_dat))$QM
+          out_dat$Chi2[nrow(out_dat)] <- stats::anova(mod_ML, btt = nrow(out_dat))$QM
           out_dat$pval_Covar[nrow(out_dat)] <- stats::anova(mod_ML, btt = nrow(out_dat))$QMp
         }
       } else {
-        out_dat$z <- rep(stats::anova(mod_ML, btt = grep(Cov_fact, rownames(mod_ML$beta)))$QM,
+        out_dat$Chi2 <- rep(stats::anova(mod_ML, btt = grep(Cov_fact, rownames(mod_ML$beta)))$QM,
                          nrow(out_dat))
         out_dat$pval_Covar <- rep(stats::anova(mod_ML, btt = grep(Cov_fact, rownames(mod_ML$beta)))$QMp,
                                   nrow(out_dat))
@@ -250,7 +250,7 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                             ID.SD = mod_REML$sigma2[grep('ID', mod_REML$s.names)],
                             Location.SD = mod_REML$sigma2[grep('Location', mod_REML$s.names)])
 
-      out_dat$z <- unlist(lapply(1:nrow(out_dat), function(x){
+      out_dat$Chi2 <- unlist(lapply(1:nrow(out_dat), function(x){
         stats::anova(mod_ML, btt = which(rownames(mod_REML$beta) %in%
                                            rownames(mod_REML$beta)[x]))$QM
       }))
@@ -263,17 +263,20 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
 
   ## if both models fitted well (no errors), get the output tibble together
   if(! is(tt.error.ML,'error') & ! is(tt.error.REML, 'error')){
+    het_mod <- get_heterog(mod= tt.error.REML, data = subs_data)
     if(Type_EfS %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
                        'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
                        'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')) {
       out_tib <- tibble::tibble(data = list(out_dat),
                                 data_EfS = list(subs_data),
                                 data_R2 = list(subs_dataR2),
-                                prop_data = list(prop_data))
+                                prop_data = list(prop_data),
+                                heter_mod = list(het_mod))
     } else {
       out_tib <- tibble::tibble(data = list(out_dat),
                                 data_EfS = list(subs_data),
-                                data_R2 = list(subs_dataR2))
+                                data_R2 = list(subs_dataR2),
+                                heter_mod = list(het_mod))
     }
   }
 
