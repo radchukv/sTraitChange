@@ -34,5 +34,6 @@ output_fSEM_precip_complexSEM
 output_fSEM_noDD_precip_simpleSEM
 output_fSEM_noDD_temp_complexSEM
 output_fSEM_noDD_precip_complexSEM
+output_all_noDD_simpleSEM
 .DS_Store
 tables
