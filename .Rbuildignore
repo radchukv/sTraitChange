@@ -33,4 +33,5 @@
 ^output_fSEM_noDD_precip_complexSEM$
 ^output_fSEM_temp_complexSEM$
 ^output_all_noDD_simpleSEM$
+^output_nonL$
 ^tables
