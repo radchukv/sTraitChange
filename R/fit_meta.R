@@ -271,12 +271,16 @@ fit_meta <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                 data_EfS = list(subs_data),
                                 data_R2 = list(subs_dataR2),
                                 prop_data = list(prop_data),
-                                heter_mod = list(het_mod))
+                                heter_mod = list(het_mod),
+                                ML_mod = list(tt.error.ML),
+                                REML_mod = list(tt.error.REML))
     } else {
       out_tib <- tibble::tibble(data = list(out_dat),
                                 data_EfS = list(subs_data),
                                 data_R2 = list(subs_dataR2),
-                                heter_mod = list(het_mod))
+                                heter_mod = list(het_mod),
+                                ML_mod = list(tt.error.ML),
+                                REML_mod = list(tt.error.REML))
     }
   }
 
