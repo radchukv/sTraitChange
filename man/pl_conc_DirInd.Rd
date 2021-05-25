@@ -8,7 +8,8 @@ trait-mediated effect of climate on population growth rate}
 pl_conc_DirInd(
   Trait_categ = "Phenological",
   GlobES_dat = met_ef_T,
-  ES_dat = prop_T_simple
+  ES_dat = wide_tempES,
+  ClEfSpecific = TRUE
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ per relation, obtained with the meta-analyses fitted using the function
 \item{ES_dat}{A data frame containing the study-specific effect size estimates per
 relation (in a wide format), extracted from prop_data object obtained with the
 function \code{\link{fit_all_meta}}.}
+
+\item{ClEfSpecific}{Boolean indicating whether the meta-analyses were fitted separately for
+studies with positive and negative effect of climate on traits.}
 }
 \value{
 A list with 1. a plot of study-specific estimates of direct effects

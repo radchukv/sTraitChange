@@ -21,38 +21,40 @@
 #'
 pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                            GlobES_dat = met_ef_T,
-                           ES_dat = prop_T_simple){
+                           ES_dat = wide_tempES,
+                           ClEfSpecific = TRUE){
 
   ES_dat <- subset(ES_dat, Trait_Categ == Trait_categ)
-  GlobES_dat <- GlobES_dat[GlobES_dat$REL == 'CZG' &
+  GlobES_dat <- GlobES_dat[GlobES_dat$REL %in% c('CZG', 'CG') &
                              GlobES_dat$Trait_Categ == Trait_categ, ]
   GlobES_dat %<>%
     dplyr::mutate(ltype = dplyr::case_when(pval_across <= 0.1 ~ '1',
                                            TRUE ~ '2'))
+  if(ClEfSpecific){
   corel <- ES_dat %>%
     tidyr::nest(data = -SignClEffect) %>%
     dplyr::mutate(
-      cort = purrr::map(data, ~ cor.test(.x$`Ind_GR<-det_Clim/Estimate`,
-                                         .x$`GR<-det_Clim/Estimate`)),
+      cort = purrr::map(data, ~ cor.test(.x$`Estimate/Ind_GR<-det_Clim`,
+                                         .x$`Estimate/GR<-det_Clim`)),
       out = purrr::map(cort, broom::tidy)) %>%
     tidyr::unnest(out)
 
 
-  mod_ML_neg <- metafor::rma.mv(`GR<-det_Clim/Estimate` ~ `Ind_GR<-det_Clim/Estimate`,
-                                V = `Ind_GR<-det_Clim/SError`^2,
+  mod_ML_neg <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,
+                                V = `SError/Ind_GR<-det_Clim`^2,
                                 random = list(~ 1|Species, ~1|ID, ~1|Location),
                                 data = subset(ES_dat, SignClEffect == 'Negative'),
                                 method = 'ML')
-  mod_ML_pos <- metafor::rma.mv(`GR<-det_Clim/Estimate` ~ `Ind_GR<-det_Clim/Estimate`,
-                                V = `Ind_GR<-det_Clim/SError`^2,
+  mod_ML_pos <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,
+                                V = `SError/Ind_GR<-det_Clim`^2,
                                 random = list(~ 1|Species, ~1|ID, ~1|Location),
                                 data = subset(ES_dat, SignClEffect == 'Nonnegative'),
                                 method = 'ML')
 
   ## data frame to add the slope estimated with the mixed-effects model -
   ## at the moment not used to not overcrowd the plto
-  rib_dat <- data.frame(x = c(rep(seq(min(ES_dat$`Ind_GR<-det_Clim/Estimate`),
-                                      max(ES_dat$`Ind_GR<-det_Clim/Estimate`),
+  rib_dat <- data.frame(x = c(rep(seq(min(ES_dat$`Estimate/Ind_GR<-det_Clim`),
+                                      max(ES_dat$`Estimate/Ind_GR<-det_Clim`),
                                       length.out = 10), 2)),
                         SignClEffect = rep(unique(ES_dat$SignClEffect), each = 10))
 
@@ -61,23 +63,23 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                            mod_ML_pos$ci.ub[2] * x[SignClEffect == 'Nonnegative']),
                   ymin = c(mod_ML_neg$ci.lb[2] * x[SignClEffect == 'Negative'],
                            mod_ML_pos$ci.lb[2] * x[SignClEffect == 'Nonnegative']),
-                  `GR<-det_Clim/Estimate` = 0)
+                  `Estimate/GR<-det_Clim` = 0)
 
-  Rel_CZG_CG <- data.frame(slope = c(mod_ML_neg$beta["`Ind_GR<-det_Clim/Estimate`", 1],
-                                     mod_ML_pos$beta["`Ind_GR<-det_Clim/Estimate`", 1]),
+  Rel_CZG_CG <- data.frame(slope = c(mod_ML_neg$beta["`Estimate/Ind_GR<-det_Clim`", 1],
+                                     mod_ML_pos$beta["`Estimate/Ind_GR<-det_Clim`", 1]),
                            SignClEffect = c('Negative', 'Nonnegative'), intercept = 0,
                            ltype = c(ifelse(mod_ML_neg$pval[2] <= 0.1, '1', '2'),
                                      ifelse(mod_ML_pos$pval[2] <= 0.1, '1', '2')))
 
   pl_CZGvsCG <- ggplot(ES_dat,
-                       aes(x = `Ind_GR<-det_Clim/Estimate`,
-                           y = `GR<-det_Clim/Estimate`,
+                       aes(x = `Estimate/Ind_GR<-det_Clim`,
+                           y = `Estimate/GR<-det_Clim`,
                            col = SignClEffect)) +
     geom_point() +
-    geom_hline(data = GlobES_dat,
+    geom_hline(data = subset(GlobES_dat, REL == 'CG'),
                aes(yintercept = Estimate, col = SignClEffect,
                    lty = ltype)) +
-    geom_vline(data = GlobES_dat,
+    geom_vline(data = subset(GlobES_dat, REL == 'CZG'),
                aes(xintercept = Estimate, col = SignClEffect,
                    lty = ltype)) +
     geom_abline(data = Rel_CZG_CG, aes(slope = slope,
@@ -105,6 +107,64 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
 
   fin_pl <- ggExtra::ggMarginal(pl_CZGvsCG, type="density",
                                 groupFill = TRUE, groupColour = TRUE)
+  } else {
+
+    cort <- cor.test(ES_dat$`Estimate/Ind_GR<-det_Clim`, ES_dat$`Estimate/GR<-det_Clim`)
+    corel <- broom::tidy(cort)
+
+    mod_ML <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,
+                                  V = `SError/Ind_GR<-det_Clim`^2,
+                                  random = list(~ 1|Species, ~1|ID, ~1|Location),
+                                  data = ES_dat,
+                                  method = 'ML')
+    ## data frame to add the slope estimated with the mixed-effects model -
+    ## at the moment not used to not overcrowd the plto
+    rib_dat <- data.frame(x = seq(min(ES_dat$`Estimate/Ind_GR<-det_Clim`),
+                                        max(ES_dat$`Estimate/Ind_GR<-det_Clim`),
+                                        length.out = 10))
+
+    rib_dat %<>%
+      dplyr::mutate(ymax = mod_ML$ci.ub[2] * x,
+                    ymin = mod_ML_neg$ci.lb[2] * x,
+                    `Estimate/GR<-det_Clim` = 0)
+
+    Rel_CZG_CG <- data.frame(slope = mod_ML$beta["`Estimate/Ind_GR<-det_Clim`", 1],
+                             intercept = 0,
+                             ltype = ifelse(mod_ML$pval[2] <= 0.1, '1', '2'))
+
+    pl_CZGvsCG <- ggplot(ES_dat,
+                         aes(x = `Estimate/Ind_GR<-det_Clim`,
+                             y = `Estimate/GR<-det_Clim`)) +
+      geom_point(col = 'red', alpha = 0.4) +
+      geom_hline(data = subset(GlobES_dat, REL == 'CG'),
+                 aes(yintercept = Estimate,  lty = ltype),
+                 col = 'red') +
+      geom_vline(data = subset(GlobES_dat, REL == 'CZG'),
+                 aes(xintercept = Estimate, lty = ltype),
+                 col = 'red') +
+      geom_abline(data = Rel_CZG_CG, aes(slope = slope,
+                                         intercept = intercept,
+                                         lty = ltype),
+                  col = 'red') +
+      # geom_ribbon(data = rib_dat, aes(x = x, ymin= ymin, ymax = ymax, fill = SignClEffect),
+      #             alpha = 0.3) +
+      xlab('Trait-mediated effect of climate on GR (CZG)') +
+      ylab('Direct effect of climate on GR (CG)') +
+      theme_bw() + theme(legend.position = 'bottom',
+                         strip.background = element_blank(),
+                         panel.grid.minor = element_blank(),
+                         strip.text = element_text(size  =12),
+                         panel.grid.major = element_blank()) +
+      scale_linetype_manual(values = c('1' = 1,
+                                       '2' = 2),
+                            labels = c('1' = 'p <= 0.1',
+                                       '2' = 'p > 0.1')) +
+      geom_abline(intercept = 0, slope = -1, col = 'black') +
+      guides(lty = guide_legend(title = 'Significance'))
+
+    fin_pl <- ggExtra::ggMarginal(pl_CZGvsCG, type="density",
+                                  fill = 'red', col = 'red')
+  }
   return(list(plot = fin_pl, corTest = corel, GLMM_neg = mod_ML_neg,
               GLMM_pos = mod_ML_pos))
 }
