@@ -8,13 +8,14 @@ plot_concept(
   Trait_categ = "Phenological",
   raw_dat = temp_std,
   GlobES_dat = met_ef_T,
-  ES_dat = prop_T_simple,
+  ES_dat = wide_tempES,
   path = "CZ",
   xvar_raw = "det_Clim",
   yvar_raw = "Trait_mean",
-  slope_ES = "Trait_mean<-det_Clim/Estimate",
+  slope_ES = "Estimate/Trait_mean<-det_Clim",
   ylab = "Trait",
-  xlab = "Climate"
+  xlab = "Climate",
+  ClEfSpecific = TRUE
 )
 }
 \arguments{
@@ -47,6 +48,9 @@ from the ES_dat.}
 \item{ylab}{Character specifying the label for the y axis.}
 
 \item{xlab}{Character specifying the label for the x axis.}
+
+\item{ClEfSpecific}{Boolean indicating whether the meta-analyses were fitted separately for
+studies with positive and negative effect of climate on traits.}
 }
 \value{
 Plots a requested relation (CZ, ZG or CG) for each study in the dataset and

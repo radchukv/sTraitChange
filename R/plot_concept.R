@@ -22,6 +22,8 @@
 #' @param slope_ES Character specifying the name of the relation to be used to plot
 #' from the ES_dat.
 #' @param ylab Character specifying the label for the y axis.
+#' @param ClEfSpecific Boolean indicating whether the meta-analyses were fitted separately for
+#' studies with positive and negative effect of climate on traits.
 #'
 #' @inheritParams fit_all_meta
 #' @inheritParams plot_forest
@@ -34,12 +36,13 @@
 plot_concept <- function(Trait_categ = 'Phenological',
                          raw_dat = temp_std,
                          GlobES_dat = met_ef_T,
-                         ES_dat = prop_T_simple,
+                         ES_dat = wide_tempES,
                          path = 'CZ',
                          xvar_raw = 'det_Clim',
                          yvar_raw = 'Trait_mean',
-                         slope_ES = 'Trait_mean<-det_Clim/Estimate',
-                         ylab = 'Trait', xlab = 'Climate'){
+                         slope_ES = 'Estimate/Trait_mean<-det_Clim',
+                         ylab = 'Trait', xlab = 'Climate',
+                         ClEfSpecific = TRUE){
   raw_dat <- subset(raw_dat, Trait_Categ == Trait_categ)
   GlobES_dat <- GlobES_dat[GlobES_dat$REL == path &
                              GlobES_dat$Trait_Categ == Trait_categ, ]
@@ -47,6 +50,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
     dplyr::mutate(ltype = dplyr::case_when(pval_across <= 0.1 ~ '1',
                                            TRUE ~ '2'))
   ES_dat <- subset(ES_dat, Trait_Categ == Trait_categ)
+
+  if(ClEfSpecific){
   dat_rib <- data.frame(x = c(rep(seq(min(raw_dat$det_Clim),
                                       max(raw_dat$det_Clim),
                                       length.out = 10), 2)),
@@ -87,5 +92,42 @@ plot_concept <- function(Trait_categ = 'Phenological',
     guides(col = guide_legend(title = 'Climate effect'),
            fill = guide_legend(title = 'Climate effect'),
            lty = guide_legend(title = 'Significance'))
+  } else {
+    dat_rib <- data.frame(x = (seq(min(raw_dat$det_Clim),
+                                        max(raw_dat$det_Clim),
+                                        length.out = 10)))
+
+    dat_rib %<>%
+      dplyr::mutate(ymax = GlobES_dat$EfS_Upper * x,
+                    ymin = GlobES_dat$EfS_Low * x,
+                    Trait_mean = 0, GR = 0)
+
+
+    pl <- ggplot(raw_dat, aes(x = .data[[xvar_raw]],
+                              y = .data[[yvar_raw]])) +
+      lims(x = c(min(dat_rib$x), max(dat_rib$x))) +
+      geom_blank() +
+      geom_abline(data = ES_dat,
+                  aes(intercept = 0, slope = .data[[slope_ES]]),
+                  col = 'lightgrey') +
+      geom_ribbon(data = dat_rib, aes(x = x, ymin= ymin, ymax = ymax),
+                  fill = 'red',
+                  alpha = 0.4) +
+      geom_abline(data = GlobES_dat,
+                  aes(intercept = 0, slope = Estimate,
+                      lty = ltype), col = 'red',
+                  lwd = 1) +
+      # scale_color_manual(values = c('Negative' = 'darkorange',
+      #                               'Nonnegative' = 'darkgreen')) +
+      scale_linetype_manual(values = c('1' = 1,
+                                       '2' = 2),
+                            labels = c('1' = 'p <= 0.1',
+                                       '2' = 'p > 0.1')) +
+      theme_bw() + ylab(ylab) + xlab(xlab) +
+      theme(legend.position = 'bottom',
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank()) +
+      guides(lty = guide_legend(title = 'Significance'))
+  }
   return(pl)
 }
