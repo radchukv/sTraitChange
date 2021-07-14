@@ -107,6 +107,8 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
 
   fin_pl <- ggExtra::ggMarginal(pl_CZGvsCG, type="density",
                                 groupFill = TRUE, groupColour = TRUE)
+  return(list(plot = fin_pl, corTest = corel, GLMM_neg = mod_ML_neg,
+              GLMM_pos = mod_ML_pos))
   } else {
 
     cort <- cor.test(ES_dat$`Estimate/Ind_GR<-det_Clim`, ES_dat$`Estimate/GR<-det_Clim`)
@@ -125,7 +127,7 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
 
     rib_dat %<>%
       dplyr::mutate(ymax = mod_ML$ci.ub[2] * x,
-                    ymin = mod_ML_neg$ci.lb[2] * x,
+                    ymin = mod_ML$ci.lb[2] * x,
                     `Estimate/GR<-det_Clim` = 0)
 
     Rel_CZG_CG <- data.frame(slope = mod_ML$beta["`Estimate/Ind_GR<-det_Clim`", 1],
@@ -164,7 +166,7 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
 
     fin_pl <- ggExtra::ggMarginal(pl_CZGvsCG, type="density",
                                   fill = 'red', col = 'red')
+    return(list(plot = fin_pl, corTest = corel, GLMM = mod_ML))
   }
-  return(list(plot = fin_pl, corTest = corel, GLMM_neg = mod_ML_neg,
-              GLMM_pos = mod_ML_pos))
+
 }
