@@ -109,13 +109,13 @@ plot_concept <- function(Trait_categ = 'Phenological',
       geom_blank() +
       geom_abline(data = ES_dat,
                   aes(intercept = 0, slope = .data[[slope_ES]]),
-                  col = 'lightgrey') +
+                  col = 'grey') +
       geom_ribbon(data = dat_rib, aes(x = x, ymin= ymin, ymax = ymax),
-                  fill = 'red',
-                  alpha = 0.4) +
+                  fill = 'black',
+                  alpha = 0.55) +
       geom_abline(data = GlobES_dat,
                   aes(intercept = 0, slope = Estimate,
-                      lty = ltype), col = 'red',
+                      lty = ltype), col = 'black',
                   lwd = 1) +
       # scale_color_manual(values = c('Negative' = 'darkorange',
       #                               'Nonnegative' = 'darkgreen')) +
