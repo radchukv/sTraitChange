@@ -82,15 +82,15 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
     geom_vline(data = subset(GlobES_dat, REL == 'CZG'),
                aes(xintercept = Estimate, col = SignClEffect,
                    lty = ltype)) +
-    geom_abline(data = Rel_CZG_CG, aes(slope = slope,
-                                       intercept = intercept,
-                                       col = SignClEffect,
-                                       lty = ltype)) +
+    # geom_abline(data = Rel_CZG_CG, aes(slope = slope,
+    #                                    intercept = intercept,
+    #                                    col = SignClEffect,
+    #                                    lty = ltype)) +
     # geom_ribbon(data = rib_dat, aes(x = x, ymin= ymin, ymax = ymax, fill = SignClEffect),
     #             alpha = 0.3) +
     xlab('Trait-mediated effect of climate on GR (CZG)') +
     ylab('Direct effect of climate on GR (CG)') +
-    theme_bw() + theme(legend.position = 'bottom',
+    theme_bw() + theme(legend.position = 'none',
                        strip.background = element_blank(),
                        panel.grid.minor = element_blank(),
                        strip.text = element_text(size  =12),
@@ -144,15 +144,15 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
       geom_vline(data = subset(GlobES_dat, REL == 'CZG'),
                  aes(xintercept = Estimate, lty = ltype),
                  col = 'black') +
-      geom_abline(data = Rel_CZG_CG, aes(slope = slope,
-                                         intercept = intercept,
-                                         lty = ltype),
-                  col = 'black') +
+      # geom_abline(data = Rel_CZG_CG, aes(slope = slope,
+      #                                    intercept = intercept,
+      #                                    lty = ltype),
+      #             col = 'black') +
       # geom_ribbon(data = rib_dat, aes(x = x, ymin= ymin, ymax = ymax, fill = SignClEffect),
       #             alpha = 0.3) +
       xlab('Trait-mediated effect of climate on GR (CZG)') +
       ylab('Direct effect of climate on GR (CG)') +
-      theme_bw() + theme(legend.position = 'bottom',
+      theme_bw() + theme(legend.position = 'none',  ## to not interfere with other legends in the composite plot
                          strip.background = element_blank(),
                          panel.grid.minor = element_blank(),
                          strip.text = element_text(size  =12),
@@ -160,9 +160,9 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
       scale_linetype_manual(values = c('1' = 1,
                                        '2' = 2),
                             labels = c('1' = 'p <= 0.1',
-                                       '2' = 'p > 0.1')) +
+                                       '2' = 'p > 0.1')) #+
       #geom_abline(intercept = 0, slope = -1, col = 'black') +
-      guides(lty = guide_legend(title = 'Significance'))
+      #guides(lty = guide_legend(title = 'Significance'))
 
     fin_pl <- ggExtra::ggMarginal(pl_CZGvsCG, type="density",
                                   fill = 'black', col = 'black')
