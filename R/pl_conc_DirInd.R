@@ -101,7 +101,7 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                                      '2' = 2),
                           labels = c('1' = 'p <= 0.1',
                                      '2' = 'p > 0.1')) +
-    geom_abline(intercept = 0, slope = -1, col = 'black') +
+    #geom_abline(intercept = 0, slope = -1, col = 'black') +
     guides(col = guide_legend(title = 'Climate effect'),
            lty = guide_legend(title = 'Significance'))
 
@@ -137,17 +137,17 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
     pl_CZGvsCG <- ggplot(ES_dat,
                          aes(x = `Estimate/Ind_GR<-det_Clim`,
                              y = `Estimate/GR<-det_Clim`)) +
-      geom_point(col = 'red', alpha = 0.4) +
+      geom_point(col = 'black', alpha = 0.45) +
       geom_hline(data = subset(GlobES_dat, REL == 'CG'),
                  aes(yintercept = Estimate,  lty = ltype),
-                 col = 'red') +
+                 col = 'black') +
       geom_vline(data = subset(GlobES_dat, REL == 'CZG'),
                  aes(xintercept = Estimate, lty = ltype),
-                 col = 'red') +
+                 col = 'black') +
       geom_abline(data = Rel_CZG_CG, aes(slope = slope,
                                          intercept = intercept,
                                          lty = ltype),
-                  col = 'red') +
+                  col = 'black') +
       # geom_ribbon(data = rib_dat, aes(x = x, ymin= ymin, ymax = ymax, fill = SignClEffect),
       #             alpha = 0.3) +
       xlab('Trait-mediated effect of climate on GR (CZG)') +
@@ -161,11 +161,11 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                                        '2' = 2),
                             labels = c('1' = 'p <= 0.1',
                                        '2' = 'p > 0.1')) +
-      geom_abline(intercept = 0, slope = -1, col = 'black') +
+      #geom_abline(intercept = 0, slope = -1, col = 'black') +
       guides(lty = guide_legend(title = 'Significance'))
 
     fin_pl <- ggExtra::ggMarginal(pl_CZGvsCG, type="density",
-                                  fill = 'red', col = 'red')
+                                  fill = 'black', col = 'black')
     return(list(plot = fin_pl, corTest = corel, GLMM = mod_ML))
   }
 
