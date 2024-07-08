@@ -124,9 +124,12 @@ plot_concept <- function(Trait_categ = 'Phenological',
                             labels = c('1' = 'p <= 0.1',
                                        '2' = 'p > 0.1')) +
       theme_bw() + ylab(ylab) + xlab(xlab) +
-      theme(legend.position = 'bottom',
+      theme(# legend.position = 'bottom',
+            legend.position = 'none',  ## 22.06: to not interfere with other legends in the composite plot
             panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank()) +
+            panel.grid.minor = element_blank(),
+            axis.title = element_text(size = 25),
+            axis.text = element_text(size = 20)) +
       guides(lty = guide_legend(title = 'Significance'))
   }
   return(pl)

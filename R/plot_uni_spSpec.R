@@ -13,6 +13,7 @@
 #' @param pdf_basename A character specifying the name of the .pdf for
 #' the produced plot.
 #' @param xLab Character specifying the x axis label.
+#' @param xLab Character specifying the y axis label.
 #' @export
 #'
 #' @return Plots a forest plot with effect sizes (and SEs) for each study,
@@ -26,7 +27,8 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
                             mod_mv = mod_CZ_Lat,
                             lOut = 10,
                             pdf_basename = NULL,
-                            xLab){
+                            xLab,
+                            yLab = 'Estimate'){
 
   subs_pred <- names(as.data.frame(predict(mod_mv,  addx=TRUE)))[seq(length(names(as.data.frame(predict(mod_mv,  addx=TRUE)))) -3, length(names(as.data.frame(predict(mod_mv,  addx=TRUE)))))]
   subs_pred <- unlist(lapply(strsplit(subs_pred, split = 'X.'), function(x){x[2]}))
@@ -66,14 +68,14 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
                                      y = Estimate, group = Climate,
                                      col = Climate)) +
     geom_point(alpha = 0.4) + theme_bw() +
-    xlab(xLab) +
+    xlab(xLab) + ylab(yLab) +
     geom_line(data = Pred_data, aes(x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 6]],
                                     y = Estimate, col = Climate)) +
     geom_ribbon(data = Pred_data, aes(ymin = Est_MinSD, ymax = Est_PlSD,
                                       x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 6]],
                                       fill = Climate), alpha=.2) +
-    scale_color_manual(values = c('Temperature' ='red4', 'Precipitation' = 'royalblue1')) +
-    scale_fill_manual(values = c('Temperature' = 'tomato1', 'Precipitation' = 'deepskyblue2')) +
+    scale_color_manual(values = c('Temperature' ='red4', 'Precipitation' = 'royalblue4')) +
+    scale_fill_manual(values = c('Temperature' = 'tomato1', 'Precipitation' = 'lightslateblue')) +
     theme(legend.position = 'bottom')
 
   if (!is.null(pdf_basename)) {

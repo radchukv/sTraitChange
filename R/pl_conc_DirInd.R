@@ -22,7 +22,9 @@
 pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                            GlobES_dat = met_ef_T,
                            ES_dat = wide_tempES,
-                           ClEfSpecific = TRUE){
+                           ClEfSpecific = TRUE,
+                           ylab = 'Direct effect of climate on GR (CG)',
+                           xlab = 'Trait-mediated effect of climate on G (CZG)'){
 
   ES_dat <- subset(ES_dat, Trait_Categ == Trait_categ)
   GlobES_dat <- GlobES_dat[GlobES_dat$REL %in% c('CZG', 'CG') &
@@ -137,7 +139,7 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
     pl_CZGvsCG <- ggplot(ES_dat,
                          aes(x = `Estimate/Ind_GR<-det_Clim`,
                              y = `Estimate/GR<-det_Clim`)) +
-      geom_point(col = 'black', alpha = 0.45) +
+      geom_point(col = 'black', alpha = 0.45, cex = 4) +
       geom_hline(data = subset(GlobES_dat, REL == 'CG'),
                  aes(yintercept = Estimate,  lty = ltype),
                  col = 'black') +
@@ -150,13 +152,16 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
       #             col = 'black') +
       # geom_ribbon(data = rib_dat, aes(x = x, ymin= ymin, ymax = ymax, fill = SignClEffect),
       #             alpha = 0.3) +
-      xlab('Trait-mediated effect of climate on GR (CZG)') +
-      ylab('Direct effect of climate on GR (CG)') +
+      xlab(xlab) + ylab(ylab) +
       theme_bw() + theme(legend.position = 'none',  ## to not interfere with other legends in the composite plot
                          strip.background = element_blank(),
                          panel.grid.minor = element_blank(),
                          strip.text = element_text(size  =12),
-                         panel.grid.major = element_blank()) +
+                         panel.grid.major = element_blank(),
+                         axis.title = element_text(size = 20),
+                         axis.text = element_text(size = 15),
+                         axis.title.x = element_markdown(),
+                         axis.title.y = element_markdown()) +
       scale_linetype_manual(values = c('1' = 1,
                                        '2' = 2),
                             labels = c('1' = 'p <= 0.1',
