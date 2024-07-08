@@ -22,7 +22,7 @@
 test_nonlin <- function(data,
                         formula_full  = '~ 1',
                         formula_null  = '~ 1',
-                        rand_sl = 'det_Clim|ID',
+                        rand_sl = '+ (det_Clim|ID)',
                         ...) {
 
   mod_full_fix <- spaMM::fitme(stats::as.formula(formula_full),
@@ -60,7 +60,7 @@ test_nonlin <- function(data,
 
   if(out$anova[[3]]$p_value < 0.05){
     formula_randInterc <- formula_full
-    formula_randSlope <- sub("1\\|ID", replacement = rand_sl, formula_full)
+    formula_randSlope <- paste(formula_full, rand_sl)
     mod_randInterc <- spaMM::fitme(stats::as.formula(formula_randInterc),
                                    data = data,
                                    method = "REML", ...)
