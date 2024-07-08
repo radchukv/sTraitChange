@@ -57,7 +57,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                      DD = 'n_effectDGR', simpleSEM = FALSE,
                      Trait = FALSE, A = Mat_phylo){
   ## calculating indirect effects, total effects and their SEs
-  forTrans <- subset(data_MA, select = c(Estimate,  Std.Error, Relation, Species, Location, ID))
+  forTrans <- subset(data_MA, select = c(Estimate,  Std.Error, Relation, Species, Sp_phylo, Location, ID))
   forTrans <- forTrans %>%
     dplyr::rename(SError = Std.Error)
 
@@ -199,10 +199,12 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   }
 
 
-  ## fitting the models with phylogeny with ML and REML
+  ## fitting the models with phylogeny (and non-phylogeny related effect of species)
+  ## with ML and REML
   tt.error.phylo.ML <- tryCatch(mod_phylo_ML <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
-                                                                random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                                                R = list(Species = A),## give matrix as input to the function
+                                                                random = list(~ 1|Species, ~1|ID, ~1|Location,
+                                                                              ~1|Sp_phylo),
+                                                                R = list(Sp_phylo = A),
                                                                 data = subs_data,
                                                                 method = 'ML', control = list(optimizer = optimize)),
                                 error=function(e) e)
@@ -215,8 +217,9 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   }
 
   tt.error.phylo.REML <- tryCatch(mod_phylo_REML <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
-                                                                    random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                                                    R = list(Species = A),  ## give matrix as input to the function
+                                                                    random = list(~ 1|Species, ~1|ID, ~1|Location,
+                                                                                  ~1|Sp_phylo),
+                                                                    R = list(Sp_phylo = A),
                                                                     data = subs_data,
                                                                     method = 'REML',
                                                                     control = list(optimizer = optimize)),
@@ -228,8 +231,6 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                 'error when fitting the model with REML and phylogeny \n',
                 tt.error.phylo.REML[1]$message, '\n'))
   }
-
-  # compare the models with LRT? rather with AIC
 
   if(AIC(mod_REML) > AIC(mod_phylo_REML)){
     sel_mod_REML <- mod_phylo_REML
