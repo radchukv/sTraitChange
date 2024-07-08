@@ -37,5 +37,6 @@ output_fSEM_noDD_precip_complexSEM
 output_all_noDD_simpleSEM
 output_nonL
 output_all_simpleSEM_PThresh
+output_all_simpleSEM_check
 .DS_Store
 tables
