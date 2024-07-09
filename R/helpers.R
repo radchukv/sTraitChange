@@ -90,7 +90,7 @@ impute_median <- function(data, column){
 #' optimize = rep('uobyqa', 11))
 #' test <- extr_coefs(data = meta_Phen_Surv_neg, Relation = 'Tot_DemRate<-det_Clim')
 extr_coefs <- function(obj, Type_EfS){
-  sub <- obj$data_meta[[1]]$data_EfS[data$data_meta[[1]]$names == Type_EfS][[1]]
+  sub <- obj$data_meta[[1]]$data_EfS[obj$data_meta[[1]]$names == Type_EfS][[1]]
   return(sub)
 }
 
