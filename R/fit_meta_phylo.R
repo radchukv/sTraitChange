@@ -260,7 +260,9 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                             ID.SD = rep(sel_mod_REML$sigma2[grep('ID', sel_mod_REML$s.names)],
                                         length(as.numeric(sel_mod_REML$beta))),
                             Location.SD = rep(sel_mod_REML$sigma2[grep('Location', sel_mod_REML$s.names)],
-                                              length(as.numeric(sel_mod_REML$beta))))
+                                              length(as.numeric(sel_mod_REML$beta))),
+                            Phylo.SD = rep(mod_phylo_REML$sigma2[grep('Sp_phylo', mod_phylo_REML$s.names)],
+                                             length(as.numeric(sel_mod_REML$beta))))
       if(! is.null(COV)){
         for(i in grep(Cov_fact, rownames(sel_mod_ML$beta))){
           out_dat$Chi2[i] <- stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QM
@@ -295,7 +297,9 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                             AIC_nophyl = rep(AIC(mod_REML), length(as.numeric(sel_mod_REML$beta))),
                             Species.SD = sel_mod_REML$sigma2[grep('Species', sel_mod_REML$s.names)],
                             ID.SD = sel_mod_REML$sigma2[grep('ID', sel_mod_REML$s.names)],
-                            Location.SD = sel_mod_REML$sigma2[grep('Location', sel_mod_REML$s.names)])
+                            Location.SD = sel_mod_REML$sigma2[grep('Location', sel_mod_REML$s.names)],
+                            Phylo.SD = rep(mod_phylo_REML$sigma2[grep('Sp_phylo', mod_phylo_REML$s.names)],
+                                           length(as.numeric(sel_mod_REML$beta))))
 
       out_dat$Chi2 <- unlist(lapply(1:nrow(out_dat), function(x){
         stats::anova(sel_mod_ML, btt = which(rownames(sel_mod_REML$beta) %in%
