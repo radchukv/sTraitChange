@@ -33,7 +33,7 @@
 #'                           clim_data = meanT, ID = 1,
 #'                           randwin = TRUE, seednum = 1302,
 #'                           repeats = 8, plot_check = FALSE,
-#'                           RefMon = 7, out_dir = 'output_climwin_test',
+#'                           RefMon = 7, out_dir = 'output_climwin_temp',
 #'                           stat = 'mean')
 #' winDur <- check_winDur(climwin_out = test_rand$climwin_output[[1]],
 #'                        clim = test_rand$clim_data[[1]],

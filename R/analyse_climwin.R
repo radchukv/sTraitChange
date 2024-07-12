@@ -47,7 +47,7 @@
 #'                           endWindow = 12, RefMon = NA)
 
 analyse_climwin <- function(ID, biol_data,
-                            out_clim = 'output_climwin_test',
+                            out_clim = 'output_climwin_temp',
                             randwin = FALSE, metric = 'AIC',
                             MinDur = 1, MaxDur = 40,
                             deltaThresh = -7, test_winDur = FALSE,
