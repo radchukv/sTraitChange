@@ -1,4 +1,5 @@
-#' Compare fit of mixed-effects models used to predict GR by non-linear effects of climate and trait
+#' Compare fit of mixed-effects models used to predict GR
+#' by non-linear effects of climate and trait
 #'
 #' \code{fit_nonLinGR} prepares data in a way analogous to that used to fit SEM, fits
 #' four mixed-effects models differing in how they incorporate quadratic effect of
