@@ -25,6 +25,7 @@ output_fSEM_precip_simpleSEM
 output_fSEM_noDD_precip_simpleSEM
 output_all_noDD_simpleSEM
 output_nonL
+plots_ms
 output_all_simpleSEM_PThresh
 output_all_simpleSEM_check
 .DS_Store
