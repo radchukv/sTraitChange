@@ -73,7 +73,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                      'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')) {
     met_wide <- all_combi_paths(data_forMA = met_wide, DD = DD, simpleSEM = simpleSEM, Trait = Trait)
 
-    prop_data <- prop_path(data = met_wide, data_MA = data_MA, DD = DD, simpleSEM = simpleSEM)  ## hmmm, maybe this should not even be here, but be included in a separate function,
+    # prop_data <- prop_path(data = met_wide, data_MA = data_MA, DD = DD, simpleSEM = simpleSEM)  ## hmmm, maybe this should not even be here, but be included in a separate function,
     ## focused on getting prop. paths only
   }
 
@@ -102,8 +102,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                                Count, Nyears, WinDur,
                                                deltaAIC, Pvalue, WeathQ,
                                                Ref.day, Ref.month, WindowClose,
-                                               LM_std_estimate, LM_std_std.error,
-                                               Trait_ageClass, Trend,
+                                               Trait_ageClass,
                                                GenLength_y_IUCN)))
 
   tot <- merge(trans_allEfS, subs_merge, by = c('ID'))
@@ -113,40 +112,40 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   subs_data <- subset(tot, Relation == Type_EfS)
 
   # and now get the R2 per relation, to be used on the plot
-  trans_allEfS$Response <- unlist(lapply(1:nrow(trans_allEfS), FUN = function(x){
-    strsplit(x = trans_allEfS$Relation[x], split = '<')[[1]][1]
-  }))
-
-  subs_merge_R2 <- droplevels(data_MA %>%
-                                dplyr::distinct(., ID, Country, Continent,
-                                                Longitude, Latitude, Taxon,
-                                                BirdType, Trait_Categ, Trait,
-                                                Demog_rate_Categ, Demog_rate,  Response,
-                                                Count, Nyears, WinDur, deltaAIC,
-                                                .keep_all = T) %>%
-                                subset(.,
-                                       select = c(ID, Country, Continent,
-                                                  Longitude, Latitude, Taxon,
-                                                  BirdType, Trait_Categ, Trait,
-                                                  Demog_rate_Categ, Demog_rate,
-                                                  Count, Nyears,  Response,
-                                                  WinDur, deltaAIC, Pvalue, WeathQ, R.squared,
-                                                  LM_std_estimate, LM_std_std.error,
-                                                  Trend, Trait_ageClass)))
-
-  tot_R2 <- merge(trans_allEfS, subs_merge_R2, by = c('ID', 'Response'), all.x = TRUE)
-
-
-  ## subset a specified effect size only
-  subs_dataR2 <- subset(tot_R2, Relation == Type_EfS)
+  # trans_allEfS$Response <- unlist(lapply(1:nrow(trans_allEfS), FUN = function(x){
+  #   strsplit(x = trans_allEfS$Relation[x], split = '<')[[1]][1]
+  # }))
+  #
+  # subs_merge_R2 <- droplevels(data_MA %>%
+  #                               dplyr::distinct(., ID, Country, Continent,
+  #                                               Longitude, Latitude, Taxon,
+  #                                               BirdType, Trait_Categ, Trait,
+  #                                               Demog_rate_Categ, Demog_rate,  Response,
+  #                                               Count, Nyears, WinDur, deltaAIC,
+  #                                               .keep_all = T) %>%
+  #                               subset(.,
+  #                                      select = c(ID, Country, Continent,
+  #                                                 Longitude, Latitude, Taxon,
+  #                                                 BirdType, Trait_Categ, Trait,
+  #                                                 Demog_rate_Categ, Demog_rate,
+  #                                                 Count, Nyears,  Response,
+  #                                                 WinDur, deltaAIC, Pvalue, WeathQ, R.squared,
+  #                                                 LM_std_estimate, LM_std_std.error,
+  #                                                 Trend, Trait_ageClass)))
+  #
+  # tot_R2 <- merge(trans_allEfS, subs_merge_R2, by = c('ID', 'Response'), all.x = TRUE)
+  #
+  #
+  # ## subset a specified effect size only
+  # subs_dataR2 <- subset(tot_R2, Relation == Type_EfS)
 
 
   ##  preparing a formula depending on the covariates included
   if(! is.null(Cov_fact)){
     if(! is.null(COV)){
-      formul <- paste0('Estimate ~ ', Cov_fact, ' + ', COV, ' - 1')
+      formul <- paste0('Estimate ~ ', Cov_fact, ' + ', COV)#, ' - 1')
     } else {
-      formul <- paste0('Estimate ~ ', Cov_fact, ' - 1')
+      formul <- paste0('Estimate ~ ', Cov_fact)#, ' - 1')
     }
   } else {
     if(! is.null(COV)){
@@ -264,9 +263,18 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                             Phylo.SD = rep(mod_phylo_REML$sigma2[grep('Sp_phylo', mod_phylo_REML$s.names)],
                                              length(as.numeric(sel_mod_REML$beta))))
       if(! is.null(COV)){
+        if(length(grep('intrcpt', rownames(sel_mod_ML$beta))) > 0) {
+          out_dat$Chi2[1] <- stats::anova(sel_mod_ML, btt = 1)$QM
+          out_dat$pval_Covar[1] <- stats::anova(sel_mod_ML, btt = 1)$QMp
         for(i in grep(Cov_fact, rownames(sel_mod_ML$beta))){
-          out_dat$Chi2[i] <- stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QM
-          out_dat$pval_Covar[i] <- stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QMp
+          out_dat$Chi2[i] <- stats::anova(sel_mod_ML, btt = c(1, grep(Cov_fact, rownames(sel_mod_ML$beta))))$QM
+          out_dat$pval_Covar[i] <- stats::anova(sel_mod_ML, btt = c(1, grep(Cov_fact, rownames(sel_mod_ML$beta))))$QMp
+        }
+        } else {  ## this is probably be never true if we specify the model with intercept always!
+          for(i in grep(Cov_fact, rownames(sel_mod_ML$beta))){
+            out_dat$Chi2[i] <- stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QM
+            out_dat$pval_Covar[i] <- stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QMp
+          }
         }
         if(length(grep('[+]', COV)) > 0){  ## in case COV consists of several elements
           for(j in (length(grep(Cov_fact, rownames(sel_mod_ML$beta))) + 1):
@@ -279,10 +287,12 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
           out_dat$pval_Covar[nrow(out_dat)] <- stats::anova(sel_mod_ML, btt = nrow(out_dat))$QMp
         }
       } else {
-        out_dat$Chi2 <- rep(stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QM,
-                            nrow(out_dat))
-        out_dat$pval_Covar <- rep(stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QMp,
-                                  nrow(out_dat))
+        if(length(grep('intrcpt', rownames(sel_mod_ML$beta))) > 0) {
+          out_dat$Chi2[1] <- stats::anova(sel_mod_ML, btt = 1)$QM
+          out_dat$pval_Covar[1] <- stats::anova(sel_mod_ML, btt = 1)$QMp
+          }
+        out_dat$Chi2[grep(Cov_fact, rownames(sel_mod_ML$beta))] <- stats::anova(sel_mod_ML, btt = c(1, grep(Cov_fact, rownames(sel_mod_ML$beta))))$QM
+        out_dat$pval_Covar[grep(Cov_fact, rownames(sel_mod_ML$beta))] <- stats::anova(sel_mod_ML, btt = c(1, grep(Cov_fact, rownames(sel_mod_ML$beta))))$QMp
       }
 
 
@@ -320,15 +330,15 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                        'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')) {
       out_tib <- tibble::tibble(data = list(out_dat),
                                 data_EfS = list(subs_data),
-                                data_R2 = list(subs_dataR2),
-                                prop_data = list(prop_data),
+                                #data_R2 = list(subs_dataR2),
+                                #prop_data = list(prop_data),
                                 heter_mod = list(het_mod),
                                 ML_mod = list(tt.error.sel.ML),
                                 REML_mod = list(tt.error.sel.REML))
     } else {
       out_tib <- tibble::tibble(data = list(out_dat),
                                 data_EfS = list(subs_data),
-                                data_R2 = list(subs_dataR2),
+                                #data_R2 = list(subs_dataR2),
                                 heter_mod = list(het_mod),
                                 ML_mod = list(tt.error.sel.ML),
                                 REML_mod = list(tt.error.sel.REML))
