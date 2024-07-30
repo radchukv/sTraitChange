@@ -57,7 +57,8 @@ fit_SEM <- function(biol_data, ID, out_SEM,
     dplyr::filter(., !is.na(GR) & !is.na(Trait_mean) &
                     !is.na(Demog_rate_mean) & !is.na(Pop_mean)) %>%
     dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
-                                                    data = .)))
+                                                    data = .))) %>%
+    dplyr::mutate(across(where(is.array), as.numeric))
 
 
   # exploratory plots
@@ -84,7 +85,8 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                     Trait_mean = scale(Trait_mean),
                     Demog_rate_mean = scale(Demog_rate_mean),
                     Pop_mean = scale(Pop_mean),
-                    GR = scale(GR))
+                    GR = scale(GR)) %>%
+      dplyr::mutate(across(where(is.array), as.numeric))
 
     pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
                data_GR$Species[1], '_', data_GR$Location[1],
