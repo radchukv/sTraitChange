@@ -85,9 +85,7 @@ prop_path <- function(data, data_MA, DD = 'n_effectDGR',
                                                BirdType, Trait_Categ, Trait,
                                                Demog_rate_Categ, Demog_rate,
                                                Count, Nyears, WinDur, deltaAIC,
-                                               Pvalue, R.squared,
-                                               LM_std_estimate, LM_std_std.error,
-                                               Trend)))
+                                               Pvalue)))
   data_prop <-  merge(data_prop, subs_merge, by = c('ID'))
 
   return(data_prop)

@@ -79,8 +79,6 @@ fit_all_meta <- function(data_MA,
                                            'Trait_mean<-det_Clim', 'Ind_GR<-Pop_mean',
                                            'Tot_GR<-Pop_mean')){
 
-  ### subs_data <- droplevels(base::subset(data_MA, Demog_rate_Categ == Demog_rate & Trait_Categ == Trait_categ))  ## weird, why this is not working as intended???
-
   if(! is.null(Demog_rate)){
   subs_data <- droplevels(data_MA[data_MA$Demog_rate_Categ == Demog_rate & data_MA$Trait_Categ == Trait_categ,])
   } else {
@@ -91,7 +89,7 @@ fit_all_meta <- function(data_MA,
   stat_meta <- do.call('rbind', lapply(1:length(all_Relations), FUN = function(x){
     fit_meta_phylo(data_MA = subs_data, Type_EfS = all_Relations[x], Cov_fact = Cov_fact,
              COV = COV, DD = DD, A = A, simpleSEM = simpleSEM,
-             Trait = Trait)[, c('data','data_EfS', 'data_R2', 'heter_mod')]}))
+             Trait = Trait)[, c('data','data_EfS', 'heter_mod')]}))
 
 
   rel_realized <- lapply(1:length(stat_meta$data_EfS), FUN = function(x){
@@ -160,24 +158,24 @@ fit_all_meta <- function(data_MA,
   })
 
   ## getting prop. contributions
-  if(any(all_Relations %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
-                          'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
-                          'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean'))){
-    prop_data <- fit_meta(data_MA = subs_data, Type_EfS =
-               all_Relations[all_Relations %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
-                                                  'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
-                                                  'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')][1],
-             Cov_fact = Cov_fact, COV = COV, DD = DD,
-             simpleSEM = simpleSEM, Trait = Trait)[, 'prop_data']
-
-    return(tibble::tibble(meta_res = list(meta_res),
-                          data_meta = list(stat_meta),
-                          prop_data = list(prop_data[[1]][[1]])))
-  }
-  else{
+  # if(any(all_Relations %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
+  #                         'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
+  #                         'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean'))){
+  #   prop_data <- fit_meta(data_MA = subs_data, Type_EfS =
+  #              all_Relations[all_Relations %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
+  #                                                 'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
+  #                                                 'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')][1],
+  #            Cov_fact = Cov_fact, COV = COV, DD = DD,
+  #            simpleSEM = simpleSEM, Trait = Trait)[, 'prop_data']
+  #
+  #   return(tibble::tibble(meta_res = list(meta_res),
+  #                         data_meta = list(stat_meta),
+  #                         prop_data = list(prop_data[[1]][[1]])))
+  # }
+  # else{
     return(tibble::tibble(meta_res = list(meta_res),
                           data_meta = list(stat_meta)))
-  }
+  # }
 
 
 }
