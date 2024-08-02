@@ -147,17 +147,17 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
       tidyr::separate(., Levels_Covar, into = c('Category', 'Level'),
                       sep = Cov_fact, fill = 'right')
 
-    if(is.null(COV)){
-    for (j in 1:nrow(data_globES_prep)){
-      data_globES_prep$colour[j] <- unique(data_ES$colour[data_ES[, Cov_fact] == data_globES_prep$Level[j]])
-    }
-    if(nrow(data_globES_prep) > 1){
-      data_globES_prep$label <- data_globES_prep$Level
-    }
-    } else {
+    # if(is.null(COV)){
+    # for (j in 1:nrow(data_globES_prep)){
+    #   data_globES_prep$colour[j] <- unique(data_ES$colour[data_ES[, Cov_fact] == data_globES_prep$Level[j]])
+    # }
+    # if(nrow(data_globES_prep) > 1){
+    #   data_globES_prep$label <- data_globES_prep$Level
+    # }
+    # } else {
       for(j in 1:nrow(data_globES_prep)){
       data_globES_prep$colour[j] <- unique(data_ES$colour[data_ES[, Cov_fact] == data_globES_prep$Level[j]])
-      }
+      # }
       data_globES_prep$colour[is.na(data_globES_prep$colour)] <- colr[length(colr)]
       data_globES_prep$label <- c(data_globES_prep$Level[! is.na(data_globES_prep$Level)],
                                   data_globES_prep$Category[! (data_globES_prep$Category == '')])
