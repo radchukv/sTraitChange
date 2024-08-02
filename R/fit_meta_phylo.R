@@ -24,6 +24,11 @@
 #' Defaults to 'nlminb' because this optimizer was the most successful for model convergence
 #' for our datasets.
 #' @param A A variance-covariance matrix based on phylogeny.
+#' @param des.matrix A character specifying what type of design matrix to use if the factor
+#' is included as one of the explanatory variables. By default treatment contrasts is used
+#'  (des.matrix = "treatm.contrasts") but the user can also request identity matrix by
+#'  specifying "identity".
+#'
 #' @inheritParams fit_mod
 #'
 #' @export
@@ -55,7 +60,7 @@
 fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                      Cov_fact = NULL, COV = NULL, optimize = 'uobyqa',
                      DD = 'n_effectDGR', simpleSEM = FALSE,
-                     Trait = FALSE, A = Mat_phylo){
+                     Trait = FALSE, A = Mat_phylo, des.matrix = "treatm.contrasts"){
   ## calculating indirect effects, total effects and their SEs
   forTrans <- subset(data_MA, select = c(Estimate,  Std.Error, Relation, Species, Sp_phylo, Location, ID))
   forTrans <- forTrans %>%
@@ -82,9 +87,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
     tidyr::separate(., key, into = c('Relation', 'Metric'), sep = "/") %>%
     tidyr::spread(., Metric, value)
 
-  #### CHECK carefully these all merges, there are in the end two columns with Species....
-  ## think if I can add a warning if the specified path is impossible for a given model
-  ##  (e.g. Tot_DemRate<-det_Clim for simpleSEM = TRUE)
+
   subs_merge <- droplevels(data_MA %>%
                              dplyr::distinct(., ID, Country, Continent,
                                              Longitude, Latitude, Taxon,
@@ -141,11 +144,12 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
 
 
   ##  preparing a formula depending on the covariates included
+  if(des.matrix == 'treatm.contrasts') {
   if(! is.null(Cov_fact)){
     if(! is.null(COV)){
-      formul <- paste0('Estimate ~ ', Cov_fact, ' + ', COV)#, ' - 1')
+      formul <- paste0('Estimate ~ ', Cov_fact, ' + ', COV)
     } else {
-      formul <- paste0('Estimate ~ ', Cov_fact)#, ' - 1')
+      formul <- paste0('Estimate ~ ', Cov_fact)
     }
   } else {
     if(! is.null(COV)){
@@ -154,7 +158,21 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
       formul <- paste('Estimate ~ 1')
     }
   }
-
+  } else if (des.matrix == 'identity') {
+  if(! is.null(Cov_fact)){
+    if(! is.null(COV)){
+      formul <- paste0('Estimate ~ ', Cov_fact, ' + ', COV, ' - 1')
+    } else {
+      formul <- paste0('Estimate ~ ', Cov_fact, ' - 1')
+    }
+  } else {
+    if(! is.null(COV)){
+      formul <- paste0('Estimate ~ ', COV, ' + 1')
+    } else {
+      formul <- paste('Estimate ~ 1')
+    }
+  }
+}
   ## drop the data rows with missing covariate
   if(! is.null(COV)){
     if(length(grep('[+]', COV)) > 0){
@@ -252,8 +270,8 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                             EfS_Low = sel_mod_REML$ci.lb,
                             EfS_Upper = sel_mod_REML$ci.ub,
                             AIC_EfS_Covar = rep(AIC(sel_mod_ML), length(as.numeric(sel_mod_REML$beta))),
-                            AIC_phylo_Covar = rep(AIC(mod_phylo_REML), length(as.numeric(sel_mod_REML$beta))),
-                            AIC_nophyl_Covar = rep(AIC(mod_REML), length(as.numeric(sel_mod_REML$beta))),
+                            AIC_phylo = rep(AIC(mod_phylo_REML), length(as.numeric(sel_mod_REML$beta))),
+                            AIC_nophyl = rep(AIC(mod_REML), length(as.numeric(sel_mod_REML$beta))),
                             Species.SD = rep(sel_mod_REML$sigma2[grep('Species', sel_mod_REML$s.names)],
                                              length(as.numeric(sel_mod_REML$beta))),
                             ID.SD = rep(sel_mod_REML$sigma2[grep('ID', sel_mod_REML$s.names)],
@@ -262,20 +280,22 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                               length(as.numeric(sel_mod_REML$beta))),
                             Phylo.SD = rep(mod_phylo_REML$sigma2[grep('Sp_phylo', mod_phylo_REML$s.names)],
                                              length(as.numeric(sel_mod_REML$beta))))
-      if(! is.null(COV)){
-        if(length(grep('intrcpt', rownames(sel_mod_ML$beta))) > 0) {
-          out_dat$Chi2[1] <- stats::anova(sel_mod_ML, btt = 1)$QM
-          out_dat$pval_Covar[1] <- stats::anova(sel_mod_ML, btt = 1)$QMp
+
+      if(des.matrix == "treatm.contrasts") {
+        out_dat$Chi2[1] <- stats::anova(sel_mod_ML, btt = 1)$QM
+        out_dat$pval_Covar[1] <- stats::anova(sel_mod_ML, btt = 1)$QMp
         for(i in grep(Cov_fact, rownames(sel_mod_ML$beta))){
           out_dat$Chi2[i] <- stats::anova(sel_mod_ML, btt = c(1, grep(Cov_fact, rownames(sel_mod_ML$beta))))$QM
           out_dat$pval_Covar[i] <- stats::anova(sel_mod_ML, btt = c(1, grep(Cov_fact, rownames(sel_mod_ML$beta))))$QMp
         }
-        } else {  ## this is probably be never true if we specify the model with intercept always!
-          for(i in grep(Cov_fact, rownames(sel_mod_ML$beta))){
-            out_dat$Chi2[i] <- stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QM
-            out_dat$pval_Covar[i] <- stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QMp
-          }
+      } else if(des.matrix == "identity") {
+        for(i in grep(Cov_fact, rownames(sel_mod_ML$beta))){
+          out_dat$Chi2[i] <- stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QM
+          out_dat$pval_Covar[i] <- stats::anova(sel_mod_ML, btt = grep(Cov_fact, rownames(sel_mod_ML$beta)))$QMp
         }
+      }
+
+      if(! is.null(COV)){
         if(length(grep('[+]', COV)) > 0){  ## in case COV consists of several elements
           for(j in (length(grep(Cov_fact, rownames(sel_mod_ML$beta))) + 1):
               (length(grep(Cov_fact, rownames(sel_mod_ML$beta))) + length(strsplit(COV, '[+]')[[1]]))){
@@ -286,23 +306,14 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
           out_dat$Chi2[nrow(out_dat)] <- stats::anova(sel_mod_ML, btt = nrow(out_dat))$QM
           out_dat$pval_Covar[nrow(out_dat)] <- stats::anova(sel_mod_ML, btt = nrow(out_dat))$QMp
         }
-      } else {
-        if(length(grep('intrcpt', rownames(sel_mod_ML$beta))) > 0) {
-          out_dat$Chi2[1] <- stats::anova(sel_mod_ML, btt = 1)$QM
-          out_dat$pval_Covar[1] <- stats::anova(sel_mod_ML, btt = 1)$QMp
-          }
-        out_dat$Chi2[grep(Cov_fact, rownames(sel_mod_ML$beta))] <- stats::anova(sel_mod_ML, btt = c(1, grep(Cov_fact, rownames(sel_mod_ML$beta))))$QM
-        out_dat$pval_Covar[grep(Cov_fact, rownames(sel_mod_ML$beta))] <- stats::anova(sel_mod_ML, btt = c(1, grep(Cov_fact, rownames(sel_mod_ML$beta))))$QMp
       }
-
-
     }
-  } else {
+  } else {  # there is no factor as an explanatory
     if(! is(tt.error.sel.ML,'error') & ! is(tt.error.sel.REML, 'error')){
       out_dat <- data.frame(Variable = rownames(sel_mod_REML$beta),
                             Estimate = as.numeric(sel_mod_REML$beta), SError = sel_mod_REML$se,
                             EfS_Low = sel_mod_REML$ci.lb, EfS_Upper = sel_mod_REML$ci.ub,
-                            AIC_EfS_across = rep(AIC(sel_mod_ML), length(as.numeric(sel_mod_REML$beta))),
+                            AIC_EfS_Covar = rep(AIC(sel_mod_ML), length(as.numeric(sel_mod_REML$beta))),
                             AIC_phylo = rep(AIC(mod_phylo_REML), length(as.numeric(sel_mod_REML$beta))),
                             AIC_nophyl = rep(AIC(mod_REML), length(as.numeric(sel_mod_REML$beta))),
                             Species.SD = sel_mod_REML$sigma2[grep('Species', sel_mod_REML$s.names)],
@@ -315,7 +326,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
         stats::anova(sel_mod_ML, btt = which(rownames(sel_mod_REML$beta) %in%
                                                rownames(sel_mod_REML$beta)[x]))$QM
       }))
-      out_dat$pval_across <- unlist(lapply(1:nrow(out_dat), function(x){
+      out_dat$pval_Covar <- unlist(lapply(1:nrow(out_dat), function(x){
         stats::anova(sel_mod_ML, btt = which(rownames(sel_mod_REML$beta) %in%
                                                rownames(sel_mod_REML$beta)[x]))$QMp
       }))
