@@ -72,7 +72,7 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
     }
 
     for(j in 1:len_Covar){
-      data_ES$colour[data_ES[, Cov_fact] == unique(data_ES[, Cov_fact])[j]] <- colr[j]
+      data_ES$colour[data_ES[, Cov_fact] == levels(data_ES[, Cov_fact])[j]] <- colr[j]
     }
   } else {
     data_ES$colour <- colr
@@ -158,11 +158,15 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
       for(j in 1:nrow(data_globES_prep)){
       data_globES_prep$colour[j] <- unique(data_ES$colour[data_ES[, Cov_fact] == data_globES_prep$Level[j]])
       # }
-      data_globES_prep$colour[is.na(data_globES_prep$colour)] <- colr[length(colr)]
-      data_globES_prep$label <- c(data_globES_prep$Level[! is.na(data_globES_prep$Level)],
-                                  data_globES_prep$Category[! (data_globES_prep$Category == '')])
+      #colr[length(colr)]
+      #data_globES_prep$label <- c(data_globES_prep$Level[! is.na(data_globES_prep$Level)],
+      #                            data_globES_prep$Category[! (data_globES_prep$Category == '')])
+
+      data_globES_prep$label[j] <- ifelse(! (is.na(data_globES_prep$Category[j]) | data_globES_prep$Category[j] == ''), data_globES_prep$Category[j],
+                                          ifelse(!is.na(data_globES_prep$Level[j]), data_globES_prep$Level[j], 'NA'))
       }
-  }else {
+    data_globES_prep$colour[is.na(data_globES_prep$colour)] <- "black"
+  } else {
     if(nrow(data_globES_prep) > 1){
       data_globES_prep$label <- data_globES_prep$Variable
       data_globES_prep$colour <- c(colr, rep('grey', nrow(data_globES_prep)-1))
