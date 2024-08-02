@@ -30,7 +30,7 @@ fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
                                 Trait_categ = 'Phenological',
                                 Clim = 'Temperature'){
   vert_tree <- ape::read.tree(paste0(vtree_folder, "/vert", ind, ".tre"))
-  tre_ult <- ape::compute.brlen(vert_tree, power = 1)
+  # tre_ult <- ape::compute.brlen(vert_tree, power = 1)
 
   ## update the species names to correspond to the ones on phylogeny
   Coefs_Aut <- data_MA %>%
@@ -58,17 +58,17 @@ fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
   # prepare the var-covar matrix based on the requested Trait_categ
   Coefs_sub <- subset(Coefs_Aut, Relation == 'Trait_mean<-det_Clim' &
                              Trait_Categ == Trait_categ)
-  tre_sub <- ape::drop.tip(tre_ult, which(!tre_ult$tip.label %in% Coefs_sub$Species))
+  tre_sub <- ape::drop.tip(vert_tree, which(!vert_tree$tip.label %in% Coefs_sub$Species))
 
-  Mat_sub <- ape::vcv.phylo(tre_sub)
+  Mat_sub <- ape::vcv.phylo(tre_sub, corr = TRUE)
 
   # fitting meta-analysis for cliimate-dependent relations with both covariates
   meta_Cov <- fit_all_meta(data_MA = Coefs_Aut,
                                 Demog_rate = NULL,
                                 Trait_categ = Trait_categ,
                                 Clim = Clim,
-                                Cov_fact = NULL,
-                                COV = 'Pvalue + WeathQ',
+                                Cov_fact = 'WeathQ',
+                                COV = 'Pvalue',
                                 sel = 'DoesNotMatter',
                                 folder_name = NULL,  # we do not want to print these detailed res-ts for these X trees
                                 colr = c('black'),
@@ -93,6 +93,7 @@ fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
                              simpleSEM = TRUE,
                              all_Relations = c('GR<-det_Clim', 'GR<-Pop_mean',
                                                'GR<-Trait_mean'))
+  colnames(meta_Cov$meta_res[[1]])[1] <- 'Variable'
   ef_all <- rbind(meta_other$meta_res[[1]], meta_Cov$meta_res[[1]]) %>%
     dplyr::mutate(., Trait_Categ = Trait_categ,
                   Clim = Clim, phylo = ind)
