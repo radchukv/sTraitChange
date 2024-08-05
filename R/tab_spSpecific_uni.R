@@ -34,7 +34,7 @@
 #' tab_spSpecific(mod_mv = mod_genLength, table_name = './tables/GenLength_Temp', explanatory = 'GenLength_y_IUCN')
 #'
 tab_spSpecific_uni <- function(mod_mv, table_name,
-                           explanatory){
+                           explanatory, interact_fac){
   stats <- stats::coef(summary(mod_mv))
   stats$Parameter <- rownames(stats)
   stats <- stats %>%
@@ -42,11 +42,11 @@ tab_spSpecific_uni <- function(mod_mv, table_name,
   colnames(stats) <- c('Estimate', 'SE', 'Chi2', 'pval', 'Parameter')
 
   ## estimate the effect for an interaction
-  Inter <- stats::anova(mod_mv, btt = grep(':ClimateTemperature', stats$Parameter))
+  Inter <- stats::anova(mod_mv, btt = grep(interact_fac, stats$Parameter))
 
   stats$DF <- rep(1, nrow(stats))
   ## replace the statistics with the  performed omnibus tests
-  stats <- replace_stats(data = stats, variable = ':ClimateTemperature', stats_out = Inter)
+  stats <- replace_stats(data = stats, variable = interact_fac, stats_out = Inter)
 
   ## 4. for explanatory if it is not continuous - actually the stats on Chi2 has to be updated anyways
   for(i in 1:length(explanatory)){
