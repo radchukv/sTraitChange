@@ -47,7 +47,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
   GlobES_dat <- GlobES_dat[GlobES_dat$REL == path &
                              GlobES_dat$Trait_Categ == Trait_categ, ]
   GlobES_dat %<>%
-    dplyr::mutate(ltype = dplyr::case_when(pval_across <= 0.1 ~ '1',
+    dplyr::mutate(ltype = dplyr::case_when(pval_Covar <= 0.1 ~ '1',
                                            TRUE ~ '2'))
   ES_dat <- subset(ES_dat, Trait_Categ == Trait_categ)
 
