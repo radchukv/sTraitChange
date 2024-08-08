@@ -30,7 +30,7 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
   GlobES_dat <- GlobES_dat[GlobES_dat$REL %in% c('CZG', 'CG') &
                              GlobES_dat$Trait_Categ == Trait_categ, ]
   GlobES_dat %<>%
-    dplyr::mutate(ltype = dplyr::case_when(pval_across <= 0.1 ~ '1',
+    dplyr::mutate(ltype = dplyr::case_when(pval_Covar <= 0.1 ~ '1',
                                            TRUE ~ '2'))
   if(ClEfSpecific){
   corel <- ES_dat %>%
