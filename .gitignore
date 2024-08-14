@@ -16,7 +16,7 @@ output_fSEM_precip
 output_fSEM_noDD_precip
 output_all
 output_all_noPval
-output_all_nDD
+output_all_noDD
 output_fSEM_temp
 output_all_simpleSEM
 output_fSEM_precip_simpleSEM

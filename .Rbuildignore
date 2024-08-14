@@ -19,7 +19,7 @@
 ^output_fSEM_noDD_precip_simpleSEM$
 ^output_fSEM_precip_simpleSEM$
 ^output_all_simpleSEM$
-^output_all_noDD_simpleSEM$
+^output_all_noDD$
 ^output_nonL$
 ^output_SEM_all$
 ^scripts$
