@@ -138,26 +138,32 @@ replace_stats <- function(data, variable, stats_out){
     return(data)
   } else {
     data$Chi2[which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
-                                                         !grepl(':', data$Parameter)])[1]] <- stats_out$QM
+                                                         !grepl(':', data$Parameter)])] <- stats_out$QM
     data$pval[which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
-                                                         !grepl(':', data$Parameter)])[1]] <- stats_out$QMp
+                                                         !grepl(':', data$Parameter)])] <- stats_out$QMp
     data$DF[which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
-                                                       !grepl(':', data$Parameter)])[1]] <- stats_out$m
+                                                       !grepl(':', data$Parameter)])] <- stats_out$m
+    ## I do not understand why this was needed:
+    # %in% data$Parameter[grepl(variable, data$Parameter) &
+    #                       !grepl(':', data$Parameter)])[1]]
+    # that idnex of [1] effectively adds the stats onlu to the first level of the categorical variable...
+    # maybe it has to do with the diff. ways of design matrix, check later
+    # for now I leave uncommented here
 
-    if(length(which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
-                                                       !grepl(':', data$Parameter)])) > 1){
-      for(i in seq(from = 2,
-                   to = length(which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
-                                                                        !grepl(':', data$Parameter)])))){
-        data$Chi2[which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
-                                                             !grepl(':', data$Parameter)])[i]] <- NA
-        data$DF[which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
-                                                           !grepl(':', data$Parameter)])[i]] <- NA
-        data$pval[which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
-                                                             !grepl(':', data$Parameter)])[i]] <- NA
-        return(data)
-      }
-    }
+    # if(length(which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
+    #                                                    !grepl(':', data$Parameter)])) > 1){
+    #   for(i in seq(from = 2,
+    #                to = length(which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
+    #                                                                     !grepl(':', data$Parameter)])))){
+    #     data$Chi2[which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
+    #                                                          !grepl(':', data$Parameter)])[i]] <- NA
+    #     data$DF[which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
+    #                                                        !grepl(':', data$Parameter)])[i]] <- NA
+    #     data$pval[which(data$Parameter %in% data$Parameter[grepl(variable, data$Parameter) &
+    #                                                          !grepl(':', data$Parameter)])[i]] <- NA
+    #     return(data)
+    #   }
+    # }
     return(data)
   }
 }
