@@ -30,14 +30,14 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
                             xLab,
                             yLab = 'Estimate'){
 
-  subs_pred <- names(as.data.frame(predict(mod_mv,  addx=TRUE)))[seq(length(names(as.data.frame(predict(mod_mv,  addx=TRUE)))) -3, length(names(as.data.frame(predict(mod_mv,  addx=TRUE)))))]
+  subs_pred <- names(as.data.frame(predict(mod_mv,  addx=TRUE)))[seq(length(names(as.data.frame(predict(mod_mv,  addx=TRUE)))) - nrow(stats::coef(summary(mod_mv))) + 1, length(names(as.data.frame(predict(mod_mv,  addx=TRUE)))))]
   subs_pred <- unlist(lapply(strsplit(subs_pred, split = 'X.'), function(x){x[2]}))
-  Pred_data <- matrix(c(rep(seq(from = min(data_allEstim[, subs_pred[1]], na.rm = T),
-                                to = max(data_allEstim[, subs_pred[1]], na.rm = T),
-                                length.out = lOut), 2),
-                        rep(c(0, 1), each = lOut), rep(mean(data_allEstim[, 'Pvalue'], na.rm = TRUE), lOut*2),
-                        rep(0, lOut*2)), ncol = 4, byrow = FALSE)
-  Pred_data[, 4] <- Pred_data[,1]*Pred_data[,2]
+  Pred_data <- matrix(c(seq(from = min(data_allEstim[, subs_pred[2]], na.rm = T),
+                                to = max(data_allEstim[, subs_pred[2]], na.rm = T),
+                                length.out = lOut),
+                         rep(mean(data_allEstim[, 'Pvalue'], na.rm = TRUE), lOut)), # rep(c(0, 1), each = lOut),
+                         ncol = 2, byrow = FALSE)
+  #Pred_data[, 4] <- Pred_data[,1]*Pred_data[,2]
   Pred_data <- as.data.frame(predict(mod_mv, newmods = Pred_data,  addx=TRUE))
 
   for(i in 1:length(names(Pred_data))){
@@ -57,25 +57,22 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
 
   Pred_data %<>%
     dplyr::rename(Estimate = pred) %>%
-    dplyr::mutate(., Climate = dplyr::recode(Climate,
-                                             '0' = 'Precipitation', '1' = 'Temperature'),
-                  SD = (ci.ub - ci.lb) / 4,
+    dplyr::mutate(., SD = (ci.ub - ci.lb) / 4,
                   Est_PlSD = Estimate + SD,
                   Est_MinSD = Estimate - SD)
 
 
-  pl_CZ <- ggplot(data_allEstim, aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 6]],
-                                     y = Estimate, group = Climate,
-                                     col = Climate)) +
+  if(stats::coef(summary(mod_mv))$pval[2] < 0.05){  ## still hard-coded, decision on the line type
+    lt = 1} else {lt = 2}
+  pl_CZ <- ggplot(data_allEstim, aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 4]],
+                                     y = Estimate)) +
     geom_point(alpha = 0.4) + theme_bw() +
     xlab(xLab) + ylab(yLab) +
-    geom_line(data = Pred_data, aes(x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 6]],
-                                    y = Estimate, col = Climate)) +
+    geom_line(data = Pred_data, aes(x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 4]],
+                                    y = Estimate), linetype = lt) +
     geom_ribbon(data = Pred_data, aes(ymin = Est_MinSD, ymax = Est_PlSD,
-                                      x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 6]],
-                                      fill = Climate), alpha=.2) +
-    scale_color_manual(values = c('Temperature' ='red4', 'Precipitation' = 'royalblue4')) +
-    scale_fill_manual(values = c('Temperature' = 'tomato1', 'Precipitation' = 'lightslateblue')) +
+                                      x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 4]]),
+                alpha=.2) +
     theme(legend.position = 'bottom')
 
   if (!is.null(pdf_basename)) {
