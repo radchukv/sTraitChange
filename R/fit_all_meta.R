@@ -22,7 +22,7 @@
 #' included in the meta-analytical model, or should be one (if the single global effect size
 #' across all studies is to be plotted).
 #' @inheritParams fit_mod
-#' @inheritParams fit_meta
+#' @inheritParams fit_meta_phylo
 #'
 #' @export
 #'
@@ -71,6 +71,7 @@ fit_all_meta <- function(data_MA,
                          simpleSEM = FALSE,
                          Trait = FALSE,
                          A = Mat_phylo,
+                         des.matrix = "treatm.contrasts",
                          all_Relations = c('Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean',
                                            'Demog_rate_mean<-Trait_mean', 'GR<-Demog_rate_mean',
                                            'GR<-det_Clim', 'GR<-Pop_mean',
@@ -89,7 +90,7 @@ fit_all_meta <- function(data_MA,
   stat_meta <- do.call('rbind', lapply(1:length(all_Relations), FUN = function(x){
     fit_meta_phylo(data_MA = subs_data, Type_EfS = all_Relations[x], Cov_fact = Cov_fact,
              COV = COV, DD = DD, A = A, simpleSEM = simpleSEM,
-             Trait = Trait)[, c('data','data_EfS', 'heter_mod')]}))
+             Trait = Trait, des.matrix = des.matrix)[, c('data','data_EfS', 'heter_mod')]}))
 
 
   rel_realized <- lapply(1:length(stat_meta$data_EfS), FUN = function(x){
