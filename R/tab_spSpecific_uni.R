@@ -34,12 +34,15 @@
 #' tab_spSpecific(mod_mv = mod_genLength, table_name = './tables/GenLength_Temp', explanatory = 'GenLength_y_IUCN')
 #'
 tab_spSpecific_uni <- function(mod_mv, table_name,
-                           explanatory, interact_fac){
+                           explanatory, interact_fac = NULL){
   stats <- stats::coef(summary(mod_mv))
   stats$Parameter <- rownames(stats)
+  stats$DF <- numeric(length = nrow(stats))
   stats <- stats %>%
     dplyr::select(., -c(ci.lb, ci.ub))
-  colnames(stats) <- c('Estimate', 'SE', 'Chi2', 'pval', 'Parameter')
+  colnames(stats) <- c('Estimate', 'SE', 'Chi2', 'pval', 'Parameter', 'DF')
+
+  if(! is.null(interact_fac)){
 
   ## estimate the effect for an interaction
   Inter <- stats::anova(mod_mv, btt = grep(interact_fac, stats$Parameter))
@@ -47,14 +50,24 @@ tab_spSpecific_uni <- function(mod_mv, table_name,
   stats$DF <- rep(1, nrow(stats))
   ## replace the statistics with the  performed omnibus tests
   stats <- replace_stats(data = stats, variable = interact_fac, stats_out = Inter)
+  }
 
-  ## 4. for explanatory if it is not continuous - actually the stats on Chi2 has to be updated anyways
+  ## 4. for explanatory if it is not continuous or a factor with 2 levels
   for(i in 1:length(explanatory)){
     Explan <- stats::anova(mod_mv, btt = which(stats$Parameter %in%
                                               stats$Parameter[grepl(explanatory[i], stats$Parameter) &
                                                                 !grepl(':', stats$Parameter)]))
     stats <- replace_stats(data = stats, variable = explanatory[i], stats_out = Explan)
+    # this does not seem to be needed anymore, now that I changed replace_stats
+    # (cross-check again with the metaanalysis model!!!)
+    # if (length(grep(explanatory[i], rownames(stats))) > 1) {
+    #   for(j in grep(explanatory[i], rownames(stats))){
+    #     stats$Chi2[j] <- stats::anova(mod_mv, btt = grep(explanatory, rownames(stats)))$QM
+    #     stats$pval[j] <- stats::anova(mod_mv, btt = grep(explanatory, rownames(stats)))$QMp
+    #   }
+    # }
   }
+
 
 
   stats <- stats[c('Parameter', 'Estimate', 'SE', 'Chi2', 'pval', 'DF')]
