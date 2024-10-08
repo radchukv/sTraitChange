@@ -24,6 +24,8 @@
 #' @param ylab Character specifying the label for the y axis.
 #' @param ClEfSpecific Boolean indicating whether the meta-analyses were fitted separately for
 #' studies with positive and negative effect of climate on traits.
+#' @miny Numeric specifying the minimum limit for the y axis.
+#' @maxy Numeric specifying the maximum limit for the y axis.
 #'
 #' @inheritParams fit_all_meta
 #' @inheritParams plot_forest
@@ -42,7 +44,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
                          yvar_raw = 'Trait_mean',
                          slope_ES = 'Estimate/Trait_mean<-det_Clim',
                          ylab = 'Trait', xlab = 'Climate',
-                         ClEfSpecific = TRUE){
+                         ClEfSpecific = TRUE,
+                         miny = -6, maxy = 6){
   raw_dat <- subset(raw_dat, Trait_Categ == Trait_categ)
   GlobES_dat <- GlobES_dat[GlobES_dat$REL == path &
                              GlobES_dat$Trait_Categ == Trait_categ, ]
@@ -68,7 +71,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
 
   pl <- ggplot(raw_dat, aes(x = .data[[xvar_raw]],
                             y = .data[[yvar_raw]])) +
-    lims(x = c(min(dat_rib$x), max(dat_rib$x))) +
+    lims(x = c(min(dat_rib$x), max(dat_rib$x)),
+         y =  c(miny, maxy)) +
     geom_blank() +
     geom_abline(data = ES_dat,
                 aes(intercept = 0, slope = .data[[slope_ES]]),
@@ -105,7 +109,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
 
     pl <- ggplot(raw_dat, aes(x = .data[[xvar_raw]],
                               y = .data[[yvar_raw]])) +
-      lims(x = c(min(dat_rib$x), max(dat_rib$x))) +
+      lims(x = c(min(dat_rib$x), max(dat_rib$x)),
+           y =  c(miny, maxy)) +
       geom_blank() +
       geom_abline(data = ES_dat,
                   aes(intercept = 0, slope = .data[[slope_ES]]),
