@@ -14,6 +14,10 @@
 #' the produced plot.
 #' @param xLab Character specifying the x axis label.
 #' @param xLab Character specifying the y axis label.
+#' @param byHemisphere Boolean specifying whether raw data points should be coloured depending on
+#' which Hemisphere they are coming from.
+#' @miny Numeric specifying the minimum limit for the y axis.
+#' @maxy Numeric specifying the maximum limit for the y axis.
 #' @export
 #'
 #' @return Plots a forest plot with effect sizes (and SEs) for each study,
@@ -28,7 +32,9 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
                             lOut = 10,
                             pdf_basename = NULL,
                             xLab,
-                            yLab = 'Estimate'){
+                            yLab = 'Estimate',
+                            byHemisphere = FALSE,
+                            miny = -1.2, maxy = 1.2){
 
   subs_pred <- names(as.data.frame(predict(mod_mv,  addx=TRUE)))[seq(length(names(as.data.frame(predict(mod_mv,  addx=TRUE)))) - nrow(stats::coef(summary(mod_mv))) + 1, length(names(as.data.frame(predict(mod_mv,  addx=TRUE)))))]
   subs_pred <- unlist(lapply(strsplit(subs_pred, split = 'X.'), function(x){x[2]}))
@@ -55,26 +61,48 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
     }
   }
 
-  Pred_data %<>%
-    dplyr::rename(Estimate = pred) %>%
-    dplyr::mutate(., SD = (ci.ub - ci.lb) / 4,
-                  Est_PlSD = Estimate + SD,
-                  Est_MinSD = Estimate - SD)
+  if(byHemisphere){
+    Pred_data %<>%
+      dplyr::rename(Estimate = pred) %>%
+      dplyr::mutate(., SD = (ci.ub - ci.lb) / 4,
+                    Est_PlSD = Estimate + SD,
+                    Est_MinSD = Estimate - SD,
+                    Hemisphere = '')
+  } else {
+    Pred_data %<>%
+      dplyr::rename(Estimate = pred) %>%
+      dplyr::mutate(., SD = (ci.ub - ci.lb) / 4,
+                    Est_PlSD = Estimate + SD,
+                    Est_MinSD = Estimate - SD)
+  }
 
 
   if(stats::coef(summary(mod_mv))$pval[2] < 0.05){  ## still hard-coded, decision on the line type
     lt = 1} else {lt = 2}
+  if(byHemisphere){
+    pl_CZ <- ggplot(data_allEstim, aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 5]],
+                                       y = Estimate, colour = Hemisphere)) +
+      geom_point(alpha = 0.4) + theme_bw() +
+      xlab(xLab) + ylab(yLab) +
+      geom_line(data = Pred_data, aes(x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 5]],
+                                      y = Estimate), linetype = lt, col = 'black') +
+      geom_ribbon(data = Pred_data, aes(ymin = Est_MinSD, ymax = Est_PlSD,
+                                        x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 5]]),
+                  alpha=.2, col ='black') +
+      scale_color_manual(values = c('deepskyblue2', 'goldenrod2')) +
+      theme(legend.position = 'bottom') + ylim(miny, maxy)
+  } else {
   pl_CZ <- ggplot(data_allEstim, aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 4]],
                                      y = Estimate)) +
     geom_point(alpha = 0.4) + theme_bw() +
     xlab(xLab) + ylab(yLab) +
     geom_line(data = Pred_data, aes(x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 4]],
-                                    y = Estimate), linetype = lt) +
+                                    y = Estimate), linetype = lt, col = 'black') +
     geom_ribbon(data = Pred_data, aes(ymin = Est_MinSD, ymax = Est_PlSD,
                                       x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 4]]),
-                alpha=.2) +
-    theme(legend.position = 'bottom')
-
+                alpha=.2, col ='black') +
+    theme(legend.position = 'bottom') + ylim(miny, maxy)
+}
   if (!is.null(pdf_basename)) {
     grDevices::pdf(file = paste0(pdf_basename, '.pdf'))
   }
