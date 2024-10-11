@@ -10,13 +10,15 @@
 #'
 #' @export
 #'
-#' @return A tibble with 15 columns that represent the metadata for a
+#' @return A tibble with 33 columns that represent the metadata for a
 #' given study ID and the results of SEM: Cstat, dTable, R2 of all
-#' equations and path coefficients.
+#' equations and path coefficients, as well as requested settings
+#' for fitting SEM (whether weights, autocorrelation and traits are
+#' included in the model).
 #'
 #' @examples
 #' # fit SEM
-#' test <- fit_SEM(biol_data = dataSEM, ID = 7,
+#' mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
 #'                 out_SEM = 'output_SEM_all',
 #'                 DD = 'n_effectGR', weight = TRUE,
 #'                 correlation = TRUE,
