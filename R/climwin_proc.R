@@ -6,7 +6,7 @@
 #' tests (if asked for)
 #'
 #' @param biol_data Data frame with trait data for a given population and species.
-#' @param clim_data Either raster stack of climatic data for the region that encompases
+#' @param clim_data Either raster stack of climatic data for the region that encompasses
 #' the study location or a dataframe with the local weather from the closest weather station.
 #' @param ID Numeric giving a unique ID of the current dataset for a given population and species.
 #' @param randwin Logical (TRUE/FALSE). Should \code{\link[climwin]{randwin}}
@@ -28,7 +28,7 @@
 #' five cells: the focal one and four neighbours.
 #' @param explanYear Logical (TRUE/FALSE). Whether to include year as an
 #' explanatory variable in the baseline formula for window analysis.
-#' @param endWindow A numeric specifying the furtherst number of time intervals
+#' @param endWindow A numeric specifying the furthest number of time intervals
 #' (set by cinterval) back from the reference day. See also the option range in
 #' the function \code{\link[climwin]{slidingwin}}.
 #' @param startWindow A numeric specifying the closest number of time intervals
