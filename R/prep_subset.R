@@ -18,8 +18,7 @@
 #' a subset of biological data to be used in climwin analyses.
 #'
 #' @examples
-#' biol_dat <- read.csv('./data-raw/Data_11_06_2019.csv')
-#' biol_noSea <- prep_subset(data = biol_dat, Seabird = FALSE)
+#' biol_noSea <- prep_subset(data = data, Seabird = FALSE)
 
 prep_subset <- function(data, Seabird = FALSE){
 

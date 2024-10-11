@@ -14,8 +14,7 @@
 #' not in Julian Days converted to Julian Days.
 #'
 #' @examples
-#' biol_dat <- read.csv('./data-raw/test_dateChange.csv')
-#' out_biol <- convert_JulianDay(biol_data = biol_dat)
+#' out_biol <- convert_JulianDay(biol_data = data)
 #'
 convert_JulianDay <- function(biol_data){
   if (any(levels(biol_data$Trait_Categ) %in% c('Phenological'))){
