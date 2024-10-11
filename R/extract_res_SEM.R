@@ -11,11 +11,27 @@
 #'
 #' @export
 #'
-#' @return A dataframe containing the meta-data on each study (e.g. study is,
+#' @return A dataframe containing the meta-data on each study (e.g. study ID,
 #' species name, location, trait category, demographic rate category etc) and
 #' the data on the requested aspect of the fitted SEM.
 #'
-#' still add the example
+#' @examples
+#'
+#' Fit SEMs on all studies
+#' fitted_SEMs <- lapply(unique(dataSEM$ID),
+#' FUN = function(x){fit_SEM(biol_data = dataSEM, ID = x,
+#'                   out_SEM = 'output_SEM_all',
+#'                   DD = 'n_effectGR',
+#'                   weight = TRUE,
+#'                   correlation = TRUE,
+#'                   standardize = TRUE,
+#'                   Trait = FALSE,
+#'                   simpleSEM = TRUE)})
+#' length(fitted_SEMs)  ## 15
+#'
+#' # getting the results of SEMs on R2
+#' R2_Aut <- extract_res_SEM(list_fitSEM = fitted_SEMs,
+#' stat_extr = 'R2')
 
 extract_res_SEM <- function(list_fitSEM, stat_extr){
   res <- dplyr::bind_rows(lapply(1:length(list_fitSEM), FUN = function(x){
