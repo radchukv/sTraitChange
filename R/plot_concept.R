@@ -92,7 +92,9 @@ plot_concept <- function(Trait_categ = 'Phenological',
     theme_bw() + ylab(ylab) + xlab(xlab) +
     theme(legend.position = 'bottom',
           panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank()) +
+          panel.grid.minor = element_blank(),
+          axis.title.x = element_markdown(),
+          axis.title.y = element_markdown()) +
     guides(col = guide_legend(title = 'Climate effect'),
            fill = guide_legend(title = 'Climate effect'),
            lty = guide_legend(title = 'Significance'))
@@ -134,7 +136,9 @@ plot_concept <- function(Trait_categ = 'Phenological',
             panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(),
             axis.title = element_text(size = 25),
-            axis.text = element_text(size = 20)) +
+            axis.text = element_text(size = 20),
+            axis.title.x = element_markdown(),
+            axis.title.y = element_markdown()) +
       guides(lty = guide_legend(title = 'Significance'))
   }
   return(pl)
