@@ -90,7 +90,9 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
                                         x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 5]]),
                   alpha=.2, col ='black') +
       scale_color_manual(values = c('deepskyblue2', 'goldenrod2')) +
-      theme(legend.position = 'bottom') + ylim(miny, maxy)
+      theme(legend.position = 'bottom',
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank()) + ylim(miny, maxy)
   } else {
   pl_CZ <- ggplot(data_allEstim, aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 4]],
                                      y = Estimate)) +
@@ -101,7 +103,9 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
     geom_ribbon(data = Pred_data, aes(ymin = Est_MinSD, ymax = Est_PlSD,
                                       x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 4]]),
                 alpha=.2, col ='black') +
-    theme(legend.position = 'bottom') + ylim(miny, maxy)
+    theme(legend.position = 'bottom',
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank()) + ylim(miny, maxy)
 }
   if (!is.null(pdf_basename)) {
     grDevices::pdf(file = paste0(pdf_basename, '.pdf'))
