@@ -33,20 +33,17 @@
 #'
 #' @export
 #'
-#' @return Returns a tibble. If no categorical explanatory variables are included in the model,
-#' then this tibble includes four data frames: 1. 'data' - the data frame with the estimate
+#' @return Returns a tibble that includes five data frames:
+#' 1. 'data' - the data frame with the estimate
 #' of the global effect size, its standard error, its significance, the AIC of the fitted
 #' mixed-effects model and the variances explained by random effects;
 #' 2. 'data_Efs' - the data frame with the effect sizes and their standard errors for each study;
-#' 3. 'data_R2' - the data frame that includes in addition to the effect size and standard error
-#' per each study also R2 of the fitted relations; and 4. 'prop_data' the data frame with
-#' the proportional contribution of the direct and indirect paths to the total path. Additionally,
-#' the column 'names' contains the names of the fitted relation for each mixed-effects model.
-#' If a categorical explanatory variable is included in the model, then the tibble
-#' additionally contains the dara frame with the estimates of effect sizes (and their SEs)
-#' for each level of the categorical variable; and the columns with the p value
-#' indicating whether the categorical variable is significant, the AIC of the mixed-effects model
-#' with categorical variable and the variances explained by random effects.
+#' 3. 'heter_mod' - the data frame with estimates of heterogeneity
+#' typically extracted for meta-analysis;
+#' 4. ML_mod - results of the meta-analysis correcting for phylogeny (if that
+#' improves mode lit to the data) and fitted with ML;
+#' 5. REML_mod - results of the meta-analysis correcting for phylogeny (if that
+#' improves mode lit to the data) and fitted with REML.
 #' The AIC and the p values are obtained from the models fitted with ML, whereas
 #' the parameter estimates from the models fitted using REML.
 #'
@@ -54,6 +51,19 @@
 #' # prepare dataset, select only studies with phenological traits
 #' Coefs_phenClim <- subset(dataPaths, Relation == 'Trait_mean<-det_Clim' &
 #' Trait_Categ == 'Phenological')
+#' Coefs_phenClim <- Coefs_phenClim %>%
+#'                   mutate(Species = case_when(
+#'                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
+#'                          Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
+#'                          Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',
+#'                          Species == 'Thalassarche melanophris' ~ 'Thalassarche melanophrys',
+#'                          Species == 'Ichthyaetus audouinii' ~ 'Larus audouinii',
+#'                          Species == 'Stercorarius maccormicki' ~ 'Catharacta maccormicki',
+#'                          TRUE ~ Species))
+#'
+#' Coefs_phenClim$Species <- unlist(lapply(1:nrow(Coefs_phenClim), FUN = function(x){
+#'   binary <- strsplit(as.character(Coefs_phenClim$Species[x]), " ")
+#'   Underscore <- paste(binary[[1]][1], binary[[1]][2], sep = "_")}))
 #' Coefs_phenClim$Sp_phylo <- Coefs_phenClim$Species
 #'
 #' test_noCovar <- fit_meta_phylo(data_MA = Coefs_phenClim,
@@ -70,9 +80,14 @@
 #'                               simpleSEM = TRUE,
 #'                               A = phyloMat)
 #'
-#' check_TraitCateg <- fit_meta_phylo(data_MA = Coefs_Aut, Type_EfS = 'Trait_mean<-det_Clim',
-#'                              Cov_fact = 'Trait_Categ')
-#' check_TraitCateg
+#' test_WeathQ <- fit_meta_phylo(data_MA = Coefs_phenClim,
+#'                                    Type_EfS = 'Trait_mean<-det_Clim',
+#'                                    Cov_fact = 'WeathQ',
+#'                                    COV = NULL,
+#'                                    DD = 'n_effectGR',
+#'                                    simpleSEM = TRUE,
+#'                                    A = phyloMat)
+#' test_WeathQ
 fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                      Cov_fact = NULL, COV = NULL, optimize = 'uobyqa',
                      DD = 'n_effectDGR', simpleSEM = FALSE,
@@ -129,35 +144,6 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
 
   ## subset a specified effect size only
   subs_data <- subset(tot, Relation == Type_EfS)
-
-  # and now get the R2 per relation, to be used on the plot
-  # trans_allEfS$Response <- unlist(lapply(1:nrow(trans_allEfS), FUN = function(x){
-  #   strsplit(x = trans_allEfS$Relation[x], split = '<')[[1]][1]
-  # }))
-  #
-  # subs_merge_R2 <- droplevels(data_MA %>%
-  #                               dplyr::distinct(., ID, Country, Continent,
-  #                                               Longitude, Latitude, Taxon,
-  #                                               BirdType, Trait_Categ, Trait,
-  #                                               Demog_rate_Categ, Demog_rate,  Response,
-  #                                               Count, Nyears, WinDur, deltaAIC,
-  #                                               .keep_all = T) %>%
-  #                               subset(.,
-  #                                      select = c(ID, Country, Continent,
-  #                                                 Longitude, Latitude, Taxon,
-  #                                                 BirdType, Trait_Categ, Trait,
-  #                                                 Demog_rate_Categ, Demog_rate,
-  #                                                 Count, Nyears,  Response,
-  #                                                 WinDur, deltaAIC, Pvalue, WeathQ, R.squared,
-  #                                                 LM_std_estimate, LM_std_std.error,
-  #                                                 Trend, Trait_ageClass)))
-  #
-  # tot_R2 <- merge(trans_allEfS, subs_merge_R2, by = c('ID', 'Response'), all.x = TRUE)
-  #
-  #
-  # ## subset a specified effect size only
-  # subs_dataR2 <- subset(tot_R2, Relation == Type_EfS)
-
 
   ##  preparing a formula depending on the covariates included
   if(des.matrix == 'treatm.contrasts') {
@@ -357,15 +343,12 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                        'Ind_GR<-Pop_mean', 'Tot_GR<-Pop_mean')) {
       out_tib <- tibble::tibble(data = list(out_dat),
                                 data_EfS = list(subs_data),
-                                #data_R2 = list(subs_dataR2),
-                                #prop_data = list(prop_data),
                                 heter_mod = list(het_mod),
                                 ML_mod = list(tt.error.sel.ML),
                                 REML_mod = list(tt.error.sel.REML))
     } else {
       out_tib <- tibble::tibble(data = list(out_dat),
                                 data_EfS = list(subs_data),
-                                #data_R2 = list(subs_dataR2),
                                 heter_mod = list(het_mod),
                                 ML_mod = list(tt.error.sel.ML),
                                 REML_mod = list(tt.error.sel.REML))
