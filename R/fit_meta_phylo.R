@@ -51,9 +51,25 @@
 #' the parameter estimates from the models fitted using REML.
 #'
 #' @examples
-#' Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
-#' check_noCovar <- fit_meta_phylo(data_MA = Coefs_Aut, Type_EfS = 'Trait_mean<-det_Clim',
-#'                           Cov_fact = NULL)
+#' # prepare dataset, select only studies with phenological traits
+#' Coefs_phenClim <- subset(dataPaths, Relation == 'Trait_mean<-det_Clim' &
+#' Trait_Categ == 'Phenological')
+#' Coefs_phenClim$Sp_phylo <- Coefs_phenClim$Species
+#'
+#' test_noCovar <- fit_meta_phylo(data_MA = Coefs_phenClim,
+#'                               Type_EfS = 'Trait_mean<-det_Clim',
+#'                               Cov_fact = NULL, COV = NULL,
+#'                               DD = 'n_effectGR',
+#'                               simpleSEM = TRUE,
+#'                               A = phyloMat)
+#' # meta-analysis with a quantitative covariate
+#' test_PValCovar <- fit_meta_phylo(data_MA = Coefs_phenClim,
+#'                               Type_EfS = 'Trait_mean<-det_Clim',
+#'                               Cov_fact = NULL, COV = 'Pvalue',
+#'                               DD = 'n_effectGR',
+#'                               simpleSEM = TRUE,
+#'                               A = phyloMat)
+#'
 #' check_TraitCateg <- fit_meta_phylo(data_MA = Coefs_Aut, Type_EfS = 'Trait_mean<-det_Clim',
 #'                              Cov_fact = 'Trait_Categ')
 #' check_TraitCateg

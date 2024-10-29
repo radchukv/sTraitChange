@@ -17,7 +17,48 @@
 #'   \code{\link[spaMM]{anova.HLfit}} comparing this model and a null model.
 #' @export
 #'
-#' ## still add the examples
+#' @examples
+#' # prepare the data
+#' allYrs_T <- do.call('rbind', lapply(X = unique(dataSEM$ID),
+#'                    FUN = function(x){
+#'                    subs <- droplevels(dataSEM[dataSEM$ID == x, ])
+#'                    full_NA <- data.frame(Year = seq(min(subs$Year),
+#'                    max(subs$Year), by = 1), ID = x)}))
+#' consec_yrs_T <- merge(allYrs_T, dataSEM, by = c('ID','Year'),
+#' all= T)
+#' phen_temp <- subset(consec_yrs_T, Trait_Categ == 'Phenological')
+#' # calculate GR
+#' temp_GR_phen <- phen_temp %>%
+#' dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) %>%
+#' dplyr::mutate(., GR = log(Pop_mean_lag / Pop_mean)) %>%
+#' dplyr::filter(., !is.na(GR) & !is.na(Trait_mean) &
+#' !is.na(Demog_rate_mean) & !is.na(Pop_mean))
+#'
+#' temp_GRRes_phen <- split(temp_GR_phen, temp_GR_phen$ID) %>%
+#' purrr::map(., ~lm(Clim ~ Year, data = .)) %>%
+#' purrr::map2(.x = ., .y = split(temp_GR_phen, f= temp_GR_phen$ID),
+#'           .f = ~broom::augment_columns(x = .x, data = .y)) %>%
+#' dplyr::bind_rows()
+#' temp_std_phen <- temp_GRRes_phen %>%
+#' dplyr::group_by(ID) %>%
+#' dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean, na.rm = T),
+#'               Demog_rate_SE = Demog_rate_SE /sd(Demog_rate_mean,
+#'               na.rm = T),
+#'               det_Clim = as.numeric(scale(`.resid`)),
+#'               Trait_mean = scale(Trait_mean),
+#'               Demog_rate_mean = scale(Demog_rate_mean),
+#'               Pop_mean = scale(Pop_mean),
+#'               GR = scale(GR)) %>%
+#'               dplyr::ungroup() %>%
+#'               dplyr::mutate(Trait_mean2 = Trait_mean^2,
+#'               det_Clim2 = det_Clim^2,
+#'               GR = as.numeric(GR[,1]))
+#'
+#' # test nonlinearity
+#' test_phenTGR <- test_nonlin(data = temp_std_phen,
+#' formula_full  = 'GR ~ Trait_mean + Trait_mean2 + (Trait_mean|ID)',
+#' formula_null  = 'GR ~ Trait_mean + (Trait_mean|ID)')
+#' test_phenTGR
 #'
 test_nonlin <- function(data,
                         formula_full  = '~ 1',
