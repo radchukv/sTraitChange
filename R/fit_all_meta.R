@@ -27,6 +27,7 @@
 #' @inheritParams fit_meta_phylo
 #'
 #' @export
+#' @importFrom magrittr "%>%"
 #'
 #' @return Returns a tibble that includes one data frame and one tibble. A data frame
 #' contains the estimated effect sizes, their standard errors, lower and upper confidence
@@ -45,7 +46,7 @@
 #' @examples
 #' # prepare dataset, select only studies with phenological traits
 #' dataPaths <- dataPaths %>%
-#'                   mutate(Species = case_when(
+#'                   dplyr::mutate(Species = dplyr::case_when(
 #'                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
 #'                          Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
 #'                          Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',

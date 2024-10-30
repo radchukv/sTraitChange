@@ -16,6 +16,7 @@
 #' @return A list containing the best full fitted model and the result of
 #'   \code{\link[spaMM]{anova.HLfit}} comparing this model and a null model.
 #' @export
+#' @importFrom magrittr "%>%"
 #'
 #' @examples
 #' # prepare the data

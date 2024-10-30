@@ -30,6 +30,7 @@
 #'  specifying "identity".
 #'
 #' @inheritParams fit_mod
+#' @importFrom magrittr "%>%"
 #'
 #' @export
 #'
@@ -52,7 +53,7 @@
 #' Coefs_phenClim <- subset(dataPaths, Relation == 'Trait_mean<-det_Clim' &
 #' Trait_Categ == 'Phenological')
 #' Coefs_phenClim <- Coefs_phenClim %>%
-#'                   mutate(Species = case_when(
+#'                   dplyr::mutate(Species = dplyr::case_when(
 #'                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
 #'                          Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
 #'                          Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',

@@ -75,11 +75,12 @@ impute_median <- function(data, column){
 #' @return A dataframe that contains 26 columns including the required path coefficients and
 #' the associated meta-data.
 #' @export
+#' @importFrom magrittr "%>%"
 #'
 #' @examples
 #' # prepare data
 #' dataPaths <- dataPaths %>%
-#'                   mutate(Species = case_when(
+#'                   dplyr::mutate(Species = dplyr::case_when(
 #'                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
 #'                          Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
 #'                          Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',

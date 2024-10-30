@@ -7,6 +7,7 @@
 #' \code{\link{fit_mod}}
 #'
 #' @export
+#' @importFrom magrittr "%>%"
 #'
 #' @return A tibble with 29 columns that represent the metadata for a
 #' given study ID and the results of SEM: Cstat, dTable, R2 of all

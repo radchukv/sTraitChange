@@ -30,6 +30,7 @@
 #' by trait, demographic rates are not considered. Defaults to FALSE.
 #'
 #' @export
+#' @importFrom magrittr "%>%"
 #'
 #' @return A fitted object of class psem (see
 #' \code{\link[piecewiseSEM]{psem}} for more details
