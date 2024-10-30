@@ -9,7 +9,11 @@ plot_uni_spSpec(
   mod_mv = mod_CZ_Lat,
   lOut = 10,
   pdf_basename = NULL,
-  xLab
+  xLab,
+  yLab = "Estimate",
+  byHemisphere = FALSE,
+  miny = -1.2,
+  maxy = 1.2
 )
 }
 \arguments{
@@ -25,7 +29,14 @@ response of species traits to climate will be predicted and plotted.}
 \item{pdf_basename}{A character specifying the name of the .pdf for
 the produced plot.}
 
-\item{xLab}{Character specifying the x axis label.}
+\item{xLab}{Character specifying the y axis label.}
+
+\item{byHemisphere}{Boolean specifying whether raw data points should be coloured depending on
+which Hemisphere they are coming from.}
+
+\item{miny}{Numeric specifying the minimum limit for the y axis.}
+
+\item{maxy}{Numeric specifying the maximum limit for the y axis.}
 }
 \value{
 Plots a forest plot with effect sizes (and SEs) for each study,
@@ -38,6 +49,21 @@ of climate on trait and as predictor one species-specific predictor at a time an
 climate
 }
 \examples{
-STILL To add
+# prepare the dataset with phenological traits only
+dataPaths_phen <- dataPaths \%>\%
+    dplyr::filter(Trait_Categ == 'Phenological') \%>\%
+    dplyr::mutate(absLat = abs(Latitude))
+# fit the meta-analytical model
+mod_CZ_PhenT_AbsLat <- metafor::rma.mv(Estimate ~ absLat + Pvalue,
+                              V = Std.Error^2, random = list(~ 1|Species, ~1|ID, ~1|Location),
+                              data = dataPaths_phen, method = 'ML')
+plot_CZ_PhenT_AbsLat <- plot_uni_spSpec(data_allEstim = dataPaths_phen,
+                                        mod_mv = mod_CZ_PhenT_AbsLat,
+                                       lOut = 10, xLab = 'Absolute latitude',
+                                       yLab = 'CZ estimate',
+                                       pdf_basename = './plots/PlotCZ_PhenT_byAbsLat',
+                                       byHemisphere = FALSE,
+                                       miny = min(dataPaths_phen$Estimate) - 0.1,
+                                       maxy = max(dataPaths_phen$Estimate) + 0.1)
 
 }

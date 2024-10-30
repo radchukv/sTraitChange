@@ -21,17 +21,36 @@ the associated meta-data.
 \code{extr_coefs} extracts the path coefficients for a specified relation.
 }
 \examples{
- ## come up with a simpler example???
-Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
-meta_Phen_Surv_neg <- fit_all_meta(data_MA = Coefs_Aut_neg,
-Clim = 'Temperature',
-Demog_rate = 'Survival',
-Trait_categ = 'Phenological',
-Covar = NULL,
-COV = 'Pvalue + WeathQ',
-sel = 'Temp_Neg_Phen_Surv_Cov',
-folder_name = './output_overall_sig/',
-colr = c('black'),
-optimize = rep('uobyqa', 11))
-test <- extr_coefs(data = meta_Phen_Surv_neg, Relation = 'Tot_DemRate<-det_Clim')
+# prepare data
+dataPaths <- dataPaths \%>\%
+                  dplyr::mutate(Species = dplyr::case_when(
+                         Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
+                         Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
+                         Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',
+                         Species == 'Thalassarche melanophris' ~ 'Thalassarche melanophrys',
+                         Species == 'Ichthyaetus audouinii' ~ 'Larus audouinii',
+                         Species == 'Stercorarius maccormicki' ~ 'Catharacta maccormicki',
+                         TRUE ~ Species))
+
+dataPaths$Species <- unlist(lapply(1:nrow(dataPaths), FUN = function(x){
+  binary <- strsplit(as.character(dataPaths$Species[x]), " ")
+  Underscore <- paste(binary[[1]][1], binary[[1]][2], sep = "_")}))
+dataPaths$Sp_phylo <- dataPaths$Species
+
+# fit the models for: Trait_mean<-det_Clim', 'Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'
+meta_Phen_Cov <- fit_all_meta(data_MA = dataPaths,
+                              Demog_rate = NULL,
+                              Trait_categ = 'Phenological',
+                              Clim = 'Temperature',
+                              Cov_fact = 'WeathQ',
+                              COV = 'Pvalue',
+                              sel = 'Temp_Phen_Cov',
+                              folder_name = NULL,
+                              colr = c('black', 'red'),
+                              DD = 'n_effectGR',
+                              simpleSEM = TRUE,
+                              A = phyloMat,
+                              all_Relations = c('Trait_mean<-det_Clim',
+                              'Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'))
+test <- extr_coefs(obj = meta_Phen_Cov, Type_EfS = 'Tot_GR<-det_Clim')
 }

@@ -9,7 +9,9 @@ pl_conc_DirInd(
   Trait_categ = "Phenological",
   GlobES_dat = met_ef_T,
   ES_dat = wide_tempES,
-  ClEfSpecific = TRUE
+  ClEfSpecific = TRUE,
+  ylab = "Direct effect of climate on GR (CG)",
+  xlab = "Trait-mediated effect of climate on G (CZG)"
 )
 }
 \arguments{
@@ -25,6 +27,10 @@ function \code{\link{fit_all_meta}}.}
 
 \item{ClEfSpecific}{Boolean indicating whether the meta-analyses were fitted separately for
 studies with positive and negative effect of climate on traits.}
+
+\item{ylab}{Character specifying the label for the y axis.}
+
+\item{xlab}{Character specifying the label for the x axis.}
 }
 \value{
 A list with 1. a plot of study-specific estimates of direct effects

@@ -53,9 +53,11 @@ structure will be fitted in which climate effect on GR is only mediated
 by trait, demographic rates are not considered. Defaults to FALSE.}
 }
 \value{
-A tibble with 15 columns that represent the metadata for a
+A tibble with 33 columns that represent the metadata for a
 given study ID and the results of SEM: Cstat, dTable, R2 of all
-equations and path coefficients.
+equations and path coefficients, as well as requested settings
+for fitting SEM (whether weights, autocorrelation and traits are
+included in the model).
 }
 \description{
 \code{fit_SEM} fits structural equation model with
@@ -63,20 +65,13 @@ requested model structure for the specified study ID and returns
 the results to be used in meta-analysis
 }
 \examples{
-biol_dat <- read.csv('./data-raw/Closed_Data_26_02.csv')
-biol_stand <- convert_JulianDay(biol_data = biol_dat)
-# example for ID = 1
-subs <- droplevels(biol_stand[biol_stand$ID == 25, ])
-test_fSEM <- readRDS(paste0('./output_forSEM_temp/', subs$ID[1], '_',
-                    subs$Species[1], '_', subs$Location[1],
-                    '_', subs$Trait[1], '_ForSEM',  '.RDS'))
-dat <- test_fSEM$data_res[[1]]
-# fit the model
-test <- fit_SEM(biol_data = dat, ID = 1,
-                out_SEM = 'output_SEM',
-                DD = FALSE, weights = FALSE,
-                correlation = FALSE,
-                standardize = FALSE,
-                simpleSEM = FALSE)
+# fit SEM
+mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
+                out_SEM = 'output_SEM_all',
+                DD = 'n_effectGR', weight = TRUE,
+                correlation = TRUE,
+                standardize = TRUE,
+                Trait = FALSE,
+                simpleSEM = TRUE)
 
 }

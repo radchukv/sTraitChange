@@ -24,8 +24,8 @@
 #' @param ylab Character specifying the label for the y axis.
 #' @param ClEfSpecific Boolean indicating whether the meta-analyses were fitted separately for
 #' studies with positive and negative effect of climate on traits.
-#' @miny Numeric specifying the minimum limit for the y axis.
-#' @maxy Numeric specifying the maximum limit for the y axis.
+#' @param miny Numeric specifying the minimum limit for the y axis.
+#' @param maxy Numeric specifying the maximum limit for the y axis.
 #'
 #' @inheritParams fit_all_meta
 #' @inheritParams plot_forest

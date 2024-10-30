@@ -18,6 +18,8 @@ fit_all_meta(
   DD = "n_effectDGR",
   simpleSEM = FALSE,
   Trait = FALSE,
+  A = Mat_phylo,
+  des.matrix = "treatm.contrasts",
   all_Relations = c("Demog_rate_mean<-det_Clim", "Demog_rate_mean<-Pop_mean",
     "Demog_rate_mean<-Trait_mean", "GR<-Demog_rate_mean", "GR<-det_Clim", "GR<-Pop_mean",
     "Ind_DemRate<-det_Clim", "Ind_GR<-det_Clim", "Tot_DemRate<-det_Clim",
@@ -75,18 +77,31 @@ the direct impact of trait on GR in the SEM fitted using a complex
 structure, i.e. climate effect on GR is mediated by both trait and
 demographic rate. Is applicable only if \code{simpleSEM = FALSE}.
 Defaults to FALSE.}
+
+\item{A}{A variance-covariance matrix based on phylogeny.}
+
+\item{des.matrix}{A character specifying what type of design matrix to use if the factor
+is included as one of the explanatory variables. By default treatment contrasts is used
+ (des.matrix = "treatm.contrasts") but the user can also request identity matrix by
+ specifying "identity".}
+
+\item{All_relations}{Vector specifying the names of the relations from the SEMs that will
+be used as response variables in meta-analyses to be fitted.}
 }
 \value{
-Returns a tibble that includes one data frame, one tibble and a table. A data frame
-contains the estimated effect sizes, their standard errors, their significance and the AIC per each
-fitted mixed-effects model, including also the column 'Relation' specifying for which relation
-the data were analyzed (e.g. Demog_rate_mean<-Pop_mean', for more details see \code{\link{fit_meta}}).
-A tibble contains two lists and one character variable. The first list contains estimated global
+Returns a tibble that includes one data frame and one tibble. A data frame
+contains the estimated effect sizes, their standard errors, lower and upper confidence
+intervals, their significance and the AIC for both the mixed-effects model fitted while
+accounting and not for phylogenetic relatedness. This dataframe also has the column
+'Relation' specifying for which relation the data were analyzed
+(e.g. Demog_rate_mean<-Pop_mean', for more details see \code{\link{fit_meta_phylo}}).
+A tibble contains three lists and one character variable. The first list contains estimated global
 effect sizes, their standard errors, their significance and the AIC per each fitted mixed-effects model
-defined by the 'Relation', as returned by \code{\link{fit_meta}}. The second list contains data frames
-with the effect sizes and standard errors for each study. Each data frame corresponds to the subset
-of the data per each 'Relation' type. A character 'names' specifies the 'Relation' type. A table
-contains frequencies for the levels of the specified categorical variable, supplied via parameter 'tab'.
+defined by the 'Relation', as returned by \code{\link{fit_meta_phylo}}. The second list
+contains data frames with the effect sizes and standard errors for each study.
+The third list contains the heterogeneity metrics extracted from each meta-analysis.
+Each data frame corresponds to the subset of the data per each 'Relation' type.
+A character 'names' specifies the 'Relation' type.
 }
 \description{
 \code{fit_all_meta} fits all mixed-effects meta-analytical models (per each relation
@@ -94,24 +109,37 @@ in the SEM), to extract global effect sizes across the studies in a specified su
 of data as defined by a demographic rate and a trait
 }
 \examples{
-Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
-meta_Phen_Surv <- fit_all_meta(data_MA = Coefs_Aut,
-                               Demog_rate = 'survival',
-                               Trait_categ = 'phenological',
-                               Clim = 'temperature',
-                               COV = NULL,
-                               Covar = NULL,
-                               sel = 'Phen_Surv',
-                               folder_name = './output_overall/',
-                               colr = c('black'))
-meta_Phen_Surv
-meta_Phen_Surv_byCont <- fit_all_meta(data_MA = Coefs_Aut,
-                                      Demog_rate = 'survival',
-                                      Trait_categ = 'phenological',
-                                      Clim = 'temperature',
-                                      COV = 'Pvalue',
-                                      Covar = 'Continent',
-                                      sel = 'Phen_Surv',
-                                      folder_name = './output_overall/',
-                                      colr = c('black', 'green', 'blue', 'red'))
+# prepare dataset, select only studies with phenological traits
+dataPaths <- dataPaths \%>\%
+                  dplyr::mutate(Species = dplyr::case_when(
+                         Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
+                         Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
+                         Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',
+                         Species == 'Thalassarche melanophris' ~ 'Thalassarche melanophrys',
+                         Species == 'Ichthyaetus audouinii' ~ 'Larus audouinii',
+                         Species == 'Stercorarius maccormicki' ~ 'Catharacta maccormicki',
+                         TRUE ~ Species))
+
+dataPaths$Species <- unlist(lapply(1:nrow(dataPaths), FUN = function(x){
+  binary <- strsplit(as.character(dataPaths$Species[x]), " ")
+  Underscore <- paste(binary[[1]][1], binary[[1]][2], sep = "_")}))
+dataPaths$Sp_phylo <- dataPaths$Species
+
+# fit the models for: Trait_mean<-det_Clim', 'Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'
+meta_Phen_Cov <- fit_all_meta(data_MA = dataPaths,
+                              Demog_rate = NULL,
+                              Trait_categ = 'Phenological',
+                              Clim = 'Temperature',
+                              Cov_fact = 'WeathQ',
+                              COV = 'Pvalue',
+                              sel = 'Temp_Phen_Cov',
+                              folder_name = NULL,
+                              colr = c('black', 'red'),
+                              DD = 'n_effectGR',
+                              simpleSEM = TRUE,
+                              A = phyloMat,
+                              all_Relations = c('Trait_mean<-det_Clim',
+                              'Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'))
+meta_Phen_Cov
+
 }

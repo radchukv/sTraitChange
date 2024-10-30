@@ -26,6 +26,5 @@ according to the requirements, i.e. whether the subset should be
 for sea birds or not
 }
 \examples{
-biol_dat <- read.csv('./data-raw/Data_11_06_2019.csv')
-biol_noSea <- prep_subset(data = biol_dat, Seabird = FALSE)
+biol_noSea <- prep_subset(data = data, Seabird = FALSE)
 }

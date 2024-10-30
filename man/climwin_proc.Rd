@@ -13,7 +13,7 @@ climwin_proc(
   repeats = 200,
   plot_check = FALSE,
   cinterval = "week",
-  out_clim = "output_climwin_test",
+  out_clim = "output_climwin_temp",
   stat = "mean",
   oneGrid = TRUE,
   explanYear = TRUE,
@@ -26,7 +26,7 @@ climwin_proc(
 \arguments{
 \item{biol_data}{Data frame with trait data for a given population and species.}
 
-\item{clim_data}{Either raster stack of climatic data for the region that encompases
+\item{clim_data}{Either raster stack of climatic data for the region that encompasses
 the study location or a dataframe with the local weather from the closest weather station.}
 
 \item{ID}{Numeric giving a unique ID of the current dataset for a given population and species.}
@@ -62,7 +62,7 @@ explanatory variable in the baseline formula for window analysis.}
 (set by cinterval) back from the reference day. See also the option range in
 the function \code{\link[climwin]{slidingwin}}.}
 
-\item{endWindow}{A numeric specifying the furtherst number of time intervals
+\item{endWindow}{A numeric specifying the furthest number of time intervals
 (set by cinterval) back from the reference day. See also the option range in
 the function \code{\link[climwin]{slidingwin}}.}
 

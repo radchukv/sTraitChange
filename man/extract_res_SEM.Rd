@@ -14,14 +14,32 @@ you want to extract the results. Can take on the following values: 'coefs',
 'R2', 'Cstat'.}
 }
 \value{
-A dataframe containing the meta-data on each study (e.g. study is,
+A dataframe containing the meta-data on each study (e.g. study ID,
 species name, location, trait category, demographic rate category etc) and
 the data on the requested aspect of the fitted SEM.
-
-still add the example
 }
 \description{
 \code{extract_res_SEM} extracts the results of the list of models fitted with
 \code{\link{fit_SEM}} function. The results are extracted with a focus on a particular aspect
 of the model: Cstat value, R2 values or obtained path coefficients
+}
+\examples{
+### DO NOT RUN! - takes long time
+Fit SEMs on all studies - exclude 3 studies for which the models do not converge
+\dontrun{
+fitted_SEMs <- lapply(unique(dataSEM$ID)[- which(unique(dataSEM$ID) \%in\%
+                  c(3, 221, 550))],
+FUN = function(x){fit_SEM(biol_data = dataSEM, ID = x,
+                  out_SEM = 'output_SEM_all',
+                  DD = 'n_effectGR',
+                  weight = TRUE,
+                  correlation = TRUE,
+                  standardize = TRUE,
+                  Trait = FALSE,
+                  simpleSEM = TRUE)})
+length(fitted_SEMs)  ## 210
+
+# getting the results of SEMs on R2
+R2_Aut <- extract_res_SEM(list_fitSEM = fitted_SEMs,
+                          stat_extr = 'R2')}
 }

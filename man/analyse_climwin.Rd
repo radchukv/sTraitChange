@@ -7,7 +7,7 @@
 analyse_climwin(
   ID,
   biol_data,
-  out_clim = "output_climwin_test",
+  out_clim = "output_climwin_temp",
   randwin = FALSE,
   metric = "AIC",
   MinDur = 1,

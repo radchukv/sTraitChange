@@ -21,7 +21,6 @@ traits by converting those that are specified from other
 starting day than the 1st of January to Julian days
 }
 \examples{
-biol_dat <- read.csv('./data-raw/test_dateChange.csv')
-out_biol <- convert_JulianDay(biol_data = biol_dat)
+out_biol <- convert_JulianDay(biol_data = data)
 
 }

@@ -15,7 +15,9 @@ plot_concept(
   slope_ES = "Estimate/Trait_mean<-det_Clim",
   ylab = "Trait",
   xlab = "Climate",
-  ClEfSpecific = TRUE
+  ClEfSpecific = TRUE,
+  miny = -6,
+  maxy = 6
 )
 }
 \arguments{
@@ -51,6 +53,10 @@ from the ES_dat.}
 
 \item{ClEfSpecific}{Boolean indicating whether the meta-analyses were fitted separately for
 studies with positive and negative effect of climate on traits.}
+
+\item{miny}{Numeric specifying the minimum limit for the y axis.}
+
+\item{maxy}{Numeric specifying the maximum limit for the y axis.}
 }
 \value{
 Plots a requested relation (CZ, ZG or CG) for each study in the dataset and

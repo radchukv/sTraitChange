@@ -47,7 +47,7 @@ that addittionally contains estimates medians and SEs for the combined pathways.
 all combined pathways present in SEM, using the bootstrap procedure
 }
 \examples{
-Coefs_Aut <- readRDS(file = './output_fSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
+Coefs_Aut <- readRDS(file = './output_fSEM_temp_simpleSEM/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
 forTrans <- subset(Coefs_Aut, select = c(Estimate,  Std.Error, Relation, Species, Location, ID))
 forTrans <- forTrans \%>\%
             dplyr::rename(SError = Std.Error)

@@ -57,31 +57,25 @@ A fitted object of class psem (see
 requested model structure for the specified study ID
 }
 \examples{
-biol_dat <- read.csv('./data-raw/Closed_Data_26_02.csv')
-biol_stand <- convert_JulianDay(biol_data = biol_dat)
-# example for ID = 1
-subs <- droplevels(biol_stand[biol_stand$ID == 1, ])
-test_fSEM <- readRDS(paste0('./output_climwin/', subs$ID[1], '_',
-                    subs$Species[1], '_', subs$Location[1],
-                    '_', subs$Trait[1], '_ForSEM',  '.RDS'))
-dat <- test_fSEM$data_res[[1]]
-## impute the DR
-dat <- impute_ma(data = dat, column = 'Demog_rate_mean')
-dat <- impute_median(data = dat, column = 'Demog_rate_SE')
-## impute the Pop Size
-dat <- impute_ma(data = dat, column = 'Pop_mean')
-if(unique(subs$Count) == 'N'){
-dat <- impute_median(data = dat, column = 'Pop_SE')
-}
-## calculate GR
-data_GR <- dat \%>\%
-dplyr::mutate(., Pop_mean_lag = lag(Pop_mean)) \%>\%
-dplyr::mutate(., GR = Pop_mean / Pop_mean_lag) \%>\%
-dplyr::filter(., !is.na(GR))
+
+ # prepare the data to fit the model to one study only
+ subs <- droplevels(dataSEM[dataSEM$ID == 7, ])
+ full_NA <- data.frame(Year = seq(min(subs$Year), max(subs$Year), by = 1))
+ consec_yrs <- merge(full_NA, subs, by = 'Year', all= T)
+
+ data_GR <- consec_yrs \%>\%
+ dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) \%>\%
+ dplyr::mutate(., GR = log(Pop_mean_lag / Pop_mean)) \%>\%
+ dplyr::filter(., !is.na(GR) & !is.na(Trait_mean) &
+               !is.na(Demog_rate_mean) & !is.na(Pop_mean)) \%>\%
+ dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
+               data = .))) \%>\%
+ dplyr::mutate(across(where(is.array), as.numeric))
 
 # fit the model
-test <- fit_mod(biol_data = data_GR, ID =1,
-                DD = FALSE, weight = FALSE,
-                correlation = FALSE,
-                Trait = TRUE, simpleSEM = FALSE)
+test <- fit_mod(biol_data = data_GR, ID = 7,
+                DD = 'n_effectGR', weight = TRUE,
+                correlation = TRUE,
+                Trait = TRUE,
+                simpleSEM = TRUE)
 }
