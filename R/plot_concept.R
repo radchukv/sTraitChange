@@ -33,8 +33,103 @@
 #'
 #' @return Plots a requested relation (CZ, ZG or CG) for each study in the dataset and
 #' overlays the across-study global effect sizes estimated with the meta-analyses.
-#' ## Still add examples + revise to get the xvar_raw, yvar_raw, and slopeES programmatically!!
+#' @examples
+#' allYrs_T <- do.call('rbind', lapply(X = unique(dataSEM$ID), FUN = function(x){
+#' subs <- droplevels(dataSEM[dataSEM$ID == x, ])
+#' full_NA <- data.frame(Year = seq(min(subs$Year), max(subs$Year), by = 1), ID = x)}))
+#'  consec_yrs_T <- merge(allYrs_T, dataSEM, by = c('ID','Year'), all= T)
+#'  # calculate GR
+#'  temp_GR <- consec_yrs_T %>%
+#'  dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) %>%
+#'  dplyr::mutate(., GR = log(Pop_mean_lag / Pop_mean)) %>%
+#'  dplyr::filter(., !is.na(GR) & !is.na(Trait_mean) &
+#'  !is.na(Demog_rate_mean) & !is.na(Pop_mean))
+#' # get residuals for clim over time
+#'  temp_GRRes <- split(temp_GR, temp_GR$ID) %>%
+#'  purrr::map(., ~lm(Clim ~ Year, data = .)) %>%
+#'  purrr::map2(.x = ., .y = split(temp_GR, f= temp_GR$ID),
+#'  .f = ~broom::augment_columns(x = .x, data = .y)) %>%
+#'  dplyr::bind_rows() %>%
+#'  dplyr::select(-.rownames)
+#'  # scale the variables as for the meta-analyses
+#'  temp_std <- temp_GRRes %>%
+#'  dplyr::group_by(ID) %>%
+#'  dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean, na.rm = T),
+#'                Demog_rate_SE = Demog_rate_SE /sd(Demog_rate_mean, na.rm = T),
+#'                det_Clim = as.numeric(scale(`.resid`)),
+#'                Trait_mean = scale(Trait_mean),
+#'                Demog_rate_mean = scale(Demog_rate_mean),
+#'                Pop_mean = scale(Pop_mean),
+#'                GR = scale(GR)) %>%
+#'                dplyr::ungroup() %>%
+#'                dplyr::mutate(Climatic_var = 'Temperature')
 #'
+#' temp_std$GR <- as.numeric(temp_std$GR[,1])
+#'  # prepare the data with paths extracted
+#'  allES_T <- dataPaths %>%
+#'  dplyr::mutate(Climatic_var = 'Temperature',
+#'  SError = Std.Error)
+#'  wide_temp_all <- allES_T %>%
+#'   dplyr::select(ID, Estimate, SError, P.Value, Relation) %>%
+#'   tidyr::pivot_wider(id_cols = ID, names_from = Relation,
+#'   values_from = c(Estimate, SError, P.Value), names_sep = '/')
+#'
+#'   metaD_temp_all <- allES_T %>%
+#'   dplyr::distinct(ID, .keep_all = TRUE) %>%
+#'   dplyr::select(-c(Estimate, SError, Relation,
+#'                   P.Value, Pvalue, Count, Nyears,
+#'                   WinDur, Ref.day, Ref.month,
+#'                   WindowClose, deltaAIC, Trait_ageClass,
+#'                   WeathQ, GenLength_y_IUCN))
+#'
+#' wide_tempES_all <- (merge(wide_temp_all, metaD_temp_all, by = 'ID'))
+#' # and estimating the global, across-study estimates
+#'
+#' dataPaths_sp <- dataPaths %>%
+#'                   dplyr::mutate(Species = dplyr::case_when(
+#'                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
+#'                          Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
+#'                          Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',
+#'                          Species == 'Thalassarche melanophris' ~ 'Thalassarche melanophrys',
+#'                          Species == 'Ichthyaetus audouinii' ~ 'Larus audouinii',
+#'                          Species == 'Stercorarius maccormicki' ~ 'Catharacta maccormicki',
+#'                          TRUE ~ Species))
+#'
+#' dataPaths_sp$Species <- unlist(lapply(1:nrow(dataPaths_sp), FUN = function(x){
+#'   binary <- strsplit(as.character(dataPaths_sp$Species[x]), " ")
+#'   Underscore <- paste(binary[[1]][1], binary[[1]][2], sep = "_")}))
+#' dataPaths_sp$Sp_phylo <- dataPaths_sp$Species
+#'
+#' meta_Phen_Cov <- fit_all_meta(data_MA = dataPaths_sp,
+#'                               Demog_rate = NULL,
+#'                               Trait_categ = 'Phenological',
+#'                               Clim = 'Temperature',
+#'                               Cov_fact = 'WeathQ',
+#'                               COV = 'Pvalue',
+#'                               sel = 'Temp_Phen_Cov',
+#'                               folder_name = NULL,
+#'                               colr = c('black', 'red'),
+#'                               DD = 'n_effectGR',
+#'                               simpleSEM = TRUE,
+#'                               A = phyloMat,
+#'                               all_Relations = c('Trait_mean<-det_Clim'))
+#' globES_T <-  meta_Phen_Cov$meta_res[[1]] %>%
+#' dplyr::filter(Levels_Covar == 'intrcpt') %>%
+#' dplyr::mutate(Trait_Categ = 'Phenological',
+#'             REL ='CZ')
+#' # plot
+#' PhenT_CZ <- plot_concept(Trait_categ = 'Phenological',
+#'                         raw_dat = temp_std,
+#'                         GlobES_dat = globES_T,
+#'                         ES_dat = wide_tempES_all,
+#'                         path = 'CZ',
+#'                         xvar_raw = 'det_Clim',
+#'                         yvar_raw = 'Trait_mean',
+#'                         slope_ES = 'Estimate/Trait_mean<-det_Clim',
+#'                         ylab = 'Phenology, Z',
+#'                         xlab = 'Temperature, C',
+#'                         ClEfSpecific = FALSE,
+#'                         miny = -4, maxy = 4)
 plot_concept <- function(Trait_categ = 'Phenological',
                          raw_dat = temp_std,
                          GlobES_dat = met_ef_T,
@@ -69,35 +164,36 @@ plot_concept <- function(Trait_categ = 'Phenological',
                   Trait_mean = 0, GR = 0)
 
 
-  pl <- ggplot(raw_dat, aes(x = .data[[xvar_raw]],
+  pl <- ggplot2::ggplot(raw_dat, ggplot2::aes(x = .data[[xvar_raw]],
                             y = .data[[yvar_raw]])) +
-    lims(x = c(min(dat_rib$x), max(dat_rib$x)),
+    ggplot2::lims(x = c(min(dat_rib$x), max(dat_rib$x)),
          y =  c(miny, maxy)) +
-    geom_blank() +
-    geom_abline(data = ES_dat,
-                aes(intercept = 0, slope = .data[[slope_ES]]),
-                col = 'lightgrey') +
-    geom_abline(data = GlobES_dat, aes(intercept = 0, slope = Estimate,
-                                       col = SignClEffect, lty = ltype),
-                lwd = 1) +
-    geom_ribbon(data = dat_rib, aes(x = x, ymin= ymin, ymax = ymax,
-                                    fill = SignClEffect),
-                alpha = 0.3) +
-    scale_color_manual(values = c('Negative' = 'darkorange',
+    ggplot2::geom_blank() +
+    ggplot2::geom_abline(data = ES_dat,
+                         ggplot2::aes(intercept = 0,
+                                      slope = .data[[slope_ES]]), col = 'lightgrey') +
+    ggplot2::geom_abline(data = GlobES_dat,
+                         ggplot2::aes(intercept = 0, slope = Estimate,
+                                       col = SignClEffect, lty = ltype), lwd = 1) +
+    ggplot2::geom_ribbon(data = dat_rib,
+                         ggplot2::aes(x = x, ymin= ymin, ymax = ymax,
+                                    fill = SignClEffect), alpha = 0.3) +
+    ggplot2::scale_color_manual(values = c('Negative' = 'darkorange',
                                   'Nonnegative' = 'darkgreen')) +
-    scale_linetype_manual(values = c('1' = 1,
+    ggplot2::scale_linetype_manual(values = c('1' = 1,
                                      '2' = 2),
                           labels = c('1' = 'p <= 0.1',
                                      '2' = 'p > 0.1')) +
-    theme_bw() + ylab(ylab) + xlab(xlab) +
-    theme(legend.position = 'bottom',
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          axis.title.x = element_markdown(),
-          axis.title.y = element_markdown()) +
-    guides(col = guide_legend(title = 'Climate effect'),
-           fill = guide_legend(title = 'Climate effect'),
-           lty = guide_legend(title = 'Significance'))
+    ggplot2::theme_bw() +
+    ggplot2::ylab(ylab) + ggplot2::xlab(xlab) +
+    ggplot2::theme(legend.position = 'bottom',
+          panel.grid.major = ggplot2::element_blank(),
+          panel.grid.minor = ggplot2::element_blank(),
+          axis.title.x = ggtext::element_markdown(),
+          axis.title.y = ggtext::element_markdown()) +
+    ggplot2::guides(col = ggplot2::guide_legend(title = 'Climate effect'),
+           fill = ggplot2::guide_legend(title = 'Climate effect'),
+           lty = ggplot2::guide_legend(title = 'Significance'))
   } else {
     dat_rib <- data.frame(x = (seq(min(raw_dat$det_Clim),
                                         max(raw_dat$det_Clim),
@@ -109,37 +205,38 @@ plot_concept <- function(Trait_categ = 'Phenological',
                     Trait_mean = 0, GR = 0)
 
 
-    pl <- ggplot(raw_dat, aes(x = .data[[xvar_raw]],
-                              y = .data[[yvar_raw]])) +
-      lims(x = c(min(dat_rib$x), max(dat_rib$x)),
+    pl <- ggplot2::ggplot(raw_dat,
+                          ggplot2::aes(x = .data[[xvar_raw]], y = .data[[yvar_raw]])) +
+      ggplot2::lims(x = c(min(dat_rib$x), max(dat_rib$x)),
            y =  c(miny, maxy)) +
-      geom_blank() +
-      geom_abline(data = ES_dat,
-                  aes(intercept = 0, slope = .data[[slope_ES]]),
+      ggplot2::geom_blank() +
+      ggplot2::geom_abline(data = ES_dat,
+                           ggplot2::aes(intercept = 0, slope = .data[[slope_ES]]),
                   col = 'grey') +
-      geom_ribbon(data = dat_rib, aes(x = x, ymin= ymin, ymax = ymax),
+      ggplot2::geom_ribbon(data = dat_rib,
+                           ggplot2::aes(x = x, ymin= ymin, ymax = ymax),
                   fill = 'black',
                   alpha = 0.55) +
-      geom_abline(data = GlobES_dat,
-                  aes(intercept = 0, slope = Estimate,
-                      lty = ltype), col = 'black',
-                  lwd = 1) +
+      ggplot2::geom_abline(data = GlobES_dat,
+                           ggplot2::aes(intercept = 0, slope = Estimate,
+                      lty = ltype), col = 'black', lwd = 1) +
       # scale_color_manual(values = c('Negative' = 'darkorange',
       #                               'Nonnegative' = 'darkgreen')) +
-      scale_linetype_manual(values = c('1' = 1,
+      ggplot2::scale_linetype_manual(values = c('1' = 1,
                                        '2' = 2),
                             labels = c('1' = 'p <= 0.1',
                                        '2' = 'p > 0.1')) +
-      theme_bw() + ylab(ylab) + xlab(xlab) +
-      theme(# legend.position = 'bottom',
+      ggplot2::theme_bw() +
+      ggplot2::ylab(ylab) + ggplot2::xlab(xlab) +
+      ggplot2::theme(# legend.position = 'bottom',
             legend.position = 'none',  ## 22.06: to not interfere with other legends in the composite plot
-            panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank(),
-            axis.title = element_text(size = 25),
-            axis.text = element_text(size = 20),
-            axis.title.x = element_markdown(),
-            axis.title.y = element_markdown()) +
-      guides(lty = guide_legend(title = 'Significance'))
+            panel.grid.major = ggplot2::element_blank(),
+            panel.grid.minor = ggplot2::element_blank(),
+            axis.title = ggplot2::element_text(size = 25),
+            axis.text = ggplot2::element_text(size = 20),
+            axis.title.x = ggtext::element_markdown(),
+            axis.title.y = ggtext::element_markdown()) +
+      ggplot2::guides(lty = ggplot2::guide_legend(title = 'Significance'))
   }
   return(pl)
 }
