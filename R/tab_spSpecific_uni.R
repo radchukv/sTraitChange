@@ -1,37 +1,41 @@
 #' Save a table with statistics for species-specific analyses
 #'
-#' \code{tab_spSpecific} saves the table with the statistics exracted
-#' from the model fitted to test the hypothesis about the effect of
-#' a specified species characteristic on the indirect path.
+#' \code{tab_spSpecific_uni} saves the table with the statistics extracted
+#' from the model fitted to test hypothesis about the effects of
+#' specified species characteristic(s) on the path from SEMs.
 #'
 #' @param mod_mv Model object of class rma.mv fitted to test the
-#' hypothesis about the effect of the specified species characteristic
-#' on the indirect path.
+#' hypothesis about the effects of the specified species characteristic(s)
+#' on a certain path from SEMs.
 #' @param table_name A string specifying the path and the name of the
 #' table to be created.
-#' @param explanatory Character indicating the name of the variable
-#' corresponding to a species characteristic, for which the
-#' hypothesis is being tested.
+#' @param explanatory A character string indicating the name(s) of
+#' the variable(s) corresponding to (a) species characteristic(s),
+#' for which the hypothesis is being tested.
+#' @param interact_fac A character specifying the name of the factor
+#' variable with which interactions of other variable(s) are tested,
+#' defaults to NULL.
 #'
-#' @inheritParams fit_mod
 #' @export
+#' @importFrom magrittr "%>%"
 #'
-#' @return A dataframe with the statistics for the test of the effect of
-#' a specified characteristic on the indirect path, and saves this dataframe
-#' (invisibly) as an .xlsx sheet.
+#' @return A dataframe with the statistics for the test of the effect(s) of
+#' (a) specified characteristic(s) on the specific path from SEMs,
+#' and saves this dataframe (invisibly) as an .xlsx sheet.
 #'
 #' @examples
-#' Coefs_Aut <- readRDS(file = './output_overall_sig/PathCoefs_allMods_Temp_AlsoEstimatedRelations.RDS')
-#' traits <- read.csv('./data-raw/Species_traits_Subset_11_09.csv')
-#' Coef_Aut_IndDR <- droplevels(Coefs_Aut %>%
-#' dplyr::filter(., Relation == 'Ind_DemRate<-det_Clim'))
-#' Coefs_Aut_sp <- base::merge(Coef_Aut_IndDR, traits_proc, by = 'Species')
-#' mod_genLength <- metafor::rma.mv(Estimate ~ GenLength_y_IUCN + Trait_Categ + Demog_rate_Categ +
-#'                             GenLength_y_IUCN * Trait_Categ + GenLength_y_IUCN * Demog_rate_Categ +
-#'                             Pvalue,
-#'                             V = SError^2, random = list(~ 1|Species, ~1|ID, ~1|Location),
-#'                             data = Coefs_Aut_sp, method = 'ML')
-#' tab_spSpecific(mod_mv = mod_genLength, table_name = './tables/GenLength_Temp', explanatory = 'GenLength_y_IUCN')
+#' dataPaths_phen <- dataPaths %>%
+#'     dplyr::filter(Trait_Categ == 'Phenological') %>%
+#'     dplyr::mutate(absLat = abs(Latitude))
+#'
+#' mod_CZ_PhenT_AbsLat <- metafor::rma.mv(Estimate ~ absLat + Pvalue,
+#'                               V = Std.Error^2, random = list(~ 1|Species, ~1|ID, ~1|Location),
+#'                               data = dataPaths_phen, method = 'ML')
+#' summary(mod_CZ_PhenT_AbsLat)
+#' tab_spSpecific_uni(mod_mv = mod_CZ_PhenT_AbsLat,
+#'                    table_name = './tables/CZ_PhenT_AbsLat',
+#'                    explanatory = c('absLat', 'Pvalue'),
+#'                    interact_fac = NULL)
 #'
 tab_spSpecific_uni <- function(mod_mv, table_name,
                            explanatory, interact_fac = NULL){
@@ -58,14 +62,6 @@ tab_spSpecific_uni <- function(mod_mv, table_name,
                                               stats$Parameter[grepl(explanatory[i], stats$Parameter) &
                                                                 !grepl(':', stats$Parameter)]))
     stats <- replace_stats(data = stats, variable = explanatory[i], stats_out = Explan)
-    # this does not seem to be needed anymore, now that I changed replace_stats
-    # (cross-check again with the metaanalysis model!!!)
-    # if (length(grep(explanatory[i], rownames(stats))) > 1) {
-    #   for(j in grep(explanatory[i], rownames(stats))){
-    #     stats$Chi2[j] <- stats::anova(mod_mv, btt = grep(explanatory, rownames(stats)))$QM
-    #     stats$pval[j] <- stats::anova(mod_mv, btt = grep(explanatory, rownames(stats)))$QMp
-    #   }
-    # }
   }
 
 

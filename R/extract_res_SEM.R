@@ -16,9 +16,11 @@
 #' the data on the requested aspect of the fitted SEM.
 #'
 #' @examples
-#'
-#' Fit SEMs on all studies
-#' fitted_SEMs <- lapply(unique(dataSEM$ID),
+#' ### DO NOT RUN! - takes long time
+#' Fit SEMs on all studies - exclude 3 studies for which the models do not converge
+#' \dontrun{
+#' fitted_SEMs <- lapply(unique(dataSEM$ID)[- which(unique(dataSEM$ID) %in%
+#'                   c(3, 221, 550))],
 #' FUN = function(x){fit_SEM(biol_data = dataSEM, ID = x,
 #'                   out_SEM = 'output_SEM_all',
 #'                   DD = 'n_effectGR',
@@ -27,11 +29,11 @@
 #'                   standardize = TRUE,
 #'                   Trait = FALSE,
 #'                   simpleSEM = TRUE)})
-#' length(fitted_SEMs)  ## 15
+#' length(fitted_SEMs)  ## 210
 #'
 #' # getting the results of SEMs on R2
 #' R2_Aut <- extract_res_SEM(list_fitSEM = fitted_SEMs,
-#' stat_extr = 'R2')
+#'                           stat_extr = 'R2')}
 
 extract_res_SEM <- function(list_fitSEM, stat_extr){
   res <- dplyr::bind_rows(lapply(1:length(list_fitSEM), FUN = function(x){

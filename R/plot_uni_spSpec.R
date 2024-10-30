@@ -16,16 +16,32 @@
 #' @param xLab Character specifying the y axis label.
 #' @param byHemisphere Boolean specifying whether raw data points should be coloured depending on
 #' which Hemisphere they are coming from.
-#' @miny Numeric specifying the minimum limit for the y axis.
-#' @maxy Numeric specifying the maximum limit for the y axis.
+#' @param miny Numeric specifying the minimum limit for the y axis.
+#' @param maxy Numeric specifying the maximum limit for the y axis.
 #' @export
+#' @importFrom magrittr "%>%"
 #'
 #' @return Plots a forest plot with effect sizes (and SEs) for each study,
 #' and global effect size(s) on the bottom. The data used for the plot are
 #' returned (invisibly).
 #'
 #' @examples
-#' STILL To add
+#' # prepare the dataset with phenological traits only
+#' dataPaths_phen <- dataPaths %>%
+#'     dplyr::filter(Trait_Categ == 'Phenological') %>%
+#'     dplyr::mutate(absLat = abs(Latitude))
+#' # fit the meta-analytical model
+#' mod_CZ_PhenT_AbsLat <- metafor::rma.mv(Estimate ~ absLat + Pvalue,
+#'                               V = Std.Error^2, random = list(~ 1|Species, ~1|ID, ~1|Location),
+#'                               data = dataPaths_phen, method = 'ML')
+#' plot_CZ_PhenT_AbsLat <- plot_uni_spSpec(data_allEstim = dataPaths_phen,
+#'                                         mod_mv = mod_CZ_PhenT_AbsLat,
+#'                                        lOut = 10, xLab = 'Absolute latitude',
+#'                                        yLab = 'CZ estimate',
+#'                                        pdf_basename = './plots/PlotCZ_PhenT_byAbsLat',
+#'                                        byHemisphere = FALSE,
+#'                                        miny = min(dataPaths_phen$Estimate) - 0.1,
+#'                                        maxy = max(dataPaths_phen$Estimate) + 0.1)
 #'
 plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
                             mod_mv = mod_CZ_Lat,
@@ -41,9 +57,9 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
   Pred_data <- matrix(c(seq(from = min(data_allEstim[, subs_pred[2]], na.rm = T),
                                 to = max(data_allEstim[, subs_pred[2]], na.rm = T),
                                 length.out = lOut),
-                         rep(mean(data_allEstim[, 'Pvalue'], na.rm = TRUE), lOut)), # rep(c(0, 1), each = lOut),
+                         rep(mean(data_allEstim[, 'Pvalue'], na.rm = TRUE), lOut)),
                          ncol = 2, byrow = FALSE)
-  #Pred_data[, 4] <- Pred_data[,1]*Pred_data[,2]
+
   Pred_data <- as.data.frame(predict(mod_mv, newmods = Pred_data,  addx=TRUE))
 
   for(i in 1:length(names(Pred_data))){
@@ -80,32 +96,33 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
   if(stats::coef(summary(mod_mv))$pval[2] < 0.05){  ## still hard-coded, decision on the line type
     lt = 1} else {lt = 2}
   if(byHemisphere){
-    pl_CZ <- ggplot(data_allEstim, aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 5]],
+    pl_CZ <- ggplot2::ggplot(data_allEstim, ggplot2::aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 5]],
                                        y = Estimate, colour = Hemisphere)) +
-      geom_point(alpha = 0.4) + theme_bw() +
-      xlab(xLab) + ylab(yLab) +
-      geom_line(data = Pred_data, aes(x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 5]],
+      ggplot2::geom_point(alpha = 0.4) + ggplot2::theme_bw() +
+      ggplot2::xlab(xLab) + ggplot2::ylab(yLab) +
+      ggplot2::geom_line(data = Pred_data, ggplot2::aes(x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 5]],
                                       y = Estimate), linetype = lt, col = 'black') +
-      geom_ribbon(data = Pred_data, aes(ymin = Est_MinSD, ymax = Est_PlSD,
+      ggplot2::geom_ribbon(data = Pred_data, ggplot2::aes(ymin = Est_MinSD, ymax = Est_PlSD,
                                         x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 5]]),
                   alpha=.2, col ='black') +
       scale_color_manual(values = c('deepskyblue2', 'goldenrod2')) +
-      theme(legend.position = 'bottom',
-            panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank()) + ylim(miny, maxy)
+      ggplot2::theme(legend.position = 'bottom',
+            panel.grid.major = ggplot2::element_blank(),
+            panel.grid.minor = ggplot2::element_blank()) + ggplot2::ylim(miny, maxy)
   } else {
-  pl_CZ <- ggplot(data_allEstim, aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 4]],
+  pl_CZ <- ggplot2::ggplot(data_allEstim, ggplot2::aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 4]],
                                      y = Estimate)) +
-    geom_point(alpha = 0.4) + theme_bw() +
-    xlab(xLab) + ylab(yLab) +
-    geom_line(data = Pred_data, aes(x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 4]],
+    ggplot2::geom_point(alpha = 0.4) + ggplot2::theme_bw() +
+    ggplot2::xlab(xLab) + ggplot2::ylab(yLab) +
+    ggplot2::geom_line(data = Pred_data, ggplot2::aes(x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 4]],
                                     y = Estimate), linetype = lt, col = 'black') +
-    geom_ribbon(data = Pred_data, aes(ymin = Est_MinSD, ymax = Est_PlSD,
+    ggplot2::geom_ribbon(data = Pred_data, ggplot2::aes(ymin = Est_MinSD, ymax = Est_PlSD,
                                       x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 4]]),
                 alpha=.2, col ='black') +
-    theme(legend.position = 'bottom',
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank()) + ylim(miny, maxy)
+    ggplot2::theme(legend.position = 'bottom',
+          panel.grid.major = ggplot2::element_blank(),
+          panel.grid.minor = ggplot2::element_blank()) +
+    ggplot2::ylim(miny, maxy)
 }
   if (!is.null(pdf_basename)) {
     grDevices::pdf(file = paste0(pdf_basename, '.pdf'))

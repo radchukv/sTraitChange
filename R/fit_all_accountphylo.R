@@ -12,20 +12,22 @@
 #' @param ind An integer specifying what phylogenetic tree to be read from the
 #' folder given by vtree_folder.
 #' @inheritParams fit_all_meta
+#' @inheritParams fit_meta_phylo
 #'
 #' @export
 #'
 #' @return Returns a tibble that includes the estimated across-study effect sizes,
 #' their standard errors, their significance and the AIC for each fitted mixed-effects
-#' model (fitted with or without phylogeny accounted for by using phylogenetic variance-covariance
-#' matrix). This tibble also includes variances for random effects.
+#' model (fitted with or without phylogeny accounted for by using
+#' phylogenetic variance-covariance matrix). This tibble also
+#' includes variances for random effects.
+#'
 #' @examples
-#' Coefs_Aut_sp <- readRDS(file = './output_all_simpleSEM/PathCoefs_allMods_Temp_Weights_DD_Autocor_FilteredDur_WITH_Traits.rds')
-#' phenT <- fit_all_acountphylo(data_MA = Coefs_Aut_sp,
+#' phenT <- fit_all_acountphylo(data_MA = dataPaths,
 #'                              vtree = "./data/phylogenies",
 #'                              ind = 2, Trait_categ = "Phenological",
 #'                              Clim = "Temperature")
-
+#'
 fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
                                 Trait_categ = 'Phenological',
                                 Clim = 'Temperature'){
