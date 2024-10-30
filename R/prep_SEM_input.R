@@ -31,13 +31,15 @@
 #' the study species, location, coordinates) are also included.
 #'
 #' @examples
-#' temp_eu_SEM <- prep_SEM_input(prep_subset_climwin = eu_noSea,
+#' biol_noSea <- prep_subset(data = data, Seabird = FALSE)
+#' temp_SEM_1 <- prep_SEM_input(prep_subset_climwin = biol_noSea,
+#' out_for_SEM ='output_forSEM_temp',
 #' oneGrid = FALSE,
 #' explanYear = TRUE,
 #' endWindow = 104,
 #' RefMon = NA,
-#' selIDs = 152)
-
+#' selIDs = 1)
+#'
 prep_SEM_input <- function(prep_subset_climwin,
                            out_for_SEM,
                            oneGrid = FALSE,
