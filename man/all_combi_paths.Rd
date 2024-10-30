@@ -32,7 +32,7 @@ demographic rate. Is applicable only if \code{simpleSEM = FALSE}.
 Defaults to FALSE.}
 
 \item{data_for_MA}{Data frame containing a subset of data_MA (see
-\code{fit_meta}) in a wide format, i.e. single column per pathway.
+\code{fit_meta_phylo}) in a wide format, i.e. single column per pathway.
 This data frame contains for each pathway for each study the
 effect size estimates along with their SEs obtained with the SEM
 analyses. Besides that, some meta-data on each study is included
@@ -40,31 +40,65 @@ analyses. Besides that, some meta-data on each study is included
 }
 \value{
 Returns a data frame, which is an extended version of the input data frame,
-that addittionally contains estimates medians and SEs for the combined pathways.
+that additionally contains estimated medians, SEs, as well as lower and upper CI
+for the combined pathways.
 }
 \description{
 \code{all_combi_paths} returns the medians and their SE estimates for
 all combined pathways present in SEM, using the bootstrap procedure
 }
 \examples{
-Coefs_Aut <- readRDS(file = './output_fSEM_temp_simpleSEM/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
-forTrans <- subset(Coefs_Aut, select = c(Estimate,  Std.Error, Relation, Species, Location, ID))
-forTrans <- forTrans \%>\%
-            dplyr::rename(SError = Std.Error)
-met_wide <- forTrans \%>\%
-            tidyr::gather(variable, value, -(Relation:ID)) \%>\%
-            tidyr::unite(temp, Relation, variable, sep = '/') \%>\%
-            tidyr::spread(temp, value)
-test <- all_combi_paths(data = met_wide, DD = 'n_effectDGR', simpleSEM = FALSE)
+prepare the data to fit the model to extract indirect path
+dataPaths_sp <- dataPaths \%>\%
+                  dplyr::mutate(Species = dplyr::case_when(
+                         Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
+                         Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
+                         Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',
+                         Species == 'Thalassarche melanophris' ~ 'Thalassarche melanophrys',
+                         Species == 'Ichthyaetus audouinii' ~ 'Larus audouinii',
+                         Species == 'Stercorarius maccormicki' ~ 'Catharacta maccormicki',
+                         TRUE ~ Species))
 
-Coefs_Aut_simSEM <- readRDS(file = './output_fSEM_temp_simpleSEM/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
-forTrans_simSEM <- subset(Coefs_Aut_simSEM, select = c(Estimate,  Std.Error, Relation, Species, Location, ID))
-forTrans_simSEM <- forTrans_simSEM \%>\%
-                   dplyr::rename(SError = Std.Error)
-met_wide_simSEM <- forTrans_simSEM \%>\%
-                   tidyr::gather(variable, value, -(Relation:ID)) \%>\%
-                   tidyr::unite(temp, Relation, variable, sep = '/') \%>\%
-                   tidyr::spread(temp, value)
-test_simSEM <- all_combi_paths(data = met_wide, DD = 'n_effectGR', simpleSEM = TRUE)
+dataPaths_sp$Species <- unlist(lapply(1:nrow(dataPaths_sp), FUN = function(x){
+  binary <- strsplit(as.character(dataPaths_sp$Species[x]), " ")
+  Underscore <- paste(binary[[1]][1], binary[[1]][2], sep = "_")}))
+dataPaths_sp$Sp_phylo <- dataPaths_sp$Species
+
+# fit the models for: Trait_mean<-det_Clim', 'Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'
+meta_Phen_Cov <- fit_all_meta(data_MA = dataPaths_sp,
+                              Demog_rate = NULL,
+                              Trait_categ = 'Phenological',
+                              Clim = 'Temperature',
+                              Cov_fact = 'WeathQ',
+                              COV = 'Pvalue',
+                              sel = 'Temp_Phen_Cov',
+                              folder_name = NULL,
+                              colr = c('black', 'red'),
+                              DD = 'n_effectGR',
+                              simpleSEM = TRUE,
+                              A = phyloMat,
+                              all_Relations = c('Trait_mean<-det_Clim',
+                              'Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'))
+two <- dplyr::bind_rows(lapply(list('Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'),
+function(x){extr_coefs(obj = meta_Phen_Cov, Type_EfS = x)}))
+# fixing inconsistent variable naming
+Coefs_subst <- dataPaths_sp \%>\%
+dplyr::rename(.,  SError = Std.Error)
+two$P.Value = rep(NA, nrow(two))
+
+Coefs_subst <- Coefs_subst \%>\%
+    dplyr::select(., -c(names(Coefs_subst)[! names(Coefs_subst) \%in\% names(two)]))
+two <- two \%>\%
+    dplyr::select(., -c(names(two)[! names(two) \%in\% names(Coefs_subst)]))
+Coef_all <- rbind(Coefs_subst, two) \%>\%
+dplyr::filter(Trait_Categ == 'Phenological')
+ forTrans <- subset(Coef_all, select = c(Estimate,  SError, Relation,
+ Species, Location, ID))
+ met_wide <- forTrans \%>\%
+     tidyr::gather(variable, value, -(Relation:ID)) \%>\%
+     tidyr::unite(temp, Relation, variable, sep = '/') \%>\%
+     tidyr::spread(temp, value)
+ test_simSEM <- all_combi_paths(data = met_wide, DD = 'n_effectGR',
+                                simpleSEM = TRUE, Trait = FALSE)
 
 }
