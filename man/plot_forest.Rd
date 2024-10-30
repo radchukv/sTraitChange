@@ -57,25 +57,3 @@ returned (invisibly).
 \code{plot_forest} Plots a forest plot displaying the effect sizes
 for each study and global effects across the studies
 }
-\examples{
-Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
-check_noCovar <- fit_meta(data_MA = Coefs_Aut, Type_EfS = 'Trait_mean<-det_Clim',
-                          Covar = NULL)
-plot_forest(data_ES = check_noCovar$data_EfS[[1]],
-            data_globES = check_noCovar$data[[1]],
-            Covar = NULL, xlab = 'Effect of temperature on trait',
-            colr = c('black'),
-            pdf_basename = NULL,
-            mar = c(4, 10, 2, 2),
-            labels_ES = FALSE)
-check_TraitCateg <- fit_meta(data_MA = Coefs_Aut, Type_EfS = 'Trait_mean<-det_Clim',
-                             Covar = 'Trait_Categ')
-plot_forest(data_ES = check_TraitCateg$data_EfS[[1]],
-            data_globES = check_TraitCateg$data_Covar[[1]],
-            Covar = 'Trait_Categ',
-            xlab = 'Effect of temperature on trait',
-            colr = c('red', 'black'),
-            pdf_basename = NULL,
-            mar = c(4, 10, 2, 2),
-            labels_ES = TRUE)
-}
