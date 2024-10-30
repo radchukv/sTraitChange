@@ -21,6 +21,7 @@ Imports:
    climwin,
    dplyr,
    tibble,
+   ggplot2,
    magrittr,
    sp,
    lubridate,
