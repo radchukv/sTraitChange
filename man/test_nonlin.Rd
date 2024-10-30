@@ -12,6 +12,17 @@ test_nonlin(
   ...
 )
 }
+\arguments{
+\item{data}{A dataframe.}
+
+\item{formula_full}{A character specifying the full model to be tested
+(e.g. including quadratic effect).}
+
+\item{formula_null}{A character specifying the model to which the full
+model is to be compared.}
+
+\item{rand_sl}{A character specifying the random model structure.}
+}
 \value{
 A list containing the best full fitted model and the result of
   \code{\link[spaMM]{anova.HLfit}} comparing this model and a null model.

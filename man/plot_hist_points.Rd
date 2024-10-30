@@ -9,7 +9,7 @@ plot_hist_points(
   data_allEstim,
   Ef_sizesEstim,
   dataAxis,
-  Traitdem = "Morphology + Recruitment",
+  Traitdem = "Phenology",
   tabC,
   angle_yax_lab = 90,
   annot = NULL,
@@ -52,7 +52,6 @@ shown by points and error bars, shown historgams of all the underlying study-spe
 effect sizes. Each panel corresponds to a single relation (see \code{Type_EfS} in
 \code{\link{fit_meta}} function) and effect sizes for precipitation and temperature
 are shown in different colors and shapes.
-## Still add examples
 }
 \description{
 \code{plot_hist_points} Plots across-studies effect sizes as points and error bars on

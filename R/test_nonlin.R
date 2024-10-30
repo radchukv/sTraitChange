@@ -11,7 +11,12 @@
 #' using REML.
 #' All models are fitted using the package \pkg{\link[spaMM]{spaMM}}.
 #'
-#' @inheritParams parameters_definition
+#' @param data A dataframe.
+#' @param formula_full A character specifying the full model to be tested
+#' (e.g. including quadratic effect).
+#' @param formula_null A character specifying the model to which the full
+#' model is to be compared.
+#' @param rand_sl A character specifying the random model structure.
 #'
 #' @return A list containing the best full fitted model and the result of
 #'   \code{\link[spaMM]{anova.HLfit}} comparing this model and a null model.
