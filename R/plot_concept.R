@@ -30,6 +30,7 @@
 #' @inheritParams fit_all_meta
 #' @inheritParams plot_forest
 #' @export
+#' @importFrom magrittr "%>%"
 #'
 #' @return Plots a requested relation (CZ, ZG or CG) for each study in the dataset and
 #' overlays the across-study global effect sizes estimated with the meta-analyses.
@@ -83,8 +84,8 @@
 #'                   WeathQ, GenLength_y_IUCN))
 #'
 #' wide_tempES_all <- (merge(wide_temp_all, metaD_temp_all, by = 'ID'))
-#' # and estimating the global, across-study estimates
 #'
+#' # and estimating the global, across-study estimates
 #' dataPaths_sp <- dataPaths %>%
 #'                   dplyr::mutate(Species = dplyr::case_when(
 #'                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',

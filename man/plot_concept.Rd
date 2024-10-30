@@ -117,8 +117,8 @@ temp_std$GR <- as.numeric(temp_std$GR[,1])
                   WeathQ, GenLength_y_IUCN))
 
 wide_tempES_all <- (merge(wide_temp_all, metaD_temp_all, by = 'ID'))
-# and estimating the global, across-study estimates
 
+# and estimating the global, across-study estimates
 dataPaths_sp <- dataPaths \%>\%
                   dplyr::mutate(Species = dplyr::case_when(
                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',

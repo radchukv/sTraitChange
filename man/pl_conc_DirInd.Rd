@@ -40,11 +40,89 @@ effect sizes derived from the meta-analyses as well as the estimated relation be
 CG and CZG using the meta-analysis; 2. correlation estimates between CZG and CG;
 3. fitted mixed-effects model(s) predicting CG by CZG, if required per sign of the
 climatic effect on traits.
-
-## Still add examples
 }
 \description{
 \code{pl_conc_DirInd} Plots for each study the direct effect of climate
 on population growth rate vs the trait-mediated effect of climate on population
 growth rate and overlays the across-study estimates obtained with meta-analyses
+}
+\examples{
+prepare the data to fit the model to extract indirect path
+dataPaths_sp <- dataPaths \%>\%
+                  dplyr::mutate(Species = dplyr::case_when(
+                         Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
+                         Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
+                         Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',
+                         Species == 'Thalassarche melanophris' ~ 'Thalassarche melanophrys',
+                         Species == 'Ichthyaetus audouinii' ~ 'Larus audouinii',
+                         Species == 'Stercorarius maccormicki' ~ 'Catharacta maccormicki',
+                         TRUE ~ Species))
+
+dataPaths_sp$Species <- unlist(lapply(1:nrow(dataPaths_sp), FUN = function(x){
+  binary <- strsplit(as.character(dataPaths_sp$Species[x]), " ")
+  Underscore <- paste(binary[[1]][1], binary[[1]][2], sep = "_")}))
+dataPaths_sp$Sp_phylo <- dataPaths_sp$Species
+
+# fit the models for: Trait_mean<-det_Clim', 'Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'
+meta_Phen_Cov <- fit_all_meta(data_MA = dataPaths_sp,
+                              Demog_rate = NULL,
+                              Trait_categ = 'Phenological',
+                              Clim = 'Temperature',
+                              Cov_fact = 'WeathQ',
+                              COV = 'Pvalue',
+                              sel = 'Temp_Phen_Cov',
+                              folder_name = NULL,
+                              colr = c('black', 'red'),
+                              DD = 'n_effectGR',
+                              simpleSEM = TRUE,
+                              A = phyloMat,
+                              all_Relations = c('Trait_mean<-det_Clim',
+                              'Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'))
+two <- dplyr::bind_rows(lapply(list('Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'),
+function(x){extr_coefs(obj = meta_Phen_Cov, Type_EfS = x)}))
+# fixing inconsistent variable naming
+Coefs_subst <- dataPaths_sp \%>\%
+dplyr::rename(.,  SError = Std.Error)
+two$P.Value = rep(NA, nrow(two))
+
+Coefs_subst <- Coefs_subst \%>\%
+    dplyr::select(., -c(names(Coefs_subst)[! names(Coefs_subst) \%in\% names(two)]))
+two <- two \%>\%
+    dplyr::select(., -c(names(two)[! names(two) \%in\% names(Coefs_subst)]))
+Coef_all <- rbind(Coefs_subst, two) \%>\%
+dplyr::filter(Trait_Categ == 'Phenological')
+# now use this dataset with all coefs as input for ES_dat
+allES_T <- Coef_all \%>\%
+ dplyr::mutate(Climatic_var = 'Temperature')
+ wide_temp_all <- allES_T \%>\%
+  dplyr::select(ID, Estimate, SError, P.Value, Relation) \%>\%
+  tidyr::pivot_wider(id_cols = ID, names_from = Relation,
+  values_from = c(Estimate, SError, P.Value), names_sep = '/')
+
+  metaD_temp_all <- allES_T \%>\%
+  dplyr::distinct(ID, .keep_all = TRUE) \%>\%
+  dplyr::select(-c(Estimate, SError, Relation,
+                  P.Value, Pvalue, Count, Nyears,
+                  WinDur, Ref.day, Ref.month,
+                  WindowClose, deltaAIC, Trait_ageClass,
+                  WeathQ, GenLength_y_IUCN))
+
+wide_tempES_all <- (merge(wide_temp_all, metaD_temp_all, by = 'ID'))
+
+# and estimating the global, across-study estimates
+globES_T <-  meta_Phen_Cov$meta_res[[1]] \%>\%
+dplyr::filter(Levels_Covar == 'intrcpt') \%>\%
+dplyr::mutate(Trait_Categ = 'Phenological',
+  REL = dplyr::case_when(Relation == 'Trait_mean<-det_Clim' ~ 'CZ',
+                        Relation == 'GR<-Trait_mean' ~ 'ZG',
+                        Relation == 'GR<-det_Clim' ~ 'CG',
+                        Relation == 'Ind_GR<-det_Clim' ~ 'CZG',
+                        Relation == 'Tot_GR<-det_Clim' ~ 'TotalCG'))
+# plot
+PhenT_CZGvsCG <- pl_conc_DirInd(Trait_categ = 'Phenological',
+                      GlobES_dat = globES_T,
+                      ES_dat = wide_tempES_all,
+                      ClEfSpecific = FALSE,
+                      xlab = 'Phenology-mediated effect <br> of temperature on G (CZ)',
+                      ylab = 'Direct effect of temperature on G (CG)')$plot
 }
