@@ -18,7 +18,7 @@
 #' @param mar A vector specifying the plot margins, analogously to \code{\link[graphics]{par}}.
 #' @param labels_ES Boolean specifying whether to plot the labels for all the single studies.
 #' Defaults to TRUE.
-#' @inheritParams fit_meta
+#' @inheritParams fit_meta_phylo
 #'
 #' @export
 #'

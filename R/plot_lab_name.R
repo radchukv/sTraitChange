@@ -14,7 +14,7 @@
 #' conducted.
 #' @param Clim Character specifying the level of the climatic variable, for which analyses
 #' were conducted.
-#' @inheritParams fit_meta
+#' @inheritParams fit_meta_phylo
 #'
 #' @export
 #'
