@@ -5,13 +5,20 @@
 \title{Use bootstrap to obtain the coefficients and SEs for all combined pathways}
 \usage{
 all_combi_paths(
-  data_forMA,
+  data_for_MA,
   DD = "n_effectDGR",
   simpleSEM = FALSE,
   Trait = FALSE
 )
 }
 \arguments{
+\item{data_for_MA}{Data frame containing a subset of data_MA (see
+\code{fit_meta_phylo}) in a wide format, i.e. single column per pathway.
+This data frame contains for each pathway for each study the
+effect size estimates along with their SEs obtained with the SEM
+analyses. Besides that, some meta-data on each study is included
+(e.g. study species, study location, study ID).}
+
 \item{DD}{Character specifying how to account for density dependence by
 including population size as additional explanatory in the SEM. Possibilities
 are: 'none' - no inclusion of density dependence, 'n_effectGR' - effect
@@ -30,13 +37,6 @@ the direct impact of trait on GR in the SEM fitted using a complex
 structure, i.e. climate effect on GR is mediated by both trait and
 demographic rate. Is applicable only if \code{simpleSEM = FALSE}.
 Defaults to FALSE.}
-
-\item{data_for_MA}{Data frame containing a subset of data_MA (see
-\code{fit_meta_phylo}) in a wide format, i.e. single column per pathway.
-This data frame contains for each pathway for each study the
-effect size estimates along with their SEs obtained with the SEM
-analyses. Besides that, some meta-data on each study is included
-(e.g. study species, study location, study ID).}
 }
 \value{
 Returns a data frame, which is an extended version of the input data frame,
@@ -98,7 +98,7 @@ dplyr::filter(Trait_Categ == 'Phenological')
      tidyr::gather(variable, value, -(Relation:ID)) \%>\%
      tidyr::unite(temp, Relation, variable, sep = '/') \%>\%
      tidyr::spread(temp, value)
- test_simSEM <- all_combi_paths(data = met_wide, DD = 'n_effectGR',
+ test_simSEM <- all_combi_paths(data_for_MA = met_wide, DD = 'n_effectGR',
                                 simpleSEM = TRUE, Trait = FALSE)
 
 }

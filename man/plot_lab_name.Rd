@@ -17,7 +17,8 @@ plot_lab_name(
 was conducted. Possible are: 'Demog_rate_mean<-det_Clim', 'Demog_rate_mean<-Pop_mean',
 'Demog_rate_mean<-Trait_mean', 'GR<-Demog_rate_mean', 'GR<-det_Clim', 'GR<-Pop_mean',
 'Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim', 'Tot_DemRate<-det_Clim',
-'Tot_GR<-det_Clim', and 'Trait_mean<-det_Clim'. For more details see \code{\link{fit_meta}}.}
+'Tot_GR<-det_Clim', and 'Trait_mean<-det_Clim'. For more details see
+\code{\link{fit_meta_phylo}}.}
 
 \item{Cov_fact}{A character specifying the name of the categorical variable to be included
 as a fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no

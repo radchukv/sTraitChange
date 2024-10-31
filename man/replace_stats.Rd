@@ -11,6 +11,9 @@ replace_stats(data, variable, stats_out)
 
 \item{variable}{A character specifying the name of the variable for which the omnibus
 test is ot be computed.}
+
+\item{stats_out}{A character specifying the results of the Wald test performed by
+calling `anova()` on the fitted meta-analytical model.}
 }
 \value{
 A dataframe that contains corrected statistics values for the specified variable.

@@ -50,7 +50,7 @@ the plot combines the relations from simple and complex SEMs, otherwise set to N
 Plots a forest-like plot with, in addition to the overall effect size estimates
 shown by points and error bars, shown historgams of all the underlying study-speciifc
 effect sizes. Each panel corresponds to a single relation (see \code{Type_EfS} in
-\code{\link{fit_meta}} function) and effect sizes for precipitation and temperature
+\code{\link{fit_meta_phylo}} function) and effect sizes for precipitation and temperature
 are shown in different colors and shapes.
 }
 \description{

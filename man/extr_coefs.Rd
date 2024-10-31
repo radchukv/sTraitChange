@@ -10,8 +10,9 @@ extr_coefs(obj, Type_EfS)
 \item{obj}{An object returned by the  \code{\link{fit_all_meta}} function}
 
 \item{Type_EfS}{Character specifying for which relation to extract the path coefficients,
-These relations reflect different pathways in the fitted SEM, for example 'Demog_rate_mean<-det_Clim',
-'Demog_rate_mean<-Pop_mean', 'Demog_rate_mean<-Trait_mean'. For more details see \code{\link{fit_meta}}}
+These relations reflect different pathways in the fitted SEM, for example
+'Demog_rate_mean<-det_Clim', Demog_rate_mean<-Pop_mean',
+'Demog_rate_mean<-Trait_mean'. For more details see \code{\link{fit_meta_phylo}}}
 }
 \value{
 A dataframe that contains 26 columns including the required path coefficients and

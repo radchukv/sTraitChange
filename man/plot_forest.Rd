@@ -18,10 +18,10 @@ plot_forest(
 }
 \arguments{
 \item{data_ES}{Data frame containing, for each study, the effect size estimates and their
-standard errors, returned as 'data_EfS' by the function \code{\link{fit_meta}}.}
+standard errors, returned as 'data_EfS' by the function \code{\link{fit_meta_phylo}}.}
 
 \item{data_globES}{Data frame containing the global effect sizes across the studies,
-returned by function {fit_meta} as either 'data_Covar' or 'data' (depending on whether
+returned by function {fit_meta_phylo} as either 'data_Covar' or 'data' (depending on whether
 the explanatory categorical variable was included in the meta-analytical model).}
 
 \item{Cov_fact}{A character specifying the name of the categorical variable to be included

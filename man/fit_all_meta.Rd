@@ -85,7 +85,7 @@ is included as one of the explanatory variables. By default treatment contrasts 
  (des.matrix = "treatm.contrasts") but the user can also request identity matrix by
  specifying "identity".}
 
-\item{All_relations}{Vector specifying the names of the relations from the SEMs that will
+\item{all_relations}{Vector specifying the names of the relations from the SEMs that will
 be used as response variables in meta-analyses to be fitted.}
 }
 \value{

@@ -29,7 +29,9 @@ response of species traits to climate will be predicted and plotted.}
 \item{pdf_basename}{A character specifying the name of the .pdf for
 the produced plot.}
 
-\item{xLab}{Character specifying the y axis label.}
+\item{xLab}{Character specifying the x axis label.}
+
+\item{yLab}{Character specifying the y axis label.}
 
 \item{byHemisphere}{Boolean specifying whether raw data points should be coloured depending on
 which Hemisphere they are coming from.}
