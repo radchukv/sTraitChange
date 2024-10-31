@@ -26,5 +26,17 @@ Imports:
    sp,
    lubridate,
    metafor,
+   ape,
+   broom,
+   data.table,
+   ggExtra,
+   ggnewscale,
+   ggtext,
+   openxlsx, 
+   piecewiseSEM,
+   psych,
+   purrr,
+   spaMM,
+   tidyr,
    raster
 RoxygenNote: 7.3.2
