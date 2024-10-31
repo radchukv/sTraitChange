@@ -4,8 +4,9 @@
 #'
 #' @param obj An object returned by the  \code{\link{fit_all_meta}} function
 #' @param Type_EfS Character specifying for which relation to extract the path coefficients,
-#' These relations reflect different pathways in the fitted SEM, for example 'Demog_rate_mean<-det_Clim',
-#' 'Demog_rate_mean<-Pop_mean', 'Demog_rate_mean<-Trait_mean'. For more details see \code{\link{fit_meta}}
+#' These relations reflect different pathways in the fitted SEM, for example
+#' 'Demog_rate_mean<-det_Clim', Demog_rate_mean<-Pop_mean',
+#' 'Demog_rate_mean<-Trait_mean'. For more details see \code{\link{fit_meta_phylo}}
 #'
 #' @return A dataframe that contains 26 columns including the required path coefficients and
 #' the associated meta-data.
@@ -59,6 +60,8 @@ extr_coefs <- function(obj, Type_EfS){
 #' @param data A dataframe containing the output of the model summary
 #' @param variable A character specifying the name of the variable for which the omnibus
 #' test is ot be computed.
+#' @param stats_out A character specifying the results of the Wald test performed by
+#' calling `anova()` on the fitted meta-analytical model.
 #'
 #' @return A dataframe that contains corrected statistics values for the specified variable.
 #' @export

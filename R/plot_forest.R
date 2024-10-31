@@ -4,9 +4,9 @@
 #' for each study and global effects across the studies
 #'
 #' @param data_ES Data frame containing, for each study, the effect size estimates and their
-#' standard errors, returned as 'data_EfS' by the function \code{\link{fit_meta}}.
+#' standard errors, returned as 'data_EfS' by the function \code{\link{fit_meta_phylo}}.
 #' @param data_globES Data frame containing the global effect sizes across the studies,
-#' returned by function {fit_meta} as either 'data_Covar' or 'data' (depending on whether
+#' returned by function {fit_meta_phylo} as either 'data_Covar' or 'data' (depending on whether
 #' the explanatory categorical variable was included in the meta-analytical model).
 #' @param xlab Character specifying the label for the x axis.
 #' @param colr Vector specifying the colours to be used for the data points. The length of the

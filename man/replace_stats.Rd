@@ -19,20 +19,3 @@ A dataframe that contains corrected statistics values for the specified variable
 \code{replace_stats} replaces the values in the table by the correct output of
 omnibus test.
 }
-\examples{
-Coefs_Aut <- readRDS(file = './output_overall_sig/PathCoefs_allMods_Temp_AlsoEstimatedRelations.RDS')
-traits <- read.csv('./data-raw/Species_traits_Subset_11_09.csv')
-Coef_Aut_IndDR <- droplevels(Coefs_Aut \%>\%
-dplyr::filter(., Relation == 'Ind_DemRate<-det_Clim'))
-Coefs_Aut_sp <- base::merge(Coef_Aut_IndDR, traits_proc, by = 'Species')
-mod_genLength <- metafor::rma.mv(Estimate ~ GenLength_y_IUCN + Trait_Categ + Demog_rate_Categ +
-                            GenLength_y_IUCN * Trait_Categ + GenLength_y_IUCN * Demog_rate_Categ +
-                            Pvalue,
-                            V = SError^2, random = list(~ 1|Species, ~1|ID, ~1|Location),
-                            data = Coefs_Aut_sp, method = 'ML')
-stats <- stats::coef(summary(mod_genLength))
-Inter_trait <- stats::anova(mod, btt = grep(':Trait', stats$Parameter))
-DR <- stats::anova(mod, btt = which(stats$Parameter \%in\% stats$Parameter[grepl('Demog_rate', stats$Parameter) & !grepl(':', stats$Parameter)]))
-stats_new <- replace_stats(data = stats, variable = ':Trait', stats_out = Inter_trait)
-stats_new1 <- replace_stats(data = stats, variable = 'Demog_rate', stats_out = DR)
-}

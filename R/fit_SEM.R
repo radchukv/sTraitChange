@@ -6,6 +6,9 @@
 #'
 #' @param out_SEM Character specifying the library on the path where
 #' the results of structural equation analysis are stored.
+#' @standardize A boolean specifying whether the variables have to be
+#'  standardized (z-scored) so as to lead to standardized path coefficients.
+#'  Defaults to FALSE.
 #' @inheritParams fit_mod
 #'
 #' @export

@@ -68,10 +68,10 @@
 #'      tidyr::gather(variable, value, -(Relation:ID)) %>%
 #'      tidyr::unite(temp, Relation, variable, sep = '/') %>%
 #'      tidyr::spread(temp, value)
-#'  test_simSEM <- all_combi_paths(data = met_wide, DD = 'n_effectGR',
+#'  test_simSEM <- all_combi_paths(data_for_MA = met_wide, DD = 'n_effectGR',
 #'                                 simpleSEM = TRUE, Trait = FALSE)
 #'
-all_combi_paths <- function(data_forMA, DD = 'n_effectDGR', simpleSEM = FALSE,
+all_combi_paths <- function(data_for_MA, DD = 'n_effectDGR', simpleSEM = FALSE,
                             Trait = FALSE){
 
   if(simpleSEM){

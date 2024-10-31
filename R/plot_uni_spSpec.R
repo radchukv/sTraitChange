@@ -13,7 +13,7 @@
 #' @param pdf_basename A character specifying the name of the .pdf for
 #' the produced plot.
 #' @param xLab Character specifying the x axis label.
-#' @param xLab Character specifying the y axis label.
+#' @param yLab Character specifying the y axis label.
 #' @param byHemisphere Boolean specifying whether raw data points should be coloured depending on
 #' which Hemisphere they are coming from.
 #' @param miny Numeric specifying the minimum limit for the y axis.
