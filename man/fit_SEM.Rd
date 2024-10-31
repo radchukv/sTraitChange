@@ -42,6 +42,10 @@ as weights in the respective models. Defaults to FALSE.}
 \item{correlation}{Logical (TRUE/FALSE) specifying whether to include
 temporal autocorrelation with AR(1) structure. Defaults to FALSE.}
 
+\item{standardize}{A boolean specifying whether the variables have to be
+standardized (z-scored) so as to lead to standardized path coefficients.
+Defaults to FALSE.}
+
 \item{Trait}{Logical (TRUE/FALSE) specifying whether to include
 the direct impact of trait on GR in the SEM fitted using a complex
 structure, i.e. climate effect on GR is mediated by both trait and

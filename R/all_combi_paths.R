@@ -75,50 +75,50 @@ all_combi_paths <- function(data_for_MA, DD = 'n_effectDGR', simpleSEM = FALSE,
                             Trait = FALSE){
 
   if(simpleSEM){
-    Ind_GR.df <- purrr::pmap_dfr(list(x = data_forMA$`Trait_mean<-det_Clim/Estimate`,
-                                      y = data_forMA$`GR<-Trait_mean/Estimate`,
-                                      x.se = data_forMA$`Trait_mean<-det_Clim/SError`,
-                                      y.se = data_forMA$`GR<-Trait_mean/SError`),
+    Ind_GR.df <- purrr::pmap_dfr(list(x = data_for_MA$`Trait_mean<-det_Clim/Estimate`,
+                                      y = data_for_MA$`GR<-Trait_mean/Estimate`,
+                                      x.se = data_for_MA$`Trait_mean<-det_Clim/SError`,
+                                      y.se = data_for_MA$`GR<-Trait_mean/SError`),
                                  ind_path) %>%
       dplyr::rename(., `Ind_GR<-det_Clim/Estimate` = Median,
                     `Ind_GR<-det_Clim/SError` = SE,
                     `Ind_GR<-det_Clim/lCI` = lCI,
                     `Ind_GR<-det_Clim/uCI` = uCI)
 
-    Tot_GR.df <- purrr::pmap_dfr(list(direct = data_forMA$`GR<-det_Clim/Estimate`,
+    Tot_GR.df <- purrr::pmap_dfr(list(direct = data_for_MA$`GR<-det_Clim/Estimate`,
                                       indir = Ind_GR.df$`Ind_GR<-det_Clim/Estimate`,
-                                      direct.se = data_forMA$`GR<-det_Clim/SError`,
+                                      direct.se = data_for_MA$`GR<-det_Clim/SError`,
                                       indir.se = Ind_GR.df$`Ind_GR<-det_Clim/SError`),
                                  tot_path)  %>%
       dplyr::rename(., `Tot_GR<-det_Clim/Estimate` = Median,
                     `Tot_GR<-det_Clim/SError` = SE,
                     `Tot_GR<-det_Clim/lCI` = lCI,
                     `Tot_GR<-det_Clim/uCI` = uCI)
-    met_wide <- cbind(data_forMA, Ind_GR.df, Tot_GR.df)
+    met_wide <- cbind(data_for_MA, Ind_GR.df, Tot_GR.df)
 
   }else {
     if (! Trait){  ## Indirect path from climate to GR is different if the effect of trait on GR is also included
       ## in that case it is a sum of 2 paths: clim_Tr*Tr_DR*DR_GR and Tr_GR
-    Ind_GR.df <- purrr::pmap_dfr(list(x = data_forMA$`Trait_mean<-det_Clim/Estimate`,
-                                      y = data_forMA$`Demog_rate_mean<-Trait_mean/Estimate`,
-                                      z = data_forMA$`GR<-Demog_rate_mean/Estimate`,
-                                      x.se = data_forMA$`Trait_mean<-det_Clim/SError`,
-                                      y.se = data_forMA$`Demog_rate_mean<-Trait_mean/SError`,
-                                      z.se = data_forMA$`GR<-Demog_rate_mean/SError`),
+    Ind_GR.df <- purrr::pmap_dfr(list(x = data_for_MA$`Trait_mean<-det_Clim/Estimate`,
+                                      y = data_for_MA$`Demog_rate_mean<-Trait_mean/Estimate`,
+                                      z = data_for_MA$`GR<-Demog_rate_mean/Estimate`,
+                                      x.se = data_for_MA$`Trait_mean<-det_Clim/SError`,
+                                      y.se = data_for_MA$`Demog_rate_mean<-Trait_mean/SError`,
+                                      z.se = data_for_MA$`GR<-Demog_rate_mean/SError`),
                                  ind_path) %>%
       dplyr::rename(., `Ind_GR<-det_Clim/Estimate` = Median,
                     `Ind_GR<-det_Clim/SError` = SE,
                     `Ind_GR<-det_Clim/lCI` = lCI,
                     `Ind_GR<-det_Clim/uCI` = uCI)
     } else {
-      Ind_GR.df <- purrr::pmap_dfr(list(x = data_forMA$`Trait_mean<-det_Clim/Estimate`,
-                                        y = data_forMA$`Demog_rate_mean<-Trait_mean/Estimate`,
-                                        z = data_forMA$`GR<-Demog_rate_mean/Estimate`,
-                                        omega = data_forMA$`GR<-Trait_mean/Estimate`,
-                                        x.se = data_forMA$`Trait_mean<-det_Clim/SError`,
-                                        y.se = data_forMA$`Demog_rate_mean<-Trait_mean/SError`,
-                                        z.se = data_forMA$`GR<-Demog_rate_mean/SError`,
-                                        omega.se = data_forMA$`GR<-Trait_mean/SError`),
+      Ind_GR.df <- purrr::pmap_dfr(list(x = data_for_MA$`Trait_mean<-det_Clim/Estimate`,
+                                        y = data_for_MA$`Demog_rate_mean<-Trait_mean/Estimate`,
+                                        z = data_for_MA$`GR<-Demog_rate_mean/Estimate`,
+                                        omega = data_for_MA$`GR<-Trait_mean/Estimate`,
+                                        x.se = data_for_MA$`Trait_mean<-det_Clim/SError`,
+                                        y.se = data_for_MA$`Demog_rate_mean<-Trait_mean/SError`,
+                                        z.se = data_for_MA$`GR<-Demog_rate_mean/SError`,
+                                        omega.se = data_for_MA$`GR<-Trait_mean/SError`),
                                    ind_path) %>%
         dplyr::rename(., `Ind_GR<-det_Clim/Estimate` = Median,
                       `Ind_GR<-det_Clim/SError` = SE,
@@ -127,19 +127,19 @@ all_combi_paths <- function(data_for_MA, DD = 'n_effectDGR', simpleSEM = FALSE,
 
     }
 
-    Ind_DemRate.df <- purrr::pmap_dfr(list(x = data_forMA$`Trait_mean<-det_Clim/Estimate`,
-                                           y = data_forMA$`Demog_rate_mean<-Trait_mean/Estimate`,
-                                           x.se = data_forMA$`Trait_mean<-det_Clim/SError`,
-                                           y.se = data_forMA$`Demog_rate_mean<-Trait_mean/SError`),
+    Ind_DemRate.df <- purrr::pmap_dfr(list(x = data_for_MA$`Trait_mean<-det_Clim/Estimate`,
+                                           y = data_for_MA$`Demog_rate_mean<-Trait_mean/Estimate`,
+                                           x.se = data_for_MA$`Trait_mean<-det_Clim/SError`,
+                                           y.se = data_for_MA$`Demog_rate_mean<-Trait_mean/SError`),
                                       ind_path) %>%
       dplyr::rename(., `Ind_DemRate<-det_Clim/Estimate` = Median,
                     `Ind_DemRate<-det_Clim/SError` = SE,
                     `Ind_DemRate<-det_Clim/lCI` = lCI,
                     `Ind_DemRate<-det_Clim/uCI` = uCI)
 
-    Tot_DemRate.df <- purrr::pmap_dfr(list(direct = data_forMA$`Demog_rate_mean<-det_Clim/Estimate`,
+    Tot_DemRate.df <- purrr::pmap_dfr(list(direct = data_for_MA$`Demog_rate_mean<-det_Clim/Estimate`,
                                            indir = Ind_DemRate.df$`Ind_DemRate<-det_Clim/Estimate`,
-                                           direct.se = data_forMA$`Demog_rate_mean<-det_Clim/SError`,
+                                           direct.se = data_for_MA$`Demog_rate_mean<-det_Clim/SError`,
                                            indir.se = Ind_DemRate.df$`Ind_DemRate<-det_Clim/SError`),
                                       tot_path) %>%
       dplyr::rename(., `Tot_DemRate<-det_Clim/Estimate` = Median,
@@ -147,14 +147,14 @@ all_combi_paths <- function(data_for_MA, DD = 'n_effectDGR', simpleSEM = FALSE,
                     `Tot_DemRate<-det_Clim/lCI` = lCI,
                     `Tot_DemRate<-det_Clim/uCI` = uCI)
 
-    Tot_GR.df <- purrr::pmap_dfr(list(direct = data_forMA$`GR<-det_Clim/Estimate`,
+    Tot_GR.df <- purrr::pmap_dfr(list(direct = data_for_MA$`GR<-det_Clim/Estimate`,
                                       indir = Ind_GR.df$`Ind_GR<-det_Clim/Estimate`,
-                                      ClDem = data_forMA$`Demog_rate_mean<-det_Clim/Estimate`,
-                                      DemGR = data_forMA$`GR<-Demog_rate_mean/Estimate`,
-                                      direct.se = data_forMA$`GR<-det_Clim/SError`,
+                                      ClDem = data_for_MA$`Demog_rate_mean<-det_Clim/Estimate`,
+                                      DemGR = data_for_MA$`GR<-Demog_rate_mean/Estimate`,
+                                      direct.se = data_for_MA$`GR<-det_Clim/SError`,
                                       indir.se = Ind_GR.df$`Ind_GR<-det_Clim/SError`,
-                                      ClDem.se = data_forMA$`Demog_rate_mean<-det_Clim/SError`,
-                                      DemGR.se = data_forMA$`GR<-Demog_rate_mean/SError`),
+                                      ClDem.se = data_for_MA$`Demog_rate_mean<-det_Clim/SError`,
+                                      DemGR.se = data_for_MA$`GR<-Demog_rate_mean/SError`),
                                  tot_path)  %>%
       dplyr::rename(., `Tot_GR<-det_Clim/Estimate` = Median,
                     `Tot_GR<-det_Clim/SError` = SE,
@@ -162,30 +162,30 @@ all_combi_paths <- function(data_for_MA, DD = 'n_effectDGR', simpleSEM = FALSE,
                     `Tot_GR<-det_Clim/uCI` = uCI)
     ## for DD acting on both DR and GR
     if (DD == 'n_effectDGR'){
-      Ind_DD.df <- purrr::pmap_dfr(list(x = data_forMA$`Demog_rate_mean<-Pop_mean/Estimate`,
-                                        y = data_forMA$`GR<-Demog_rate_mean/Estimate`,
-                                        x.se = data_forMA$`Demog_rate_mean<-Pop_mean/SError`,
-                                        y.se = data_forMA$`GR<-Demog_rate_mean/SError`),
+      Ind_DD.df <- purrr::pmap_dfr(list(x = data_for_MA$`Demog_rate_mean<-Pop_mean/Estimate`,
+                                        y = data_for_MA$`GR<-Demog_rate_mean/Estimate`,
+                                        x.se = data_for_MA$`Demog_rate_mean<-Pop_mean/SError`,
+                                        y.se = data_for_MA$`GR<-Demog_rate_mean/SError`),
                                    ind_path) %>%
         dplyr::rename(., `Ind_GR<-Pop_mean/Estimate` = Median,
                       `Ind_GR<-Pop_mean/SError` = SE,
                       `Ind_GR<-Pop_mean/lCI` = lCI,
                       `Ind_GR<-Pop_mean/uCI` = uCI)
 
-      Tot_DD.df <- purrr::pmap_dfr(list(direct = data_forMA$`GR<-Pop_mean/Estimate`,
+      Tot_DD.df <- purrr::pmap_dfr(list(direct = data_for_MA$`GR<-Pop_mean/Estimate`,
                                         indir = Ind_DD.df$`Ind_GR<-Pop_mean/Estimate`,
-                                        direct.se = data_forMA$`GR<-Pop_mean/SError`,
+                                        direct.se = data_for_MA$`GR<-Pop_mean/SError`,
                                         indir.se = Ind_DD.df$`Ind_GR<-Pop_mean/SError`),
                                    tot_path) %>%
         dplyr::rename(., `Tot_GR<-Pop_mean/Estimate` = Median,
                       `Tot_GR<-Pop_mean/SError` = SE,
                       `Tot_GR<-Pop_mean/lCI` = lCI,
                       `Tot_GR<-Pop_mean/uCI` = uCI)
-      met_wide <- cbind(data_forMA, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df, Ind_DD.df, Tot_DD.df)
+      met_wide <- cbind(data_for_MA, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df, Ind_DD.df, Tot_DD.df)
 
     }
     else{
-      met_wide <- cbind(data_forMA, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df)
+      met_wide <- cbind(data_for_MA, Ind_GR.df, Ind_DemRate.df, Tot_GR.df, Tot_DemRate.df)
     }
   }
 
