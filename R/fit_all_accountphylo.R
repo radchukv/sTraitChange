@@ -24,7 +24,8 @@
 #'
 #' @examples
 #' phenT <- fit_all_acountphylo(data_MA = dataPaths,
-#'                              vtree = "./data/phylogenies",
+#'                              vtree_folder =
+#'                              system.file("extdata/phylogenies", package="sTraitChange"),
 #'                              ind = 2, Trait_categ = "Phenological",
 #'                              Clim = "Temperature")
 #'
