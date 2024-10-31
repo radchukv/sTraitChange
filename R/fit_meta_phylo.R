@@ -31,6 +31,7 @@
 #'
 #' @inheritParams fit_mod
 #' @importFrom magrittr "%>%"
+#' @importFrom stats "AIC"
 #'
 #' @export
 #'

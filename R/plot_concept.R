@@ -31,6 +31,7 @@
 #' @inheritParams plot_forest
 #' @export
 #' @importFrom magrittr "%>%"
+#' @importFrom magrittr "%<>%"
 #'
 #' @return Plots a requested relation (CZ, ZG or CG) for each study in the dataset and
 #' overlays the across-study global effect sizes estimated with the meta-analyses.

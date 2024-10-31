@@ -38,5 +38,6 @@ Imports:
    purrr,
    spaMM,
    tidyr,
-   raster
+   raster,
+   stats
 RoxygenNote: 7.3.2

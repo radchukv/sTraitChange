@@ -9,6 +9,7 @@
 #' @inheritParams plot_concept
 #' @export
 #' @importFrom magrittr "%>%"
+#' @importFrom magrittr "%<>%"
 #'
 #' @return A list with 1. a plot of study-specific estimates of direct effects
 #' of climate on population growth rate (CG) vs the estimates of trait-mediated

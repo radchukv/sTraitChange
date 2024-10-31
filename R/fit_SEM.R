@@ -10,6 +10,8 @@
 #'  standardized (z-scored) so as to lead to standardized path coefficients.
 #'  Defaults to FALSE.
 #' @inheritParams fit_mod
+#' @importFrom magrittr "%>%"
+#'
 #'
 #' @export
 #'
