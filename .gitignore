@@ -29,4 +29,5 @@ output_all_simpleSEM_PThresh
 output_all_simpleSEM_check
 scripts
 .DS_Store
+./inst/extdata/tg_ens_mean_0.1deg_reg_v18.0e.nc
 tables
