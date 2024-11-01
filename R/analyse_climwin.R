@@ -37,10 +37,19 @@
 #' the above-mentioned columns.
 #'
 #' @examples
-#' dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
-#' t_anal <- analyse_climwin(ID = 1, biol_data = dat_birds,
-#'                           out_clim = 'output_climwin',
-#'                           out_for_SEM = 'output_forSEM'
+#' biol_noSea <- prep_subset(data = data, Seabird = FALSE)
+#' # keep only EU countries
+#' biol_eu <- droplevels(subset(biol_noSea$subdata[[1]],
+#' ! Country %in% c('Antarctica', 'Australia',
+#'                 'Canada', 'Falkland Islands',
+#'                 'Greenland', 'Mexico',
+#'                 'New Zealand', 'South Africa',
+#'                 'South Atlantic Ocean',
+#'                 'South Georgia', 'Svalbard',
+#'                 'Taiwan', 'USA', 'Venezuela')))
+#' t_anal <- analyse_climwin(ID = 1, biol_data = biol_eu,
+#'                           out_clim = 'output_climwin_temp',
+#'                           out_for_SEM = 'output_forSEM_temp'
 #'                           randwin = TRUE, metric = 'AIC',
 #'                           MinDur = 1, MaxDur = 12,
 #'                           oneGrid = TRUE, explanYear = TRUE,
@@ -58,11 +67,8 @@ analyse_climwin <- function(ID, biol_data,
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
   if (randwin) {
     dat <- readRDS(paste0('./', out_clim, '/', subs$ID[1], '_',
-                          subs$Species[1], '_', subs$Location[1],
-                          '_', subs$Trait[1], '_OneGrid_', oneGrid,
-                          '_explYear_', explanYear, '_EndWindow_',
-                          endWindow,'_RefMon_', RefMon,
-                          '_Rand', '.RDS'))
+                          subs$Species[1], '_OneG_', oneGrid,
+                          '_Rand',  '.RDS'))
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
     biol_data_noNA <- biol %>%
@@ -73,11 +79,8 @@ analyse_climwin <- function(ID, biol_data,
     climdata <- dat$clim_data[[1]]
   } else {
     dat <- readRDS(paste0('./', out_clim, '/', subs$ID[1], '_',
-                          subs$Species[1], '_', subs$Location[1],
-                          '_', subs$Trait[1], '_OneGrid_', oneGrid,
-                          '_explYear_', explanYear, '_EndWindow_',
-                          endWindow, '_RefMon_', RefMon,'.RDS'))
-
+                          subs$Species[1], '_OneG_', oneGrid,
+                          '.RDS'))
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
     biol_data_noNA <- biol %>%
@@ -87,12 +90,9 @@ analyse_climwin <- function(ID, biol_data,
     climdata <- dat$clim_data[[1]]
   }
 
-  pdf(paste0('./', out_clim, '/', subs$ID[1], '_',
-             subs$Species[1], '_', subs$Location[1],
-             '_', subs$Trait[1], '_OneGrid_', oneGrid,
-             '_explYear_', explanYear, '_EndWindow_',
-             endWindow, '_RefMon_', RefMon, '_climwin.pdf'))
-  par(mfrow = c(2,2))
+  grDevices::pdf(paste0('./', out_clim, '/', subs$ID[1], '_',
+             subs$Species[1], '_OneG_', oneGrid, '_climwin.pdf'))
+  graphics::par(mfrow = c(2,2))
   print(climwin::plotdelta(climwin_out$Dataset))
   print(climwin::plotwin(climwin_out$Dataset))  ## seems like a bug: if the window is exactly 1 time step, does not work
   print(climwin::plotweights(climwin_out$Dataset))
@@ -100,14 +100,14 @@ analyse_climwin <- function(ID, biol_data,
     print(climwin::plothist(dataset = climwin_out$Dataset,
                             datasetrand = randwin_out))
   }
-  dev.off()
+  grDevices::dev.off()
 
   if(randwin){
     pval_rand <- climwin::pvalue(dataset = climwin_out$Dataset,
                                  datasetrand = randwin_out,
                                  metric = metric,
                                  sample.size = nrow(climwin_out$BestModelData))
-    if(class(pval_rand) == 'character') {
+    if(is.character(pval_rand)) {
       pval_rand <- as.numeric(substr(pval_rand, 2, 6))
     }
     # for now outputting climate var as calculated with the best model
@@ -124,15 +124,7 @@ analyse_climwin <- function(ID, biol_data,
                               clim = climdata,
                               biol_data = biol_data_noNA,
                               MinDur = MinDur, MaxDur = MaxDur,
-                              deltaThresh = deltaThresh,
-                              WindowClose = data_climwin$WindowClose[1],
-                              Ref.day = data_climwin$Reference.day[1],
-                              Ref.month = data_climwin$Reference.month[1],
-                              Pvalue = pval_rand,
-                              oneGrid = oneGrid,
-                              explanYear = explanYear,
-                              endWindow = endWindow,
-                              RefMon = RefMon)
+                              deltaThresh = deltaThresh)
     } else {
       dat_out <- cbind(biol_data_noNA, Clim =
                          climwin_out$BestModelData[, c('climate')],
@@ -159,10 +151,7 @@ analyse_climwin <- function(ID, biol_data,
       # save these data for SEM
       saveRDS(object = res,
               file = paste0('./', out_for_SEM, '/', biol$ID[1], '_',
-                            biol$Species[1], '_', biol$Location[1],
-                            '_', biol$Trait[1], '_OneGrid_', oneGrid,
-                            '_explYear_', explanYear, '_EndWindow_',
-                            endWindow, '_RefMon_', RefMon,
+                            biol$Species[1], '_OneG_', oneGrid,
                             '_ForSEM',  '.RDS'))
       return(res)
       }

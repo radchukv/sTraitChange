@@ -68,10 +68,19 @@ with climate window analysis (function \code{\link{climwin_proc}})
 for the specified study ID
 }
 \examples{
-dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
-t_anal <- analyse_climwin(ID = 1, biol_data = dat_birds,
-                          out_clim = 'output_climwin',
-                          out_for_SEM = 'output_forSEM'
+biol_noSea <- prep_subset(data = data, Seabird = FALSE)
+# keep only EU countries
+biol_eu <- droplevels(subset(biol_noSea$subdata[[1]],
+! Country \%in\% c('Antarctica', 'Australia',
+                'Canada', 'Falkland Islands',
+                'Greenland', 'Mexico',
+                'New Zealand', 'South Africa',
+                'South Atlantic Ocean',
+                'South Georgia', 'Svalbard',
+                'Taiwan', 'USA', 'Venezuela')))
+t_anal <- analyse_climwin(ID = 1, biol_data = biol_eu,
+                          out_clim = 'output_climwin_temp',
+                          out_for_SEM = 'output_forSEM_temp'
                           randwin = TRUE, metric = 'AIC',
                           MinDur = 1, MaxDur = 12,
                           oneGrid = TRUE, explanYear = TRUE,

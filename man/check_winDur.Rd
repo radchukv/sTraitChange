@@ -21,7 +21,7 @@ population and species.}
 \item{MaxDur}{A numeric specifying the maximum allowed window duration.}
 
 \item{deltaThresh}{A numeric specifying the minimum deltaAIC value for which the
-model will stil be judged acceptable for selecting the window duration.}
+model will still be judged acceptable for selecting the window duration.}
 }
 \value{
 If the climatic window within the specified range is found and the
@@ -37,18 +37,4 @@ NULL.
 selected model is within the specified range and if not, finds the
 model with such a window (given that the model with such window
 is still better than the one without climatic variable as explanatory)
-}
-\examples{
-dat_birds <- read.csv('./data-raw/Test_european_birds.csv')
-meanT <- raster::stack('./data-raw/tg_ens_mean_0.1deg_reg_v18.0e.nc')
-test_rand <- climwin_proc(biol_data = dat_birds,
-                          clim_data = meanT, ID = 1,
-                          randwin = TRUE, seednum = 1302,
-                          repeats = 8, plot_check = FALSE,
-                          RefMon = 7, out_dir = 'output_climwin_temp',
-                          stat = 'mean')
-winDur <- check_winDur(climwin_out = test_rand$climwin_output[[1]],
-                       clim = test_rand$clim_data[[1]],
-                       biol_data = test_rand$biol_data[[1]],
-                       MinDur = 7, MaxDur = 300, deltaThresh = -7)
 }
