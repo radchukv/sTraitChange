@@ -43,8 +43,8 @@
 #'                                        miny = min(dataPaths_phen$Estimate) - 0.1,
 #'                                        maxy = max(dataPaths_phen$Estimate) + 0.1)
 #'
-plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
-                            mod_mv = mod_CZ_Lat,
+plot_uni_spSpec <- function(data_allEstim,
+                            mod_mv,
                             lOut = 10,
                             pdf_basename = NULL,
                             xLab,
@@ -52,7 +52,7 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
                             byHemisphere = FALSE,
                             miny = -1.2, maxy = 1.2){
 
-  subs_pred <- names(as.data.frame(predict(mod_mv,  addx=TRUE)))[seq(length(names(as.data.frame(predict(mod_mv,  addx=TRUE)))) - nrow(stats::coef(summary(mod_mv))) + 1, length(names(as.data.frame(predict(mod_mv,  addx=TRUE)))))]
+  subs_pred <- names(as.data.frame(stats::predict(mod_mv,  addx=TRUE)))[seq(length(names(as.data.frame(stats::predict(mod_mv,  addx=TRUE)))) - nrow(stats::coef(summary(mod_mv))) + 1, length(names(as.data.frame(stats::predict(mod_mv,  addx=TRUE)))))]
   subs_pred <- unlist(lapply(strsplit(subs_pred, split = 'X.'), function(x){x[2]}))
   Pred_data <- matrix(c(seq(from = min(data_allEstim[, subs_pred[2]], na.rm = T),
                                 to = max(data_allEstim[, subs_pred[2]], na.rm = T),
@@ -79,22 +79,23 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
 
   if(byHemisphere){
     Pred_data %<>%
-      dplyr::rename(Estimate = pred) %>%
-      dplyr::mutate(., SD = (ci.ub - ci.lb) / 4,
-                    Est_PlSD = Estimate + SD,
-                    Est_MinSD = Estimate - SD,
+      dplyr::rename(.data, Estimate = .data$pred) %>%
+      dplyr::mutate(.data, SD = (.data$ci.ub - .data$ci.lb) / 4,
+                    Est_PlSD = .data$Estimate + .data$SD,
+                    Est_MinSD = .data$Estimate - .data$SD,
                     Hemisphere = '')
   } else {
     Pred_data %<>%
-      dplyr::rename(Estimate = pred) %>%
-      dplyr::mutate(., SD = (ci.ub - ci.lb) / 4,
-                    Est_PlSD = Estimate + SD,
-                    Est_MinSD = Estimate - SD)
+      dplyr::rename(.data, Estimate = .data$pred) %>%
+      dplyr::mutate(.data, SD = (.data$ci.ub - .data$ci.lb) / 4,
+                    Est_PlSD = .data$Estimate + .data$SD,
+                    Est_MinSD = .data$Estimate - .data$SD)
   }
 
 
   if(stats::coef(summary(mod_mv))$pval[2] < 0.05){  ## still hard-coded, decision on the line type
     lt = 1} else {lt = 2}
+  Hemisphere <- Est_MinSD <- Est_PlSD <- NULL
   if(byHemisphere){
     pl_CZ <- ggplot2::ggplot(data_allEstim, ggplot2::aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 5]],
                                        y = Estimate, colour = Hemisphere)) +
@@ -128,7 +129,7 @@ plot_uni_spSpec <- function(data_allEstim = CZ_Phen,
     grDevices::pdf(file = paste0(pdf_basename, '.pdf'))
   }
   print(pl_CZ)
-  dev.off()
+  grDevices::dev.off()
 
   return(list(Pred_data, pl_CZ))
 }
