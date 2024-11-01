@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' ### DO NOT RUN! - takes long time
-#' Fit SEMs on all studies - exclude 3 studies for which the models do not converge
+#' # Fit SEMs on all studies - exclude 3 studies for which the models do not converge
 #' \dontrun{
 #' fitted_SEMs <- lapply(unique(dataSEM$ID)[- which(unique(dataSEM$ID) %in%
 #'                   c(3, 221, 550))],
