@@ -47,11 +47,11 @@ plot_hist_points <- function(data_allEstim,
   if(is.null(annot)){
     if(! is.null(Traitdem)){
       data_sub <- data_allEstim %>%
-        dplyr::filter(.data, .data$TraitDem == Traitdem)
+        dplyr::filter(.data$TraitDem == Traitdem)
       Ef_sub <- Ef_sizesEstim %>%
-        dplyr::filter(.data, .data$TraitDem == Traitdem)
+        dplyr::filter(.data$TraitDem == Traitdem)
       tab_subs <- tabC %>%
-        dplyr::filter(.data, .data$TraitDem == Traitdem)
+        dplyr::filter(.data$TraitDem == Traitdem)
 
     ggplot2::ggplot() + ggplot2::geom_histogram(data = data_sub,
                                                 ggplot2::aes(x = Estimate, fill = Climatic_var),
@@ -98,11 +98,11 @@ plot_hist_points <- function(data_allEstim,
                            col = c('red4', 'royalblue1'))
     } else {
       data_sub <- data_allEstim %>%
-        dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
+        dplyr::filter(.data$Trait_Categ == Trait_categ)
       Ef_sub <- Ef_sizesEstim %>%
-        dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
+        dplyr::filter(.data$Trait_Categ == Trait_categ)
       tab_subs <- tabC %>%
-        dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
+        dplyr::filter(.data$Trait_Categ == Trait_categ)
       ggplot2::ggplot() + ggplot2::geom_histogram(data = data_sub,
                                                   ggplot2::aes(x = Estimate, fill = Climatic_var),
                                                   alpha = 0.5, bins = 50) +
@@ -149,11 +149,11 @@ plot_hist_points <- function(data_allEstim,
     }
   } else {
     data_sub <- data_allEstim %>%
-      dplyr::filter(.data, .data$TraitDem == Traitdem)
+      dplyr::filter(.data$TraitDem == Traitdem)
     Ef_sub <- Ef_sizesEstim %>%
-      dplyr::filter(.data, .data$TraitDem == Traitdem)
+      dplyr::filter(.data$TraitDem == Traitdem)
     tab_subs <- tabC %>%
-      dplyr::filter(.data, .data$TraitDem == Traitdem)
+      dplyr::filter(.data$TraitDem == Traitdem)
 
     ggplot2::ggplot() + ggplot2::geom_blank(data =data_sub,
                                             ggplot2::aes(x = Estimate)) +

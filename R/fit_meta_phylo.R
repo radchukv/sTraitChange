@@ -32,6 +32,7 @@
 #' @inheritParams fit_mod
 #' @importFrom magrittr "%>%"
 #' @importFrom stats "AIC"
+#' @importFrom rlang  .data
 #'
 #' @export
 #'
@@ -96,13 +97,13 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                      Trait = FALSE, A, des.matrix = "treatm.contrasts"){
   ## calculating indirect effects, total effects and their SEs
   forTrans <- data_MA %>%
-    dplyr::select(.data, .data$Estimate,  .data$Std.Error,
+    dplyr::select(.data$Estimate,  .data$Std.Error,
                   .data$Relation, .data$Species,
                   .data$Sp_phylo, .data$Location, .data$ID) %>%
-    dplyr::rename(.data, SError = .data$Std.Error)
+    dplyr::rename(SError = .data$Std.Error)
 
   met_wide <- forTrans %>%
-    tidyr::gather(.data, .data$variable, .data$value, -(Relation:ID)) %>%
+    tidyr::gather(variable, value, -(Relation:ID)) %>%
     tidyr::unite(temp, Relation, variable, sep = '/') %>%
     tidyr::spread(temp, value)
 
@@ -116,37 +117,37 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
 
   trans_allEfS <- met_wide %>%
     tidyr::gather(key, value, -c(Species:ID)) %>%
-    tidyr::separate(.data, .data$key, into = c('Relation', 'Metric'), sep = "/") %>%
-    tidyr::spread(.data, .data$Metric, .data$value)
+    tidyr::separate(key, into = c('Relation', 'Metric'), sep = "/") %>%
+    tidyr::spread(., Metric, value)
 
 
   subs_merge <- droplevels(data_MA %>%
-                             dplyr::distinct(.data, .data$ID, .data$Country,
-                                             .data$Continent, .data$Longitude,
-                                             .data$Latitude, .data$Taxon,
+                             dplyr::distinct(.data$ID, .data$Country, .data$Continent,
+                                             .data$Longitude, .data$Latitude, .data$Taxon,
                                              .data$BirdType, .data$Trait_Categ,
                                              .data$Trait, .data$Demog_rate_Categ,
                                              .data$Demog_rate, .data$Count,
                                              .data$Nyears, .data$WinDur, .data$deltaAIC,
                                              .keep_all = T) %>%
-                             subset(.data,
-                                    select = c(.data, .data$ID, .data$Study_Authors,
-                                               .data$Country, .data$Continent,
-                                               .data$Longitude, .data$Latitude,
-                                               .data$Taxon, .data$BirdType,
-                                               .data$Trait_Categ, .data$Trait,
-                                               .data$Demog_rate_Categ, .data$Demog_rate,
-                                               .data$Count, .data$Nyears, .data$WinDur,
-                                               .data$deltaAIC, .data$Pvalue,
-                                               .data$WeathQ, .data$Ref.day,
-                                               .data$Ref.month, .data$WindowClose,
-                                               .data$Trait_ageClass, .data$GenLength_y_IUCN)))
+                             subset(.,
+                                    select = c(ID, Study_Authors,
+                                               Country, Continent,
+                                               Longitude, Latitude, Taxon,
+                                               BirdType, Trait_Categ, Trait,
+                                               Demog_rate_Categ, Demog_rate,
+                                               Count, Nyears, WinDur,
+                                               deltaAIC, Pvalue, WeathQ,
+                                               Ref.day, Ref.month, WindowClose,
+                                               Trait_ageClass,
+                                               GenLength_y_IUCN)))
+
 
   tot <- merge(trans_allEfS, subs_merge, by = c('ID'))
 
 
   ## subset a specified effect size only
-  subs_data <- subset(tot, Relation == Type_EfS)
+  subs_data <- tot %>%
+    dplyr::filter(Relation == Type_EfS)
 
   ##  preparing a formula depending on the covariates included
   if(des.matrix == 'treatm.contrasts') {

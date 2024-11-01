@@ -52,12 +52,12 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
   ## calculate GR
   data_GR <- consec_yrs %>%
-    dplyr::mutate(.data, Pop_mean_lag = c(.data$Pop_mean[-1], NA)) %>%
-    dplyr::mutate(.data, GR = log(.data$Pop_mean_lag / .data$Pop_mean)) %>%
-    dplyr::filter(.data, !is.na(.data$GR) & !is.na(.data$Trait_mean) &
+    dplyr::mutate(Pop_mean_lag = c(.data$Pop_mean[-1], NA)) %>%
+    dplyr::mutate(GR = log(.data$Pop_mean_lag / .data$Pop_mean)) %>%
+    dplyr::filter(!is.na(.data$GR) & !is.na(.data$Trait_mean) &
                     !is.na(.data$Demog_rate_mean) & !is.na(.data$Pop_mean)) %>%
-    dplyr::mutate(det_Clim = stats::resid(stats::lm(.data$Clim ~ .data$Year,
-                                                    data = .data))) %>%
+    dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
+                                                    data = .))) %>%
     dplyr::mutate(dplyr::across(tidyselect::where(is.array), as.numeric))
 
 
@@ -66,7 +66,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
              data_GR$Species[1], '_', data_GR$Location[1],
              '_', data_GR$Trait[1], '_relations.pdf'))
   dat_sub <- data_GR %>%
-    dplyr::select(.data, .data$Clim, .data$det_Clim, .data$Year,
+    dplyr::select(.data$Clim, .data$det_Clim, .data$Year,
                   .data$Trait_mean, .data$Demog_rate_mean,
                   .data$Pop_mean, .data$GR)
   psych::pairs.panels(dat_sub, ellipses = FALSE, hist.col = 'grey', lm = TRUE)
@@ -80,7 +80,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
   if(standardize){
     data_GR <- data_GR %>%
-      dplyr::mutate(.data, Trait_SE = .data$Trait_SE / stats::sd(.data$Trait_mean, na.rm = T),
+      dplyr::mutate(Trait_SE = .data$Trait_SE / stats::sd(.data$Trait_mean, na.rm = T),
                     Demog_rate_SE = .data$Demog_rate_SE / stats::sd(.data$Demog_rate_mean, na.rm = T),
                     det_Clim = scale(.data$det_Clim),
                     Trait_mean = scale(.data$Trait_mean),
@@ -93,7 +93,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                data_GR$Species[1], '_', data_GR$Location[1],
                '_', data_GR$Trait[1], '_z_score_relations.pdf'))
     dat_sub <- data_GR %>%
-      dplyr::select(.data, .data$Clim, .data$det_Clim, .data$Year,
+      dplyr::select(.data$Clim, .data$det_Clim, .data$Year,
                     .data$Trait_mean, .data$Demog_rate_mean,
                     .data$Pop_mean, .data$GR)
     psych::pairs.panels(dat_sub, ellipses = FALSE, hist.col = 'grey', lm = TRUE)

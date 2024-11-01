@@ -22,9 +22,9 @@
 #'  consec_yrs <- merge(full_NA, subs, by = 'Year', all= T)
 #'
 #'  data_GR <- consec_yrs %>%
-#'  dplyr::mutate(.data, Pop_mean_lag = c(.data$Pop_mean[-1], NA)) %>%
-#'  dplyr::mutate(.data, GR = log(.data$Pop_mean_lag / .data$Pop_mean)) %>%
-#'  dplyr::filter(.data, !is.na(.data$GR) & !is.na(.data$Trait_mean) &
+#'  dplyr::mutate(Pop_mean_lag = c(.data$Pop_mean[-1], NA)) %>%
+#'  dplyr::mutate(GR = log(.data$Pop_mean_lag / .data$Pop_mean)) %>%
+#'  dplyr::filter(!is.na(.data$GR) & !is.na(.data$Trait_mean) &
 #'                !is.na(.data$Demog_rate_mean) & !is.na(.data$Pop_mean)) %>%
 #'  dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
 #'                data = .data))) %>%
@@ -52,8 +52,8 @@ get_res_SEM <- function(mod_obj){
 
   # add timeseries duration
   data <- data %>%
-    dplyr::group_by(.data, data$ID) %>%
-    dplyr::mutate(.data, NYears = dplyr::n()) %>%
+    dplyr::group_by(data$ID) %>%
+    dplyr::mutate(NYears = dplyr::n()) %>%
     dplyr::ungroup()
 
   res <- tibble::tibble(ID = unique(data$ID),

@@ -79,15 +79,15 @@ plot_uni_spSpec <- function(data_allEstim,
 
   if(byHemisphere){
     Pred_data %<>%
-      dplyr::rename(.data, Estimate = .data$pred) %>%
-      dplyr::mutate(.data, SD = (.data$ci.ub - .data$ci.lb) / 4,
+      dplyr::rename(Estimate = .data$pred) %>%
+      dplyr::mutate(SD = (.data$ci.ub - .data$ci.lb) / 4,
                     Est_PlSD = .data$Estimate + .data$SD,
                     Est_MinSD = .data$Estimate - .data$SD,
                     Hemisphere = '')
   } else {
     Pred_data %<>%
-      dplyr::rename(.data, Estimate = .data$pred) %>%
-      dplyr::mutate(.data, SD = (.data$ci.ub - .data$ci.lb) / 4,
+      dplyr::rename(Estimate = .data$pred) %>%
+      dplyr::mutate(SD = (.data$ci.ub - .data$ci.lb) / 4,
                     Est_PlSD = .data$Estimate + .data$SD,
                     Est_MinSD = .data$Estimate - .data$SD)
   }

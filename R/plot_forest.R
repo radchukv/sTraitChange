@@ -19,6 +19,7 @@
 #' @param labels_ES Boolean specifying whether to plot the labels for all the single studies.
 #' Defaults to TRUE.
 #' @inheritParams fit_meta_phylo
+#' @importFrom rlang .data
 #'
 #' @export
 #'
@@ -118,12 +119,12 @@ plot_forest <- function(data_ES,
 
   ## prepare dataframe with global effect sizes
   data_globES_prep <- data_globES %>%
-    dplyr::rename(.data, lwr = .data$EfS_Low, upr = .data$EfS_Upper) %>%
-    dplyr::mutate(.data, y = c(1:.data$miny_glob))
+    dplyr::rename(lwr = .data$EfS_Low, upr = .data$EfS_Upper) %>%
+    dplyr::mutate(y = c(1:.data$miny_glob))
 
   if(! is.null(Cov_fact)){
     data_globES_prep <- data_globES_prep %>%
-      tidyr::separate(.data, .data$Levels_Covar, into = c('Category', 'Level'),
+      tidyr::separate(.data$Levels_Covar, into = c('Category', 'Level'),
                       sep = Cov_fact, fill = 'right')
 
     # if(is.null(COV)){

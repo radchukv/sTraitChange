@@ -44,7 +44,7 @@ tab_spSpecific_uni <- function(mod_mv, table_name,
   stats$Parameter <- rownames(stats)
   stats$DF <- numeric(length = nrow(stats))
   stats <- stats %>%
-    dplyr::select(.data, -c(.data$ci.lb, .data$ci.ub))
+    dplyr::select(-c(.data$ci.lb, .data$ci.ub))
   colnames(stats) <- c('Estimate', 'SE', 'Chi2', 'pval', 'Parameter', 'DF')
 
   if(! is.null(interact_fac)){

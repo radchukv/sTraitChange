@@ -26,21 +26,21 @@ prep_subset <- function(data, Seabird = FALSE){
   ## choice on seabirds
   if(Seabird){
     sub_bird <- droplevels(data %>%
-                             dplyr::filter(.data, .data$BirdType == 'Seabird'))
+                             dplyr::filter(.data$BirdType == 'Seabird'))
   }else{
     sub_bird <- droplevels(data %>%
-                             dplyr::filter(.data, .data$BirdType != 'Seabird'))
+                             dplyr::filter(.data$BirdType != 'Seabird'))
   }
 
   ## have to check whether for each ID the trait is not being repeated
   biol_NY <- sub_bird %>%
-    dplyr::group_by(.data, .data$ID) %>%
-    dplyr::mutate(.data, NYears = dplyr::n()) %>%
+    dplyr::group_by(.data$ID) %>%
+    dplyr::mutate(NYears = dplyr::n()) %>%
     dplyr::ungroup()
 
   nodupl <- biol_NY[! duplicated(biol_NY$ID), ]
   Sel <- droplevels(nodupl %>%
-                      dplyr::distinct(.data, .data$Study_Authors, .data$Species,
+                      dplyr::distinct(.data$Study_Authors, .data$Species,
                                       .data$Location, .data$Trait, .data$NYears,
                                       .keep_all = T))
 

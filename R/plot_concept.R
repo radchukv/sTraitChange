@@ -144,14 +144,14 @@ plot_concept <- function(Trait_categ = 'Phenological',
                          ClEfSpecific = TRUE,
                          miny = -6, maxy = 6){
   raw_dat <- raw_dat %>%
-    dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
+    dplyr::filter(.data$Trait_Categ == Trait_categ)
   GlobES_dat <- GlobES_dat[GlobES_dat$REL == path &
                              GlobES_dat$Trait_Categ == Trait_categ, ]
   GlobES_dat %<>%
     dplyr::mutate(ltype = dplyr::case_when(pval_Covar < 0.05 ~ '1',
                                            TRUE ~ '2'))
   ES_dat <- ES_dat %>%
-    dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
+    dplyr::filter(.data$Trait_Categ == Trait_categ)
 
   if(ClEfSpecific){
   dat_rib <- data.frame(x = c(rep(seq(min(raw_dat$det_Clim),

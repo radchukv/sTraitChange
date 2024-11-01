@@ -106,7 +106,7 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                            xlab = 'Trait-mediated effect of climate on G (CZG)'){
 
   ES_dat <- ES_dat %>%
-    dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
+    dplyr::filter(.data$Trait_Categ == Trait_categ)
   GlobES_dat <- GlobES_dat[GlobES_dat$REL %in% c('CZG', 'CG') &
                              GlobES_dat$Trait_Categ == Trait_categ, ]
   GlobES_dat %<>%
@@ -122,14 +122,14 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
     tidyr::unnest(out)
 
   negEf <- ES_dat %>%
-    dplyr::filter(.data, .data$SignClEffect == 'Negative')
+    dplyr::filter(.data$SignClEffect == 'Negative')
   mod_ML_neg <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,
                                 V = `SError/Ind_GR<-det_Clim`^2,
                                 random = list(~ 1|Species, ~1|ID, ~1|Location),
                                 data = negEf,
                                 method = 'ML')
   posEf <- ES_dat %>%
-    dplyr::filter(.data, .data$SignClEffect == 'Nonnegative')
+    dplyr::filter(.data$SignClEffect == 'Nonnegative')
   mod_ML_pos <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,
                                 V = `SError/Ind_GR<-det_Clim`^2,
                                 random = list(~ 1|Species, ~1|ID, ~1|Location),
@@ -144,7 +144,7 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                         SignClEffect = rep(unique(ES_dat$SignClEffect), each = 10))
 
   rib_dat %<>%
-    dplyr::mutate(.data, ymax = c(mod_ML_neg$ci.ub[2] * x[.data$SignClEffect == 'Negative'],
+    dplyr::mutate(ymax = c(mod_ML_neg$ci.ub[2] * x[.data$SignClEffect == 'Negative'],
                            mod_ML_pos$ci.ub[2] * x[.data$SignClEffect == 'Nonnegative']),
                   ymin = c(mod_ML_neg$ci.lb[2] * x[.data$SignClEffect == 'Negative'],
                            mod_ML_pos$ci.lb[2] * x[.data$SignClEffect == 'Nonnegative']),
