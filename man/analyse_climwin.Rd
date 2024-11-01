@@ -51,6 +51,22 @@ the specified threshold.}
 
 \item{out_for_SEM}{Character specifying the library on the path where
 to store the results that are to be used as input for SEM.}
+
+\item{oneGrid}{Logical (TRUE/FALSE). Whether to extact climatic data from
+a single grid cell where into which the study location falls or to use mean of
+five cells: the focal one and four neighbours.}
+
+\item{explanYear}{Logical (TRUE/FALSE). Whether to include year as an
+explanatory variable in the baseline formula for window analysis.}
+
+\item{endWindow}{A numeric specifying the furthest number of time intervals
+(set by cinterval) back from the reference day. See also the option range in
+the function \code{\link[climwin]{slidingwin}}.}
+
+\item{RefMon}{A numeric specifying the month for the absolute window
+to be used for all species. If NA is specified then a species-specific window is used for
+each dataset using the available data on phenology and the period when morphology
+was recorded.}
 }
 \value{
 If the results are not likely to be an issue of overfitting,

@@ -22,7 +22,6 @@ and that was used for window analyses.}
 to store the results that are to be used as input for SEM.}
 
 \item{oneGrid}{Logical (TRUE/FALSE). Whether climatic data for window analyses
-were extracted from a single grid cell into which the study location falls or
 if the mean of five cells (the focal one and four neighbours) was used.}
 
 \item{explanYear}{Logical (TRUE/FALSE). Whether year was included as an

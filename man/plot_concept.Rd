@@ -6,9 +6,9 @@
 \usage{
 plot_concept(
   Trait_categ = "Phenological",
-  raw_dat = temp_std,
-  GlobES_dat = met_ef_T,
-  ES_dat = wide_tempES,
+  raw_dat,
+  GlobES_dat,
+  ES_dat,
   path = "CZ",
   xvar_raw = "det_Clim",
   yvar_raw = "Trait_mean",

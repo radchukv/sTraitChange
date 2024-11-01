@@ -7,8 +7,8 @@ trait-mediated effect of climate on population growth rate}
 \usage{
 pl_conc_DirInd(
   Trait_categ = "Phenological",
-  GlobES_dat = met_ef_T,
-  ES_dat = wide_tempES,
+  GlobES_dat,
+  ES_dat,
   ClEfSpecific = TRUE,
   ylab = "Direct effect of climate on GR (CG)",
   xlab = "Trait-mediated effect of climate on G (CZG)"
@@ -47,7 +47,7 @@ on population growth rate vs the trait-mediated effect of climate on population
 growth rate and overlays the across-study estimates obtained with meta-analyses
 }
 \examples{
-prepare the data to fit the model to extract indirect path
+# prepare the data to fit the model to extract indirect path
 dataPaths_sp <- dataPaths \%>\%
                   dplyr::mutate(Species = dplyr::case_when(
                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',

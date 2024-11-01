@@ -18,6 +18,7 @@
 #'
 #' @export
 #' @importFrom magrittr "%>%"
+#' @importFrom rlang .data
 #'
 #' @return A dataframe with the statistics for the test of the effect(s) of
 #' (a) specified characteristic(s) on the specific path from SEMs,
@@ -43,7 +44,7 @@ tab_spSpecific_uni <- function(mod_mv, table_name,
   stats$Parameter <- rownames(stats)
   stats$DF <- numeric(length = nrow(stats))
   stats <- stats %>%
-    dplyr::select(., -c(ci.lb, ci.ub))
+    dplyr::select(.data, -c(.data$ci.lb, .data$ci.ub))
   colnames(stats) <- c('Estimate', 'SE', 'Chi2', 'pval', 'Parameter', 'DF')
 
   if(! is.null(interact_fac)){

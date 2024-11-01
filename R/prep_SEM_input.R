@@ -8,7 +8,6 @@
 #' @param out_for_SEM Character specifying the library on the path where
 #' to store the results that are to be used as input for SEM.
 #' @param oneGrid Logical (TRUE/FALSE). Whether climatic data for window analyses
-#' were extracted from a single grid cell into which the study location falls or
 #' if the mean of five cells (the focal one and four neighbours) was used.
 #' @param explanYear Logical (TRUE/FALSE). Whether year was included as an
 #' explanatory variable in the baseline formula for window analysis.
@@ -75,17 +74,18 @@ prep_SEM_input <- function(prep_subset_climwin,
 
       all_ID <- all_ID[all_ID != j]
       for(i in all_ID){
-        sub_NY <- droplevels(subset(biol_NY, ID == i))
+        sub_NY <- biol_NY %>%
+          droplevels(dplyr::filter(.data, .data$ID == i))
         ## first check whether it is a study that has all the NAs (for SE we have some studies like that)
 
         if (sum(is.na(sub_NY$Trait_SE)) != nrow(sub_NY)){
         sub_NY_noNA <- sub_NY %>%
-          dplyr::filter(!is.na(Trait_mean) & !is.na(Trait_SE)) %>%
-          dplyr::mutate(., NYears = dplyr::n())
+          dplyr::filter(.data, !is.na(.data$Trait_mean) & !is.na(.data$Trait_SE)) %>%
+          dplyr::mutate(.data, NYears = dplyr::n())
         }else{
           sub_NY_noNA <- sub_NY %>%
-            dplyr::filter(!is.na(Trait_mean)) %>%
-            dplyr::mutate(., NYears = dplyr::n())
+            dplyr::filter(.data, !is.na(.data$Trait_mean)) %>%
+            dplyr::mutate(.data, NYears = dplyr::n())
         }
 
          # cat('ID (i) checked is', i, '\n')

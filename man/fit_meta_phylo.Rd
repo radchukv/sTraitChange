@@ -13,7 +13,7 @@ fit_meta_phylo(
   DD = "n_effectDGR",
   simpleSEM = FALSE,
   Trait = FALSE,
-  A = Mat_phylo,
+  A,
   des.matrix = "treatm.contrasts"
 )
 }

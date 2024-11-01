@@ -18,7 +18,7 @@ fit_all_meta(
   DD = "n_effectDGR",
   simpleSEM = FALSE,
   Trait = FALSE,
-  A = Mat_phylo,
+  A,
   des.matrix = "treatm.contrasts",
   all_Relations = c("Demog_rate_mean<-det_Clim", "Demog_rate_mean<-Pop_mean",
     "Demog_rate_mean<-Trait_mean", "GR<-Demog_rate_mean", "GR<-det_Clim", "GR<-Pop_mean",
@@ -85,7 +85,7 @@ is included as one of the explanatory variables. By default treatment contrasts 
  (des.matrix = "treatm.contrasts") but the user can also request identity matrix by
  specifying "identity".}
 
-\item{all_relations}{Vector specifying the names of the relations from the SEMs that will
+\item{all_Relations}{Vector specifying the names of the relations from the SEMs that will
 be used as response variables in meta-analyses to be fitted.}
 }
 \value{

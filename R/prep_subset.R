@@ -9,6 +9,7 @@
 #' sea birds in the subset or not.
 #'
 #' @export
+#' @importFrom rlang .data
 #'
 #' @return Returns a tibble with three columns: "Sel" - a data frame where
 #' each row represents a unique record per study ID for which climwin analyses
@@ -25,22 +26,23 @@ prep_subset <- function(data, Seabird = FALSE){
   ## choice on seabirds
   if(Seabird){
     sub_bird <- droplevels(data %>%
-                             dplyr::filter(., BirdType == 'Seabird'))
+                             dplyr::filter(.data, .data$BirdType == 'Seabird'))
   }else{
     sub_bird <- droplevels(data %>%
-                             dplyr::filter(., BirdType != 'Seabird'))
+                             dplyr::filter(.data, .data$BirdType != 'Seabird'))
   }
 
   ## have to check whether for each ID the trait is not being repeated
   biol_NY <- sub_bird %>%
-    dplyr::group_by(., ID) %>%
-    dplyr::mutate(., NYears = dplyr::n()) %>%
+    dplyr::group_by(.data, .data$ID) %>%
+    dplyr::mutate(.data, NYears = dplyr::n()) %>%
     dplyr::ungroup()
 
   nodupl <- biol_NY[! duplicated(biol_NY$ID), ]
   Sel <- droplevels(nodupl %>%
-                      dplyr::distinct(., Study_Authors, Species, Location,
-                                      Trait, NYears, .keep_all = T))
+                      dplyr::distinct(.data, .data$Study_Authors, .data$Species,
+                                      .data$Location, .data$Trait, .data$NYears,
+                                      .keep_all = T))
 
   return(tibble::tibble(Sel = list(Sel),
                         biol_NY = list(biol_NY),

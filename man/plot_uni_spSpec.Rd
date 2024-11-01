@@ -5,8 +5,8 @@
 \title{Plot predictions of climate effects on traits, using species-specific predictors}
 \usage{
 plot_uni_spSpec(
-  data_allEstim = CZ_Phen,
-  mod_mv = mod_CZ_Lat,
+  data_allEstim,
+  mod_mv,
   lOut = 10,
   pdf_basename = NULL,
   xLab,

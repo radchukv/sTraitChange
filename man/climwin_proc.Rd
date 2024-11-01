@@ -34,6 +34,8 @@ the study location or a dataframe with the local weather from the closest weathe
 \item{randwin}{Logical (TRUE/FALSE). Should \code{\link[climwin]{randwin}}
 be run together with \code{\link[climwin]{slidingwin}}?}
 
+\item{seednum}{Numeric specifying the seed number, for reproducibility.}
+
 \item{repeats}{If randwin is run, the number of times that data will be randomised.}
 
 \item{plot_check}{Logical (TRUE/FALSE). Whether to display

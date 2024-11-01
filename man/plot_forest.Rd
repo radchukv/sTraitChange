@@ -5,8 +5,8 @@
 \title{Forest plot of effect sizes per each study and global effect sizes across studies}
 \usage{
 plot_forest(
-  data_ES = check_DemCateg$data_EfS[[1]],
-  data_globES = check_DemCateg$data_Covar[[1]],
+  data_ES,
+  data_globES,
   Cov_fact = NULL,
   COV = NULL,
   xlab = "Effect of temperature on trait",
@@ -21,8 +21,8 @@ plot_forest(
 standard errors, returned as 'data_EfS' by the function \code{\link{fit_meta_phylo}}.}
 
 \item{data_globES}{Data frame containing the global effect sizes across the studies,
-returned by function {fit_meta_phylo} as either 'data_Covar' or 'data' (depending on whether
-the explanatory categorical variable was included in the meta-analytical model).}
+returned by function \code{\link{fit_meta_phylo}} as either 'data_Covar' or 'data' (depending on
+whether the explanatory categorical variable was included in the meta-analytical model).}
 
 \item{Cov_fact}{A character specifying the name of the categorical variable to be included
 as a fixed-effect covariate in the meta-analysis. Defaults to NULL, in which case no

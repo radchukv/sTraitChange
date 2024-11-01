@@ -23,12 +23,12 @@ path coefficient.}
 \item{indir}{Numeric reflecting the estimate of the indirect
 path coefficient.}
 
-\item{ClDem}{Numeric reflecting the estimate of the path coefficient
-between climate and demographic rate, in case the total path from
+\item{ClDem}{Numeric reflecting the estimate of the path from
+climate to demographic rate, in case the total path from
 climate to growth rate is estimated. Defaults to NULL.}
 
-\item{DemGR}{Numeric reflecting the estimate of the path coefficient
-between demographic rate and growth rate,in case the total path from
+\item{DemGR}{Numeric reflecting the estimate of the path from
+demographic rate to growth rate, in case the total path from
 climate to growth rate is estimated. Defaults to NULL.}
 
 \item{direct.se}{Numeric reflecting the standard error for the direct
@@ -37,12 +37,14 @@ path coefficient.}
 \item{indir.se}{Numeric reflecting the standard error for the indirect
 path coefficient.}
 
+\item{ClDem.se}{Numeric reflecting the standard error for the path from
+climate to demographic rate.}
+
+\item{DemGR.se}{Numeric reflecting the standard error for the path from
+demographic rate to growth rate.}
+
 \item{numrep}{Numeric for the number of replicates to use in a
 bootstrap.}
-
-\item{z.se}{Numeric reflecting the standard error for
-the third path coefficient estimate, defaults to NULL for
-the case of the indirect path consisting of two pathways.}
 }
 \value{
 A dataframe that contains four columns: a median of the

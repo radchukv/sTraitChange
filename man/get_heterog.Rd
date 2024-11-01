@@ -28,7 +28,7 @@ This function computes the heterogeneity metrics for the meta-analysis,
 including I2, Q and p value associated with !
 }
 \examples{
-prepare the data to fit the model
+# prepare the data to fit the model
 Coefs_phenClim <- subset(dataPaths, Relation == 'Trait_mean<-det_Clim' &
 Trait_Categ == 'Phenological')
  forTrans <- subset(Coefs_phenClim, select = c(Estimate,  Std.Error, Relation,
