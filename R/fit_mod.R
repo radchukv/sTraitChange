@@ -70,6 +70,7 @@ fit_mod <- function(biol_data, ID,
 
 
   # formulas
+  formGR <- formDemRate <- formTrait <- NULL
   if(simpleSEM){
     if(DD == 'n_effectGR'){
       formGR <<- 'GR ~ det_Clim  + Pop_mean + Trait_mean'
@@ -85,6 +86,7 @@ fit_mod <- function(biol_data, ID,
     }
   } else {
   if(Trait){
+
     if(DD == 'n_effectGR'){
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean + Trait_mean'
       formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
@@ -142,7 +144,7 @@ fit_mod <- function(biol_data, ID,
             dat$Demog_rate_SE[dat$Demog_rate_SE == 0] <-
               min(dat$Demog_rate_SE[dat$Demog_rate_SE != 0], na.rm = T)
           }
-          dat$weights_DemRate[is.na(dat$Demog_rate_SE)] <- median(dat$Demog_rate_SE, na.rm = T)  ## setting to 1 only makes sense if the analyses are run on standardized data
+          dat$weights_DemRate[is.na(dat$Demog_rate_SE)] <- stats::median(dat$Demog_rate_SE, na.rm = T)  ## setting to 1 only makes sense if the analyses are run on standardized data
           dat$weights_DemRate[!is.na(dat$Demog_rate_SE)] <- 1 / dat$Demog_rate_SE[!is.na(dat$Demog_rate_SE)]^2
         }
       }
