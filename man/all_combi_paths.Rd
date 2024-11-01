@@ -48,7 +48,7 @@ for the combined pathways.
 all combined pathways present in SEM, using the bootstrap procedure
 }
 \examples{
-prepare the data to fit the model to extract indirect path
+# prepare the data to fit the model to extract indirect path
 dataPaths_sp <- dataPaths \%>\%
                   dplyr::mutate(Species = dplyr::case_when(
                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',

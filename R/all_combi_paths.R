@@ -13,6 +13,7 @@
 #'
 #' @export
 #' @importFrom rlang .data
+#' @importFrom magrittr "%>%"
 #'
 #' @return Returns a data frame, which is an extended version of the input data frame,
 #' that additionally contains estimated medians, SEs, as well as lower and upper CI
