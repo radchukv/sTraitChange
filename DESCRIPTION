@@ -26,7 +26,6 @@ Imports:
    sp,
    lubridate,
    metafor,
-   ape,
    broom,
    data.table,
    ggExtra,
@@ -39,5 +38,8 @@ Imports:
    spaMM,
    tidyr,
    raster,
-   stats
+   stats,
+   rlang,
+   tidyselect
+Suggests: ape
 RoxygenNote: 7.3.2
