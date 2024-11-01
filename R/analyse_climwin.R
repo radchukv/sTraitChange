@@ -25,7 +25,9 @@
 #' @param MinDur A numeric specifying the minimum allowed window duration.
 #' @param MaxDur A numeric specifying the maximum allowed window duration.
 #'
+#' @inheritParams climwin_proc
 #' @export
+#' @importFrom rlang .data
 #'
 #' @return If the results are not likely to be an issue of overfitting,
 #' then the function returns a tibble with four columns: "ID"
@@ -72,7 +74,7 @@ analyse_climwin <- function(ID, biol_data,
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
     biol_data_noNA <- biol %>%
-      dplyr::filter(!is.na(Trait_mean) & !is.na(Trait_SE))
+      dplyr::filter(.data, !is.na(.data$Trait_mean) & !is.na(.data$Trait_SE))
     randwin_out <- dat$randwin_output[[1]]
     data_climwin <- climwin_out$Dataset
     data_climwin$WindowDur <- data_climwin$WindowOpen - data_climwin$WindowClose
@@ -84,7 +86,7 @@ analyse_climwin <- function(ID, biol_data,
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
     biol_data_noNA <- biol %>%
-      dplyr::filter(!is.na(Trait_mean) & !is.na(Trait_SE))
+      dplyr::filter(.data, !is.na(.data$Trait_mean) & !is.na(.data$Trait_SE))
     data_climwin <- climwin_out$Dataset
     data_climwin$WindowDur <- data_climwin$WindowOpen - data_climwin$WindowClose
     climdata <- dat$clim_data[[1]]
