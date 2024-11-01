@@ -15,6 +15,7 @@
 #' @inheritParams fit_meta_phylo
 #'
 #' @export
+#' @importFrom rlang .data
 #'
 #' @return Returns a tibble that includes the estimated across-study effect sizes,
 #' their standard errors, their significance and the AIC for each fitted mixed-effects
@@ -37,7 +38,7 @@ fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
 
   ## update the species names to correspond to the ones on phylogeny
   Coefs_Aut <- data_MA %>%
-    dplyr::mutate(Sp_phylo = dplyr::case_when(
+    dplyr::mutate(.data, Sp_phylo = dplyr::case_when(
       Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
       Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
       Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',
@@ -45,7 +46,7 @@ fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
       Species == 'Ichthyaetus audouinii' ~ 'Larus audouinii',
       Species == 'Stercorarius maccormicki' ~ 'Catharacta maccormicki',
       TRUE ~ Species)) %>%
-    dplyr::filter(! Sp_phylo %in% c('Chrysemys picta', 'Chelonia mydas'))
+    dplyr::filter(.data, ! .data$Sp_phylo %in% c('Chrysemys picta', 'Chelonia mydas'))
 
 
   Coefs_Aut$Species <- unlist(lapply(1:nrow(Coefs_Aut), FUN = function(x){
@@ -59,8 +60,9 @@ fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
   Coefs_Aut$Sp_phylo <- Coefs_Aut$Species
 
   # prepare the var-covar matrix based on the requested Trait_categ
-  Coefs_sub <- subset(Coefs_Aut, Relation == 'Trait_mean<-det_Clim' &
-                             Trait_Categ == Trait_categ)
+  Coefs_sub <- Coefs_Aut %>%
+    dplyr::filter(.data, .data$Relation == 'Trait_mean<-det_Clim' &
+                             .data$Trait_Categ == Trait_categ)
   tre_sub <- ape::drop.tip(vert_tree, which(!vert_tree$tip.label %in% Coefs_sub$Species))
 
   Mat_sub <- ape::vcv.phylo(tre_sub, corr = TRUE)
@@ -98,8 +100,8 @@ fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
                                                'GR<-Trait_mean'))
   colnames(meta_Cov$meta_res[[1]])[1] <- 'Variable'
   ef_all <- rbind(meta_other$meta_res[[1]], meta_Cov$meta_res[[1]]) %>%
-    dplyr::mutate(., Trait_Categ = Trait_categ,
-                  Clim = Clim, phylo = ind)
+    dplyr::mutate(.data, Trait_Categ = .data$Trait_categ,
+                  Clim = .data$Clim, phylo = .data$ind)
   return(ef_all)
 }
 
