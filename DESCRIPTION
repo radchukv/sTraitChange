@@ -40,6 +40,7 @@ Imports:
    raster,
    stats,
    rlang,
-   tidyselect
+   tidyselect,
+   methods
 Suggests: ape
 RoxygenNote: 7.3.2
