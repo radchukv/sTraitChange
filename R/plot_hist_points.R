@@ -42,9 +42,18 @@ plot_hist_points <- function(data_allEstim,
                            tabC,
                            angle_yax_lab = 90, annot = NULL,
                            Trait_categ = NULL){
+  Estimate <- Climatic_var <- EfS_Low <- EfS_Upper <-Col <- REL_Clim <- x <- y <- label <- Count <- NULL
+
   if(is.null(annot)){
     if(! is.null(Traitdem)){
-    ggplot2::ggplot() + ggplot2::geom_histogram(data = subset(data_allEstim, TraitDem == Traitdem),
+      data_sub <- data_allEstim %>%
+        dplyr::filter(.data, .data$TraitDem == Traitdem)
+      Ef_sub <- Ef_sizesEstim %>%
+        dplyr::filter(.data, .data$TraitDem == Traitdem)
+      tab_subs <- tabC %>%
+        dplyr::filter(.data, .data$TraitDem == Traitdem)
+
+    ggplot2::ggplot() + ggplot2::geom_histogram(data = data_sub,
                                                 ggplot2::aes(x = Estimate, fill = Climatic_var),
                                                 alpha = 0.5, bins = 50) +
         ggplot2::scale_fill_manual(values = c('Temperature' = 'lightsalmon1',
@@ -64,11 +73,10 @@ plot_hist_points <- function(data_allEstim,
             legend.direction = 'vertical',
             panel.border = ggplot2::element_rect(fill = NA, color = 'grey',
                                         size = 0.1, linetype = 3))  +  ## , panel.border = element_blank()
-        ggplot2::geom_errorbar(data = subset(Ef_sizesEstim, TraitDem == Traitdem),
-                    width=.1,
+        ggplot2::geom_errorbar(data = Ef_sub, width=.1,
                     ggplot2::aes(xmin = EfS_Low, xmax = EfS_Upper, colour = Col,
                                  y = 5), lwd = 0.5) +
-        ggplot2::geom_point(data = subset(Ef_sizesEstim, TraitDem == Traitdem),
+        ggplot2::geom_point(data = Ef_sub,
                             ggplot2::aes(y = 5, x = Estimate, shape = Climatic_var,
                                          color = Col), size = 1.5) +
         ggplot2::facet_grid(rows = ggplot2::vars(REL_Clim)) +
@@ -85,12 +93,17 @@ plot_hist_points <- function(data_allEstim,
         ggplot2::geom_text(data = dataAxis, ggplot2::aes(x = x, y = y, label = label),
                            angle= angle_yax_lab, vjust = 0.5, hjust = 0.6) +
         ggplot2::labs(x = 'Effect size', y = '') + ggplot2::ggtitle(Traitdem) +
-        ggplot2::geom_text(data = subset(tabC, TraitDem == Traitdem),
+        ggplot2::geom_text(data = tab_subs,
                            ggplot2::aes(x = x, y = y, label = Count),
                            col = c('red4', 'royalblue1'))
     } else {
-      ggplot2::ggplot() + ggplot2::geom_histogram(data = subset(data_allEstim,
-                                                                Trait_Categ == Trait_categ),
+      data_sub <- data_allEstim %>%
+        dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
+      Ef_sub <- Ef_sizesEstim %>%
+        dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
+      tab_subs <- tabC %>%
+        dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
+      ggplot2::ggplot() + ggplot2::geom_histogram(data = data_sub,
                                                   ggplot2::aes(x = Estimate, fill = Climatic_var),
                                                   alpha = 0.5, bins = 50) +
         ggplot2::scale_fill_manual(values = c('Temperature' = 'lightsalmon1',
@@ -113,7 +126,7 @@ plot_hist_points <- function(data_allEstim,
         ggplot2::geom_errorbar(data = subset(Ef_sizesEstim, Trait_Categ == Trait_categ),
                       width=.1,
                       ggplot2::aes(xmin = EfS_Low, xmax = EfS_Upper, colour = Col, y = 5), lwd = 0.5) +
-        ggplot2::geom_point(data = subset(Ef_sizesEstim, Trait_Categ == Trait_categ),
+        ggplot2::geom_point(data = Ef_sub,
                    ggplot2::aes(y = 5, x = Estimate, shape = Climatic_var, color = Col), size = 1.5) +
         ggplot2::facet_grid(rows = ggplot2::vars(REL_Clim)) +
         ggplot2::scale_colour_manual(values = c("Signif, temperature" = "red4",
@@ -130,13 +143,19 @@ plot_hist_points <- function(data_allEstim,
                            ggplot2::aes(x = x, y = y, label = label),
                            angle= angle_yax_lab, vjust = 0.5, hjust = 0.6) +
         ggplot2::labs(x = 'Effect size', y = '') + ggplot2::ggtitle(Trait_categ) +
-        ggplot2::geom_text(data = subset(tabC, Trait_Categ == Trait_categ),
+        ggplot2::geom_text(data = tab_subs,
                            ggplot2::aes(x = x, y = y, label = Count),
                            col = c('red4', 'royalblue1'))
     }
   } else {
-    ggplot2::ggplot() + ggplot2::geom_blank(data =
-                                              subset(data_allEstim, TraitDem == Traitdem),
+    data_sub <- data_allEstim %>%
+      dplyr::filter(.data, .data$TraitDem == Traitdem)
+    Ef_sub <- Ef_sizesEstim %>%
+      dplyr::filter(.data, .data$TraitDem == Traitdem)
+    tab_subs <- tabC %>%
+      dplyr::filter(.data, .data$TraitDem == Traitdem)
+
+    ggplot2::ggplot() + ggplot2::geom_blank(data =data_sub,
                                             ggplot2::aes(x = Estimate)) +
       ggplot2::geom_rect(data = annot,
                          ggplot2::aes(fill = hue), xmin = -Inf, xmax = Inf,
@@ -145,8 +164,8 @@ plot_hist_points <- function(data_allEstim,
                                    'Simple SEM' = 'white'),
                         guide =  ggplot2::guide_legend(title = 'Model')) +
       ggnewscale::new_scale_fill() +
-      ggplot2::geom_histogram(data = subset(data_allEstim, TraitDem == Traitdem),
-                     ggplot2::aes(x = Estimate, fill = Climatic_var), alpha = 0.5, bins = 50) +
+      ggplot2::geom_histogram(data = data_sub,
+                              ggplot2::aes(x = Estimate, fill = Climatic_var), alpha = 0.5, bins = 50) +
       ggplot2::scale_fill_manual(values = c('Temperature' = 'lightsalmon1',
                                    'Precipitation' = 'lightblue1')) +
       ggplot2::geom_vline(xintercept = 0, linetype = 'dashed', color = 'black', lwd = 0.9) +
@@ -164,13 +183,12 @@ plot_hist_points <- function(data_allEstim,
             legend.direction = 'vertical',
             panel.border = ggplot2::element_rect(fill = NA, color = 'grey',
                                         size = 0.1, linetype = 3))  +  ## , panel.border = element_blank()
-      ggplot2::geom_errorbar(data = subset(Ef_sizesEstim, TraitDem == Traitdem),
+      ggplot2::geom_errorbar(data = Ef_sub,
                     width=.1,
                     ggplot2::aes(xmin = EfS_Low, xmax = EfS_Upper,
                                  colour = Col, y = 5), lwd = 0.5) +
-      ggplot2::geom_point(data = subset(Ef_sizesEstim, TraitDem == Traitdem),
-                          ggplot2::aes(y = 5, x = Estimate, shape = Climatic_var,
-                                       color = Col), size = 1.5) +
+      ggplot2::geom_point(data = Ef_sub, ggplot2::aes(y = 5, x = Estimate,
+                                                      shape = Climatic_var, color = Col), size = 1.5) +
       ggplot2::facet_grid(rows = ggplot2::vars(REL_Clim)) +
       ggplot2::scale_colour_manual(values = c("Signif, temperature" = "red4",
                                      "Non-signif, temperature" = "tomato1",
@@ -188,7 +206,7 @@ plot_hist_points <- function(data_allEstim,
                          angle= angle_yax_lab,
                 vjust = 0.5, hjust = 0.6) +
       ggplot2::labs(x = 'Effect size', y = '') + ggplot2::ggtitle(Traitdem) +
-      ggplot2::geom_text(data = subset(tabC, TraitDem == Traitdem),
+      ggplot2::geom_text(data = tab_subs,
                          ggplot2::aes(x = x, y = y, label = Count),
                          col = c('red4', 'royalblue1'))
   }
