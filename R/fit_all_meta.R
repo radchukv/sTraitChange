@@ -21,7 +21,7 @@
 #' vector should correspond to the number of the levels in the categorical explanatory variable
 #' included in the meta-analytical model, or should be one (if the single global effect size
 #' across all studies is to be plotted).
-#' @param all_relations Vector specifying the names of the relations from the SEMs that will
+#' @param all_Relations Vector specifying the names of the relations from the SEMs that will
 #' be used as response variables in meta-analyses to be fitted.
 #' @inheritParams fit_mod
 #' @inheritParams fit_meta_phylo

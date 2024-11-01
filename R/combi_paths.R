@@ -91,19 +91,20 @@ ind_path <- function(x, y, z = NULL,
 #' path coefficient.
 #' @param indir Numeric reflecting the estimate of the indirect
 #' path coefficient.
-#' @param ClDem Numeric reflecting the estimate of the path coefficient
-#' between climate and demographic rate, in case the total path from
+#' @param ClDem Numeric reflecting the estimate of the path from
+#' climate to demographic rate, in case the total path from
 #' climate to growth rate is estimated. Defaults to NULL.
-#' @param DemGR Numeric reflecting the estimate of the path coefficient
-#' between demographic rate and growth rate,in case the total path from
+#' @param DemGR Numeric reflecting the estimate of the path from
+#' demographic rate to growth rate, in case the total path from
 #' climate to growth rate is estimated. Defaults to NULL.
+#' @param ClDem.se Numeric reflecting the standard error for the path from
+#' climate to demographic rate.
+#' @param DemGR.se Numeric reflecting the standard error for the path from
+#' demographic rate to growth rate.
 #' @param direct.se Numeric reflecting the standard error for the direct
 #' path coefficient.
 #' @param indir.se Numeric reflecting the standard error for the indirect
 #' path coefficient.
-#' @param z.se Numeric reflecting the standard error for
-#' the third path coefficient estimate, defaults to NULL for
-#' the case of the indirect path consisting of two pathways.
 #' @param numrep Numeric for the number of replicates to use in a
 #' bootstrap.
 #'

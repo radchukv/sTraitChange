@@ -40,6 +40,7 @@
 #' was recorded.
 #' @param weatherVar Character corresponding to the name of the climatic variable
 #' in the data frame provided as clim_data.
+#' @param seednum Numeric specifying the seed number, for reproducibility.
 #'
 #' @export
 #'
@@ -52,32 +53,7 @@
 #' "biol_data" - a data frame with traits, demographic rates
 #' and population size.
 #'
-#' @examples
-#' # ATTENTION: DO NOT RUN! takes long time
-#' \dontrun{
-#' biol_noSea <- prep_subset(data = data, Seabird = FALSE)
-#' # keep only EU countries
-#' biol_eu <- droplevels(subset(biol_noSea$subdata[[1]],
-#' ! Country %in% c('Antarctica', 'Australia',
-#'                 'Canada', 'Falkland Islands',
-#'                 'Greenland', 'Mexico',
-#'                 'New Zealand', 'South Africa',
-#'                 'South Atlantic Ocean',
-#'                 'South Georgia', 'Svalbard',
-#'                 'Taiwan', 'USA', 'Venezuela')))
-#' meanT <- raster::stack(x = system.file("extdata",
-#' "tg_ens_mean_0.1deg_reg_v18.0e.nc", package="sTraitChange"))
-#' test_rand <- climwin_proc(biol_data = biol_eu,
-#'                           clim_data = meanT, ID = 1,
-#'                           randwin = FALSE, seednum = 1302,
-#'                           repeats = 30, plot_check = FALSE,
-#'                           out_clim = 'output_climwin_temp',
-#'                           cinterval = 'month',
-#'                           stat = 'mean',
-#'                           startWindow = 0, endWindow = 12,
-#'                           oneGrid = FALSE, explanYear = TRUE,
-#'                           RefMon = NA, weatherVar = NA)}
-#'
+
 climwin_proc <- function(biol_data, clim_data,
                          ID, randwin = FALSE,
                          seednum = 1302, repeats = 200,
