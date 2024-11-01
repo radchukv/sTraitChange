@@ -62,16 +62,16 @@ ind_path <- function(x, y, z = NULL,
                      omega = NULL,
                      omega.se = NULL){
   if(! is.null(z)){
-    path = replicate(numrep, rnorm(1, x, x.se) * rnorm(1, y, y.se) *
-                       rnorm(1, z, z.se) +
-                       rnorm(1, x, x.se) * rnorm(1, omega, omega.se))
+    path = replicate(numrep, stats::rnorm(1, x, x.se) * stats::rnorm(1, y, y.se) *
+                       stats::rnorm(1, z, z.se) +
+                       stats::rnorm(1, x, x.se) * stats::rnorm(1, omega, omega.se))
 
   } else {
-    path = replicate(numrep, rnorm(1, x, x.se) * rnorm(1, y, y.se))
+    path = replicate(numrep, stats::rnorm(1, x, x.se) * stats::rnorm(1, y, y.se))
   }
-  med <- median(path)
-  lCI <- quantile(path, 0.025)
-  uCI <- quantile(path, 0.975)
+  med <- stats::median(path)
+  lCI <- stats::quantile(path, 0.025)
+  uCI <- stats::quantile(path, 0.975)
   if ((lCI > 0 & uCI > 0) | (lCI < 0 & uCI < 0)){
     SE = (uCI - lCI) / 4
     } else {
@@ -144,16 +144,16 @@ tot_path <- function(direct, indir,
                      ClDem.se = NULL, DemGR.se = NULL,
                      numrep = 10000){
   if(! is.null(ClDem)){
-    tot = replicate(numrep, rnorm(1, indir, indir.se) +
-                      rnorm(1, direct, direct.se) +
-                      rnorm(1, ClDem, ClDem.se) * rnorm(1, DemGR, DemGR.se))
+    tot = replicate(numrep, stats::rnorm(1, indir, indir.se) +
+                      stats::rnorm(1, direct, direct.se) +
+                      stats::rnorm(1, ClDem, ClDem.se) * stats::rnorm(1, DemGR, DemGR.se))
   } else {
-    tot = replicate(numrep, rnorm(1, indir, indir.se) +
-                      rnorm(1, direct, direct.se))
+    tot = replicate(numrep, stats::rnorm(1, indir, indir.se) +
+                      stats::rnorm(1, direct, direct.se))
   }
-  med <- median(tot)
-  lCI <- quantile(tot, 0.025)
-  uCI <- quantile(tot, 0.975)
+  med <- stats::median(tot)
+  lCI <- stats::quantile(tot, 0.025)
+  uCI <- stats::quantile(tot, 0.975)
   if ((lCI > 0 & uCI > 0) | (lCI < 0 & uCI < 0)){
     SE = (uCI - lCI) / 4
   } else {
