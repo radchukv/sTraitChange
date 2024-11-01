@@ -85,7 +85,7 @@ climwin_proc <- function(biol_data, clim_data,
   if (plot_check){
     if(! is.data.frame(clim_data)){
       raster::plot(clim_data[[1]])
-      points(location_spatial)
+      graphics::points(location_spatial)
     } else {
       raster::plot(location_spatial)
     }
@@ -204,10 +204,10 @@ climwin_proc <- function(biol_data, clim_data,
 
   ## have to exclude the rows with missing biological data before running the slidingwin
   biol_data_noNA <- biol_data %>%
-    dplyr::filter(!is.na(Trait_mean) & !is.na(Trait_SE)) %>%
+    dplyr::filter(.data, !is.na(.data$Trait_mean) & !is.na(.data$Trait_SE)) %>%
     # create weights here, otherwise slidingwin does not see them
-    dplyr::mutate(W = 1/ Trait_SE^2)
-
+    dplyr::mutate(W = 1/ .data$Trait_SE^2)
+  formBase <- NULL
   ## prepare the baseline formula
   if(explanYear){
     formBase <<- 'Trait_mean ~ Year'
@@ -244,7 +244,7 @@ climwin_proc <- function(biol_data, clim_data,
                                        xvar = list(Temp = Clim$Temp),
                                        cdate = Clim$Date,
                                        bdate = biol_data_noNA$Date,
-                                       baseline = lm(stats::as.formula(formBase),
+                                       baseline = stats::lm(stats::as.formula(formBase),
                                                      data = biol_data_noNA,
                                                      weights = W),
                                        range = c(endWindow, startWindow),
