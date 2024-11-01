@@ -6,8 +6,8 @@
 #' @param data_ES Data frame containing, for each study, the effect size estimates and their
 #' standard errors, returned as 'data_EfS' by the function \code{\link{fit_meta_phylo}}.
 #' @param data_globES Data frame containing the global effect sizes across the studies,
-#' returned by function {fit_meta_phylo} as either 'data_Covar' or 'data' (depending on whether
-#' the explanatory categorical variable was included in the meta-analytical model).
+#' returned by function \code{\link{fit_meta_phylo}} as either 'data_Covar' or 'data' (depending on
+#' whether the explanatory categorical variable was included in the meta-analytical model).
 #' @param xlab Character specifying the label for the x axis.
 #' @param colr Vector specifying the colours to be used for the data points. The length of the
 #' vector should correspond to the number of the levels in the categorical explanatory variable
@@ -26,8 +26,8 @@
 #' and global effect size(s) on the bottom. The data used for the plot are
 #' returned (invisibly).
 #'
-plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
-                        data_globES = check_DemCateg$data_Covar[[1]],
+plot_forest <- function(data_ES,
+                        data_globES,
                         Cov_fact = NULL, COV = NULL,
                         xlab = 'Effect of temperature on trait',
                         colr = c('blue', 'green', 'black'),
@@ -40,8 +40,8 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
   ymin <- ymax - nrow(data_ES) + 1
   data_ES$y <- ymax:ymin
 
-  data_ES$lwr <- data_ES$Estimate - qnorm(0.025)*data_ES$SError
-  data_ES$upr <- data_ES$Estimate + qnorm(0.025)*data_ES$SError
+  data_ES$lwr <- data_ES$Estimate - stats::qnorm(0.025)*data_ES$SError
+  data_ES$upr <- data_ES$Estimate + stats::qnorm(0.025)*data_ES$SError
 
   if(! is.null(Cov_fact)){
     if(is.null(COV)){
@@ -118,12 +118,12 @@ plot_forest <- function(data_ES = check_DemCateg$data_EfS[[1]],
 
   ## prepare dataframe with global effect sizes
   data_globES_prep <- data_globES %>%
-    dplyr::rename(lwr = EfS_Low, upr = EfS_Upper) %>%
-    dplyr::mutate(y = c(1:miny_glob))
+    dplyr::rename(.data, lwr = .data$EfS_Low, upr = .data$EfS_Upper) %>%
+    dplyr::mutate(.data, y = c(1:.data$miny_glob))
 
   if(! is.null(Cov_fact)){
     data_globES_prep <- data_globES_prep %>%
-      tidyr::separate(., Levels_Covar, into = c('Category', 'Level'),
+      tidyr::separate(.data, .data$Levels_Covar, into = c('Category', 'Level'),
                       sep = Cov_fact, fill = 'right')
 
     # if(is.null(COV)){

@@ -20,7 +20,7 @@
 #' climatic effect on traits.
 #'
 #' @examples
-#' prepare the data to fit the model to extract indirect path
+#' # prepare the data to fit the model to extract indirect path
 #' dataPaths_sp <- dataPaths %>%
 #'                   dplyr::mutate(Species = dplyr::case_when(
 #'                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
@@ -99,13 +99,14 @@
 #'                       xlab = 'Phenology-mediated effect <br> of temperature on G (CZ)',
 #'                       ylab = 'Direct effect of temperature on G (CG)')$plot
 pl_conc_DirInd <- function(Trait_categ = 'Phenological',
-                           GlobES_dat = met_ef_T,
-                           ES_dat = wide_tempES,
+                           GlobES_dat,
+                           ES_dat,
                            ClEfSpecific = TRUE,
                            ylab = 'Direct effect of climate on GR (CG)',
                            xlab = 'Trait-mediated effect of climate on G (CZG)'){
 
-  ES_dat <- subset(ES_dat, Trait_Categ == Trait_categ)
+  ES_dat <- ES_dat %>%
+    dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
   GlobES_dat <- GlobES_dat[GlobES_dat$REL %in% c('CZG', 'CG') &
                              GlobES_dat$Trait_Categ == Trait_categ, ]
   GlobES_dat %<>%
@@ -115,21 +116,24 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
   corel <- ES_dat %>%
     tidyr::nest(data = -SignClEffect) %>%
     dplyr::mutate(
-      cort = purrr::map(data, ~ cor.test(.x$`Estimate/Ind_GR<-det_Clim`,
+      cort = purrr::map(data, ~ stats::cor.test(.x$`Estimate/Ind_GR<-det_Clim`,
                                          .x$`Estimate/GR<-det_Clim`)),
       out = purrr::map(cort, broom::tidy)) %>%
     tidyr::unnest(out)
 
-
+  negEf <- ES_dat %>%
+    dplyr::filter(.data, .data$SignClEffect == 'Negative')
   mod_ML_neg <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,
                                 V = `SError/Ind_GR<-det_Clim`^2,
                                 random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                data = subset(ES_dat, SignClEffect == 'Negative'),
+                                data = negEf,
                                 method = 'ML')
+  posEf <- ES_dat %>%
+    dplyr::filter(.data, .data$SignClEffect == 'Nonnegative')
   mod_ML_pos <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,
                                 V = `SError/Ind_GR<-det_Clim`^2,
                                 random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                data = subset(ES_dat, SignClEffect == 'Nonnegative'),
+                                data = posEf,
                                 method = 'ML')
 
   ## data frame to add the slope estimated with the mixed-effects model -
@@ -140,10 +144,10 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                         SignClEffect = rep(unique(ES_dat$SignClEffect), each = 10))
 
   rib_dat %<>%
-    dplyr::mutate(ymax = c(mod_ML_neg$ci.ub[2] * x[SignClEffect == 'Negative'],
-                           mod_ML_pos$ci.ub[2] * x[SignClEffect == 'Nonnegative']),
-                  ymin = c(mod_ML_neg$ci.lb[2] * x[SignClEffect == 'Negative'],
-                           mod_ML_pos$ci.lb[2] * x[SignClEffect == 'Nonnegative']),
+    dplyr::mutate(.data, ymax = c(mod_ML_neg$ci.ub[2] * x[.data$SignClEffect == 'Negative'],
+                           mod_ML_pos$ci.ub[2] * x[.data$SignClEffect == 'Nonnegative']),
+                  ymin = c(mod_ML_neg$ci.lb[2] * x[.data$SignClEffect == 'Negative'],
+                           mod_ML_pos$ci.lb[2] * x[.data$SignClEffect == 'Nonnegative']),
                   `Estimate/GR<-det_Clim` = 0)
 
   Rel_CZG_CG <- data.frame(slope = c(mod_ML_neg$beta["`Estimate/Ind_GR<-det_Clim`", 1],
@@ -197,7 +201,7 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
               GLMM_pos = mod_ML_pos))
   } else {
 
-    cort <- cor.test(ES_dat$`Estimate/Ind_GR<-det_Clim`, ES_dat$`Estimate/GR<-det_Clim`)
+    cort <- stats::cor.test(ES_dat$`Estimate/Ind_GR<-det_Clim`, ES_dat$`Estimate/GR<-det_Clim`)
     corel <- broom::tidy(cort)
 
     mod_ML <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,

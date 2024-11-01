@@ -133,9 +133,9 @@
 #'                         ClEfSpecific = FALSE,
 #'                         miny = -4, maxy = 4)
 plot_concept <- function(Trait_categ = 'Phenological',
-                         raw_dat = temp_std,
-                         GlobES_dat = met_ef_T,
-                         ES_dat = wide_tempES,
+                         raw_dat,
+                         GlobES_dat,
+                         ES_dat,
                          path = 'CZ',
                          xvar_raw = 'det_Clim',
                          yvar_raw = 'Trait_mean',
@@ -143,13 +143,15 @@ plot_concept <- function(Trait_categ = 'Phenological',
                          ylab = 'Trait', xlab = 'Climate',
                          ClEfSpecific = TRUE,
                          miny = -6, maxy = 6){
-  raw_dat <- subset(raw_dat, Trait_Categ == Trait_categ)
+  raw_dat <- raw_dat %>%
+    dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
   GlobES_dat <- GlobES_dat[GlobES_dat$REL == path &
                              GlobES_dat$Trait_Categ == Trait_categ, ]
   GlobES_dat %<>%
     dplyr::mutate(ltype = dplyr::case_when(pval_Covar < 0.05 ~ '1',
                                            TRUE ~ '2'))
-  ES_dat <- subset(ES_dat, Trait_Categ == Trait_categ)
+  ES_dat <- ES_dat %>%
+    dplyr::filter(.data, .data$Trait_Categ == Trait_categ)
 
   if(ClEfSpecific){
   dat_rib <- data.frame(x = c(rep(seq(min(raw_dat$det_Clim),
