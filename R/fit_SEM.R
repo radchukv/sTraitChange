@@ -56,8 +56,8 @@ fit_SEM <- function(biol_data, ID, out_SEM,
     dplyr::mutate(.data, GR = log(.data$Pop_mean_lag / .data$Pop_mean)) %>%
     dplyr::filter(.data, !is.na(.data$GR) & !is.na(.data$Trait_mean) &
                     !is.na(.data$Demog_rate_mean) & !is.na(.data$Pop_mean)) %>%
-    dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
-                                                    data = .))) %>%
+    dplyr::mutate(det_Clim = stats::resid(stats::lm(.data$Clim ~ .data$Year,
+                                                    data = .data))) %>%
     dplyr::mutate(dplyr::across(tidyselect::where(is.array), as.numeric))
 
 
@@ -65,13 +65,14 @@ fit_SEM <- function(biol_data, ID, out_SEM,
   grDevices::pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
              data_GR$Species[1], '_', data_GR$Location[1],
              '_', data_GR$Trait[1], '_relations.pdf'))
-  psych::pairs.panels(subset(data_GR, select = c(Clim, det_Clim, Year,
-                                                 Trait_mean, Demog_rate_mean,
-                                                 Pop_mean, GR)),
-                      ellipses = FALSE, hist.col = 'grey', lm = TRUE)
-  graphics::mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
+  dat_sub <- data_GR %>%
+    dplyr::select(.data, .data$Clim, .data$det_Clim, .data$Year,
+                  .data$Trait_mean, .data$Demog_rate_mean,
+                  .data$Pop_mean, .data$GR)
+  psych::pairs.panels(dat_sub, ellipses = FALSE, hist.col = 'grey', lm = TRUE)
+  graphics::mtext(paste0('Demographic rate is ', unique(dat_sub$Demog_rate)), side = 3,
         line = 3)
-  graphics::mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
+  graphics::mtext(paste0('Trait is ', unique(dat_sub$Trait_Categ_det)), side = 1,
         line = 4)
   grDevices::dev.off()
 
@@ -79,25 +80,26 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
   if(standardize){
     data_GR <- data_GR %>%
-      dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean, na.rm = T),
-                    Demog_rate_SE = Demog_rate_SE /sd(Demog_rate_mean, na.rm = T),
-                    det_Clim = scale(det_Clim),
-                    Trait_mean = scale(Trait_mean),
-                    Demog_rate_mean = scale(Demog_rate_mean),
-                    Pop_mean = scale(Pop_mean),
-                    GR = scale(GR)) %>%
-      dplyr::mutate(across(where(is.array), as.numeric))
+      dplyr::mutate(.data, Trait_SE = .data$Trait_SE / stats::sd(.data$Trait_mean, na.rm = T),
+                    Demog_rate_SE = .data$Demog_rate_SE / stats::sd(.data$Demog_rate_mean, na.rm = T),
+                    det_Clim = scale(.data$det_Clim),
+                    Trait_mean = scale(.data$Trait_mean),
+                    Demog_rate_mean = scale(.data$Demog_rate_mean),
+                    Pop_mean = scale(.data$Pop_mean),
+                    GR = scale(.data$GR)) %>%
+      dplyr::mutate(dplyr::across(tidyselect::where(is.array), as.numeric))
 
     grDevices::pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
                data_GR$Species[1], '_', data_GR$Location[1],
                '_', data_GR$Trait[1], '_z_score_relations.pdf'))
-    psych::pairs.panels(subset(data_GR, select = c(Clim, det_Clim, Year,
-                                                   Trait_mean, Demog_rate_mean,
-                                                   Pop_mean, GR)),
-                        ellipses = FALSE, hist.col = 'grey', lm = TRUE)
-    graphics::mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
+    dat_sub <- data_GR %>%
+      dplyr::select(.data, .data$Clim, .data$det_Clim, .data$Year,
+                    .data$Trait_mean, .data$Demog_rate_mean,
+                    .data$Pop_mean, .data$GR)
+    psych::pairs.panels(dat_sub, ellipses = FALSE, hist.col = 'grey', lm = TRUE)
+    graphics::mtext(paste0('Demographic rate is ', unique(dat_sub$Demog_rate)), side = 3,
           line = 3)
-    graphics::mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
+    graphics::mtext(paste0('Trait is ', unique(dat_sub$Trait_Categ_det)), side = 1,
           line = 4)
     grDevices::dev.off()
   }
