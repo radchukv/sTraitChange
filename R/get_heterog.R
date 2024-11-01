@@ -17,7 +17,7 @@
 #' variance, ranges from 0 to 1, and I2_perRand is the proportion of the total
 #' heterogeneity per random factor included in the model.
 #' @examples
-#' prepare the data to fit the model
+#' # prepare the data to fit the model
 #' Coefs_phenClim <- subset(dataPaths, Relation == 'Trait_mean<-det_Clim' &
 #' Trait_Categ == 'Phenological')
 #'  forTrans <- subset(Coefs_phenClim, select = c(Estimate,  Std.Error, Relation,
@@ -63,7 +63,7 @@
 #'
 get_heterog <- function(mod, data){
   W <- diag(1/data$SError^2)
-  X <- model.matrix(mod)
+  X <- stats::model.matrix(mod)
   P <- W - W %*% X %*% solve(t(X) %*% W %*% X) %*% t(X) %*% W
   I2 <- sum(mod$sigma2) / (sum(mod$sigma2) + (mod$k-mod$p)/sum(diag(P)))
   I2_perRand <- mod$sigma2 / (sum(mod$sigma2) + (mod$k-mod$p)/sum(diag(P)))
