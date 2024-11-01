@@ -93,14 +93,16 @@
 fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                      Cov_fact = NULL, COV = NULL, optimize = 'uobyqa',
                      DD = 'n_effectDGR', simpleSEM = FALSE,
-                     Trait = FALSE, A = Mat_phylo, des.matrix = "treatm.contrasts"){
+                     Trait = FALSE, A, des.matrix = "treatm.contrasts"){
   ## calculating indirect effects, total effects and their SEs
-  forTrans <- subset(data_MA, select = c(Estimate,  Std.Error, Relation, Species, Sp_phylo, Location, ID))
-  forTrans <- forTrans %>%
-    dplyr::rename(SError = Std.Error)
+  forTrans <- data_MA %>%
+    dplyr::select(.data, .data$Estimate,  .data$Std.Error,
+                  .data$Relation, .data$Species,
+                  .data$Sp_phylo, .data$Location, .data$ID) %>%
+    dplyr::rename(.data, SError = .data$Std.Error)
 
   met_wide <- forTrans %>%
-    tidyr::gather(variable, value, -(Relation:ID)) %>%
+    tidyr::gather(.data, .data$variable, .data$value, -(Relation:ID)) %>%
     tidyr::unite(temp, Relation, variable, sep = '/') %>%
     tidyr::spread(temp, value)
 
@@ -114,29 +116,31 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
 
   trans_allEfS <- met_wide %>%
     tidyr::gather(key, value, -c(Species:ID)) %>%
-    tidyr::separate(., key, into = c('Relation', 'Metric'), sep = "/") %>%
-    tidyr::spread(., Metric, value)
+    tidyr::separate(.data, .data$key, into = c('Relation', 'Metric'), sep = "/") %>%
+    tidyr::spread(.data, .data$Metric, .data$value)
 
 
   subs_merge <- droplevels(data_MA %>%
-                             dplyr::distinct(., ID, Country, Continent,
-                                             Longitude, Latitude, Taxon,
-                                             BirdType, Trait_Categ,
-                                             Trait, Demog_rate_Categ,
-                                             Demog_rate, Count,
-                                             Nyears, WinDur, deltaAIC,
+                             dplyr::distinct(.data, .data$ID, .data$Country,
+                                             .data$Continent, .data$Longitude,
+                                             .data$Latitude, .data$Taxon,
+                                             .data$BirdType, .data$Trait_Categ,
+                                             .data$Trait, .data$Demog_rate_Categ,
+                                             .data$Demog_rate, .data$Count,
+                                             .data$Nyears, .data$WinDur, .data$deltaAIC,
                                              .keep_all = T) %>%
-                             subset(.,
-                                    select = c(ID, Study_Authors,
-                                               Country, Continent,
-                                               Longitude, Latitude, Taxon,
-                                               BirdType, Trait_Categ, Trait,
-                                               Demog_rate_Categ, Demog_rate,
-                                               Count, Nyears, WinDur,
-                                               deltaAIC, Pvalue, WeathQ,
-                                               Ref.day, Ref.month, WindowClose,
-                                               Trait_ageClass,
-                                               GenLength_y_IUCN)))
+                             subset(.data,
+                                    select = c(.data, .data$ID, .data$Study_Authors,
+                                               .data$Country, .data$Continent,
+                                               .data$Longitude, .data$Latitude,
+                                               .data$Taxon, .data$BirdType,
+                                               .data$Trait_Categ, .data$Trait,
+                                               .data$Demog_rate_Categ, .data$Demog_rate,
+                                               .data$Count, .data$Nyears, .data$WinDur,
+                                               .data$deltaAIC, .data$Pvalue,
+                                               .data$WeathQ, .data$Ref.day,
+                                               .data$Ref.month, .data$WindowClose,
+                                               .data$Trait_ageClass, .data$GenLength_y_IUCN)))
 
   tot <- merge(trans_allEfS, subs_merge, by = c('ID'))
 
@@ -188,13 +192,14 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
     subs_data <- subs_data[! is.na(subs_data[, Cov_fact]), ]
   }
 
+  SError <- NULL
   ## fitting the models without phylogeny with ML and REML
   tt.error.ML <- tryCatch(mod_ML <- metafor::rma.mv(stats::as.formula(formul), V = SError^2,
                                                     random = list(~ 1|Species, ~1|ID, ~1|Location),
                                                     data = subs_data,
                                                     method = 'ML', control = list(optimizer = optimize)),
                           error=function(e) e)
-  if(is(tt.error.ML,"error")){
+  if(methods::is(tt.error.ML,"error")){
     warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
                 'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
                 'fitted relation is ', unique(subs_data$Relation), '\n',
@@ -208,7 +213,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                                         method = 'REML',
                                                         control = list(optimizer = optimize)),
                             error=function(e) e)
-  if(is(tt.error.REML,"error")){
+  if(methods::is(tt.error.REML,"error")){
     warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
                 'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
                 'fitted relation is ', unique(subs_data$Relation), '\n',
@@ -226,7 +231,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                                                 data = subs_data,
                                                                 method = 'ML', control = list(optimizer = optimize)),
                                 error=function(e) e)
-  if(is(tt.error.phylo.ML,"error")){
+  if(methods::is(tt.error.phylo.ML,"error")){
     warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
                 'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
                 'fitted relation is ', unique(subs_data$Relation), '\n',
@@ -242,7 +247,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                                                     method = 'REML',
                                                                     control = list(optimizer = optimize)),
                                   error=function(e) e)
-  if(is(tt.error.phylo.REML,"error")){
+  if(methods::is(tt.error.phylo.REML,"error")){
     warning(cat('trait category is ', unique(subs_data$Trait_Categ), '\n',
                 'demographic rate category is ', unique(subs_data$Demog_rate_Categ), '\n',
                 'fitted relation is ', unique(subs_data$Relation), '\n',
@@ -264,7 +269,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   ## getting the output depending on whether Cov_fact is included or not (slightly different type of output then
   ## because for covariate we get the estimates per each level but the p value for the whole factor)
   if(! is.null(Cov_fact)){
-    if(! is(tt.error.sel.ML,'error') & ! is(tt.error.sel.REML, 'error')){
+    if(! methods::is(tt.error.sel.ML,'error') & ! methods::is(tt.error.sel.REML, 'error')){
       out_dat <- data.frame(Levels_Covar = rownames(sel_mod_REML$beta),
                             Estimate = as.numeric(sel_mod_REML$beta),
                             SError = sel_mod_REML$se,
@@ -310,7 +315,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
       }
     }
   } else {  # there is no factor as an explanatory
-    if(! is(tt.error.sel.ML,'error') & ! is(tt.error.sel.REML, 'error')){
+    if(! methods::is(tt.error.sel.ML,'error') & ! methods::is(tt.error.sel.REML, 'error')){
       out_dat <- data.frame(Variable = rownames(sel_mod_REML$beta),
                             Estimate = as.numeric(sel_mod_REML$beta), SError = sel_mod_REML$se,
                             EfS_Low = sel_mod_REML$ci.lb, EfS_Upper = sel_mod_REML$ci.ub,
@@ -335,7 +340,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   }
 
   ## if both models fitted well (no errors), get the output tibble together
-  if(! is(tt.error.sel.ML,'error') & ! is(tt.error.sel.REML, 'error')){
+  if(! methods::is(tt.error.sel.ML,'error') & ! methods::is(tt.error.sel.REML, 'error')){
     het_mod <- get_heterog(mod= tt.error.sel.REML, data = subs_data)
     if(Type_EfS %in% c('Ind_DemRate<-det_Clim', 'Ind_GR<-det_Clim',
                        'Tot_DemRate<-det_Clim', 'Tot_GR<-det_Clim',
