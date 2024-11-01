@@ -27,12 +27,12 @@ equations and path coefficients.
  consec_yrs <- merge(full_NA, subs, by = 'Year', all= T)
 
  data_GR <- consec_yrs \%>\%
- dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) \%>\%
- dplyr::mutate(., GR = log(Pop_mean_lag / Pop_mean)) \%>\%
- dplyr::filter(., !is.na(GR) & !is.na(Trait_mean) &
-               !is.na(Demog_rate_mean) & !is.na(Pop_mean)) \%>\%
+ dplyr::mutate(.data, Pop_mean_lag = c(.data$Pop_mean[-1], NA)) \%>\%
+ dplyr::mutate(.data, GR = log(.data$Pop_mean_lag / .data$Pop_mean)) \%>\%
+ dplyr::filter(.data, !is.na(.data$GR) & !is.na(.data$Trait_mean) &
+               !is.na(.data$Demog_rate_mean) & !is.na(.data$Pop_mean)) \%>\%
  dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
-               data = .))) \%>\%
+               data = .data))) \%>\%
  dplyr::mutate(across(where(is.array), as.numeric))
 
 # fit the model

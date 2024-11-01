@@ -11,7 +11,7 @@
 #'  Defaults to FALSE.
 #' @inheritParams fit_mod
 #' @importFrom magrittr "%>%"
-#'
+#' @importFrom rlang .data
 #'
 #' @export
 #'
@@ -52,28 +52,28 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
   ## calculate GR
   data_GR <- consec_yrs %>%
-    dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) %>%
-    dplyr::mutate(., GR = log(Pop_mean_lag / Pop_mean)) %>%
-    dplyr::filter(., !is.na(GR) & !is.na(Trait_mean) &
-                    !is.na(Demog_rate_mean) & !is.na(Pop_mean)) %>%
+    dplyr::mutate(.data, Pop_mean_lag = c(.data$Pop_mean[-1], NA)) %>%
+    dplyr::mutate(.data, GR = log(.data$Pop_mean_lag / .data$Pop_mean)) %>%
+    dplyr::filter(.data, !is.na(.data$GR) & !is.na(.data$Trait_mean) &
+                    !is.na(.data$Demog_rate_mean) & !is.na(.data$Pop_mean)) %>%
     dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
                                                     data = .))) %>%
-    dplyr::mutate(across(where(is.array), as.numeric))
+    dplyr::mutate(dplyr::across(tidyselect::where(is.array), as.numeric))
 
 
   # exploratory plots
-  pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
+  grDevices::pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
              data_GR$Species[1], '_', data_GR$Location[1],
              '_', data_GR$Trait[1], '_relations.pdf'))
   psych::pairs.panels(subset(data_GR, select = c(Clim, det_Clim, Year,
                                                  Trait_mean, Demog_rate_mean,
                                                  Pop_mean, GR)),
                       ellipses = FALSE, hist.col = 'grey', lm = TRUE)
-  mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
+  graphics::mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
         line = 3)
-  mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
+  graphics::mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
         line = 4)
-  dev.off()
+  grDevices::dev.off()
 
 
 
@@ -88,18 +88,18 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                     GR = scale(GR)) %>%
       dplyr::mutate(across(where(is.array), as.numeric))
 
-    pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
+    grDevices::pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
                data_GR$Species[1], '_', data_GR$Location[1],
                '_', data_GR$Trait[1], '_z_score_relations.pdf'))
     psych::pairs.panels(subset(data_GR, select = c(Clim, det_Clim, Year,
                                                    Trait_mean, Demog_rate_mean,
                                                    Pop_mean, GR)),
                         ellipses = FALSE, hist.col = 'grey', lm = TRUE)
-    mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
+    graphics::mtext(paste0('Demographic rate is ', unique(data_GR$Demog_rate)), side = 3,
           line = 3)
-    mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
+    graphics::mtext(paste0('Trait is ', unique(data_GR$Trait_Categ_det)), side = 1,
           line = 4)
-    dev.off()
+    grDevices::dev.off()
   }
 
   ## now call a function fitting a model (depending on the options:

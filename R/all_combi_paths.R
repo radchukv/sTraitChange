@@ -12,13 +12,14 @@
 #' @inheritParams fit_mod
 #'
 #' @export
+#' @importFrom rlang .data
 #'
 #' @return Returns a data frame, which is an extended version of the input data frame,
 #' that additionally contains estimated medians, SEs, as well as lower and upper CI
 #' for the combined pathways.
 #'
 #' @examples
-#' prepare the data to fit the model to extract indirect path
+#' # prepare the data to fit the model to extract indirect path
 #' dataPaths_sp <- dataPaths %>%
 #'                   dplyr::mutate(Species = dplyr::case_when(
 #'                          Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
