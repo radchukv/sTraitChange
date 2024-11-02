@@ -22,6 +22,8 @@ test_nonlin(
 model is to be compared.}
 
 \item{rand_sl}{A character specifying the random model structure.}
+
+\item{...}{Additional parameters for the function \code{\link{test_nonlin}}}
 }
 \value{
 A list containing the best full fitted model and the result of

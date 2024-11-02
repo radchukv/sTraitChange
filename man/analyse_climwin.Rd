@@ -94,11 +94,4 @@ biol_eu <- droplevels(subset(biol_noSea$subdata[[1]],
                 'South Atlantic Ocean',
                 'South Georgia', 'Svalbard',
                 'Taiwan', 'USA', 'Venezuela')))
-t_anal <- analyse_climwin(ID = 1, biol_data = biol_eu,
-                          out_clim = 'output_climwin_temp',
-                          out_for_SEM = 'output_forSEM_temp',
-                          randwin = FALSE, metric = 'AIC',
-                          MinDur = 1, MaxDur = 12,
-                          oneGrid = FALSE, explanYear = TRUE,
-                          endWindow = 12, RefMon = NA)
 }

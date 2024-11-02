@@ -9,7 +9,6 @@ pl_conc_DirInd(
   Trait_categ = "Phenological",
   GlobES_dat,
   ES_dat,
-  ClEfSpecific = TRUE,
   ylab = "Direct effect of climate on GR (CG)",
   xlab = "Trait-mediated effect of climate on G (CZG)"
 )
@@ -24,9 +23,6 @@ per relation, obtained with the meta-analyses fitted using the function
 \item{ES_dat}{A data frame containing the study-specific effect size estimates per
 relation (in a wide format), extracted from prop_data object obtained with the
 function \code{\link{fit_all_meta}}.}
-
-\item{ClEfSpecific}{Boolean indicating whether the meta-analyses were fitted separately for
-studies with positive and negative effect of climate on traits.}
 
 \item{ylab}{Character specifying the label for the y axis.}
 
@@ -122,7 +118,6 @@ dplyr::mutate(Trait_Categ = 'Phenological',
 PhenT_CZGvsCG <- pl_conc_DirInd(Trait_categ = 'Phenological',
                       GlobES_dat = globES_T,
                       ES_dat = wide_tempES_all,
-                      ClEfSpecific = FALSE,
                       xlab = 'Phenology-mediated effect <br> of temperature on G (CZ)',
                       ylab = 'Direct effect of temperature on G (CG)')$plot
 }

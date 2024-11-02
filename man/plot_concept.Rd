@@ -15,7 +15,6 @@ plot_concept(
   slope_ES = "Estimate/Trait_mean<-det_Clim",
   ylab = "Trait",
   xlab = "Climate",
-  ClEfSpecific = TRUE,
   miny = -6,
   maxy = 6
 )
@@ -50,9 +49,6 @@ from the ES_dat.}
 \item{ylab}{Character specifying the label for the y axis.}
 
 \item{xlab}{Character specifying the label for the x axis.}
-
-\item{ClEfSpecific}{Boolean indicating whether the meta-analyses were fitted separately for
-studies with positive and negative effect of climate on traits.}
 
 \item{miny}{Numeric specifying the minimum limit for the y axis.}
 
@@ -162,6 +158,5 @@ PhenT_CZ <- plot_concept(Trait_categ = 'Phenological',
                         slope_ES = 'Estimate/Trait_mean<-det_Clim',
                         ylab = 'Phenology, Z',
                         xlab = 'Temperature, C',
-                        ClEfSpecific = FALSE,
                         miny = -4, maxy = 4)
 }

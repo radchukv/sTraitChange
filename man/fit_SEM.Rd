@@ -71,7 +71,7 @@ the results to be used in meta-analysis
 \examples{
 # fit SEM
 mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
-                out_SEM = 'output_SEM_all',
+                out_SEM = 'output_forSEM',
                 DD = 'n_effectGR', weight = TRUE,
                 correlation = TRUE,
                 standardize = TRUE,

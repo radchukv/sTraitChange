@@ -47,6 +47,8 @@ Defaults to FALSE.}
 \item{simpleSEM}{Logical (TRUE/FALSE) specifying that the simple SEM
 structure will be fitted in which climate effect on GR is only mediated
 by trait, demographic rates are not considered. Defaults to FALSE.}
+
+\item{...}{Additional parameters for the function \code{\link{fit_mod}}}
 }
 \value{
 A fitted object of class psem (see
