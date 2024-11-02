@@ -30,31 +30,6 @@
 #' lower and upper confidence intervals, and SE of the estimate.
 #' @export
 #'
-#' @examples
-#' Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
-#'   forTrans <- subset(Coefs_Aut,
-#'               select = c(Estimate,  Std.Error, Relation,
-#'               Species, Location, ID)) %>%
-#'               dplyr::rename(SError = Std.Error)
-#' met_wide <- forTrans %>%
-#'   tidyr::gather(variable, value, -(Relation:ID)) %>%
-#'   tidyr::unite(temp, Relation, variable, sep = '/') %>%
-#'   tidyr::spread(temp, value)
-#'
-#' ind_p_Dem <- ind_path(x = met_wide$`Trait_mean<-det_Clim/Estimate`[1],
-#'                   y = met_wide$`Demog_rate_mean<-Trait_mean/Estimate`[1],
-#'                   z = NULL,
-#'                   x.se = met_wide$`Trait_mean<-det_Clim/SError`[1],
-#'                   y.se = met_wide$`Demog_rate_mean<-Trait_mean/SError`[1],
-#'                   z.se = NULL, numrep = 10000)
-#' ind_p_GR <- ind_path(x = met_wide$`Trait_mean<-det_Clim/Estimate`[2],
-#'                      y = met_wide$`Demog_rate_mean<-Trait_mean/Estimate`[2],
-#'                      z = met_wide$`GR<-Demog_rate_mean/Estimate`[2],
-#'                      x.se = met_wide$`Trait_mean<-det_Clim/SError`[2],
-#'                      y.se = met_wide$`Demog_rate_mean<-Trait_mean/SError`[2],
-#'                      z.se = met_wide$`GR<-Demog_rate_mean/SError`[2],
-#'                      numrep = 10000)
-#'
 ind_path <- function(x, y, z = NULL,
                      x.se, y.se,
                      z.se = NULL,
@@ -112,31 +87,6 @@ ind_path <- function(x, y, z = NULL,
 #' bootstrap values as an estimate of an indirect path coefficient,
 #' lower and upper confidence intervals, and SE of the estimate.
 #' @export
-#'
-#' @examples
-#' Coefs_Aut <- readRDS(file = './output_forSEM_temp/PathCoefs_allMods_Temp_Weights_DD_Autocor.RDS')
-#'   forTrans <- subset(Coefs_Aut,
-#'               select = c(Estimate,  Std.Error, Relation,
-#'               Species, Location, ID)) %>%
-#'               dplyr::rename(SError = Std.Error)
-#' met_wide <- forTrans %>%
-#'   tidyr::gather(variable, value, -(Relation:ID)) %>%
-#'   tidyr::unite(temp, Relation, variable, sep = '/') %>%
-#'   tidyr::spread(temp, value)
-#'
-#' ind_p_Dem <- ind_path(x = met_wide$`Trait_mean<-det_Clim/Estimate`[1],
-#'                   y = met_wide$`Demog_rate_mean<-Trait_mean/Estimate`[1],
-#'                   z = NULL,
-#'                   x.se = met_wide$`Trait_mean<-det_Clim/SError`[1],
-#'                   y.se = met_wide$`Demog_rate_mean<-Trait_mean/SError`[1],
-#'                   z.se = NULL, numrep = 10000)
-#' tot_Dem <- tot_path(direct = met_wide$`Demog_rate_mean<-det_Clim/Estimate`[1],
-#'                     indir = ind_p_Dem$Median,
-#'                     ClDem = NULL,  DemGR= NULL,
-#'                     direct.se = met_wide$`Demog_rate_mean<-det_Clim/SError`[1],
-#'                     indir.se = ind_p_Dem$SE,
-#'                     ClDem.se = NULL, DemGR.se = NULL,
-#'                     numrep = 10000)
 #'
 tot_path <- function(direct, indir,
                      ClDem = NULL,  DemGR= NULL,
