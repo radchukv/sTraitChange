@@ -28,15 +28,15 @@ The package was conceived to perform analyses presented in the above-mentioned p
 You can install the development version of sTraitChange from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("pak")
-pak::pak("radchukv/sTraitChange")
+# install.packages("devtools")
+devtools::install_github("radchukv/sTraitChange")
 ```
 
 ## Usage
 
-To access the documentation, type:
+To access the documentation on a specific function, type '?' and a function name, for example:
 ```{r help}
-help(sTraitChange)
+?fit_SEM
 ```
 
 The main functions of importance to the analyses performed for the paper are:   
@@ -52,7 +52,7 @@ And the main functions used for visualisation of the obtained results are:
 
 Here is an example of how SEM can be fitted to the 1st study in the dataset:
 
-```{r example SEM}
+```{r example SEM, message=FALSE}
 mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
                    out_SEM = 'output_forSEM',
                    DD = 'n_effectGR', weight = TRUE,
@@ -95,8 +95,6 @@ test_noCovar <- fit_meta_phylo(data_MA = Coefs_phenClim,
                                simpleSEM = TRUE,
                                A = phyloMat)
 ```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
 
 ## Support
 

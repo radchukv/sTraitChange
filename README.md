@@ -21,18 +21,17 @@ You can install the development version of sTraitChange from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("pak")
-pak::pak("radchukv/sTraitChange")
+# install.packages("devtools")
+devtools::install_github("radchukv/sTraitChange")
 ```
 
 ## Usage
 
-To access the documentation, type:
+To access the documentation on a specific function, type ‘?’ and a
+function name, for example:
 
 ``` r
-help(sTraitChange)
-#> No documentation for 'sTraitChange' in specified packages and libraries:
-#> you could try '??sTraitChange'
+?fit_SEM
 ```
 
 The main functions of importance to the analyses performed for the paper
@@ -67,10 +66,6 @@ mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
                    standardize = TRUE,
                    Trait = FALSE,
                    simpleSEM = TRUE)
-#> Currently fitting SEM for study 1 for species Parus major in Askainen for LayingDate
-#> /private/var/folders/5z/w9py0h790j31_sv8r1xldf3w0000gq/T/Rtmpwe7mSw/temp_libpath119b05330e622/sTraitChange
-#> /private/var/folders/5z/w9py0h790j31_sv8r1xldf3w0000gq/T/Rtmpwe7mSw/temp_libpath119b05330e622/sTraitChange/output_forSEM/1_Parus major_Askainen_LayingDate_z_score_relations.pdf
-#> /private/var/folders/5z/w9py0h790j31_sv8r1xldf3w0000gq/T/Rtmpwe7mSw/temp_libpath119b05330e622/sTraitChange/output_forSEM/1_Parus major_Askainen_LayingDate_NumberFledglings_ResultsSEM.RDS
 ```
 
 And another example of how a meta-analysis that allows to account for
@@ -109,9 +104,6 @@ test_noCovar <- fit_meta_phylo(data_MA = Coefs_phenClim,
                                simpleSEM = TRUE,
                                A = phyloMat)
 ```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
 
 ## Support
 
