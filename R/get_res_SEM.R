@@ -19,7 +19,7 @@
 #'  # prepare the data to fit the model to one study only
 #'  subs <- droplevels(dataSEM[dataSEM$ID == 7, ])
 #'  full_NA <- data.frame(Year = seq(min(subs$Year), max(subs$Year), by = 1))
-#'  consec_yrs <- merge(full_NA, subs, by = 'Year', all= T)
+#'  consec_yrs <- merge(full_NA, subs, by = 'Year', all= TRUE)
 #'
 #'  data_GR <- consec_yrs %>%
 #'  dplyr::mutate(Pop_mean_lag = c(.data$Pop_mean[-1], NA)) %>%
@@ -27,7 +27,7 @@
 #'  dplyr::filter(!is.na(.data$GR) & !is.na(.data$Trait_mean) &
 #'                !is.na(.data$Demog_rate_mean) & !is.na(.data$Pop_mean)) %>%
 #'  dplyr::mutate(det_Clim = stats::resid(stats::lm(Clim ~ Year,
-#'                data = .data))) %>%
+#'                data = .))) %>%
 #'  dplyr::mutate(across(where(is.array), as.numeric))
 #'
 #' # fit the model
