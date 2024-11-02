@@ -63,12 +63,12 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
   # exploratory plots
   pathfull <- system.file(package ='sTraitChange')
-  message(paste(pathfull))
+  #message(paste(pathfull))
   path <- paste0(pathfull,
                  '/', out_SEM, '/', data_GR$ID[1], '_',
                  data_GR$Species[1], '_', data_GR$Location[1],
                  '_', data_GR$Trait[1], '_relations.pdf')
-  message(paste(path))
+  #message(paste(path))
 
 
   grDevices::pdf(path)

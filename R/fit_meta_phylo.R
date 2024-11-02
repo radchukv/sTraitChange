@@ -102,6 +102,7 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                   .data$Sp_phylo, .data$Location, .data$ID) %>%
     dplyr::rename(SError = .data$Std.Error)
 
+  Relation <- ID <- Species <- NULL
   met_wide <- forTrans %>%
     tidyr::gather("variable", "value", -(Relation:ID)) %>%
     tidyr::unite("temp", "Relation", "variable", sep = '/') %>%
