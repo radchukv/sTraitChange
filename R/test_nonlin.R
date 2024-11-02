@@ -17,6 +17,7 @@
 #' @param formula_null A character specifying the model to which the full
 #' model is to be compared.
 #' @param rand_sl A character specifying the random model structure.
+#' @param ... Additional parameters for the function \code{\link{test_nonlin}}
 #'
 #' @return A list containing the best full fitted model and the result of
 #'   \code{\link[spaMM]{anova.HLfit}} comparing this model and a null model.
