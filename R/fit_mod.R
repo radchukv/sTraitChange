@@ -73,6 +73,7 @@ fit_mod <- function(biol_data, ID,
   # formulas
   if(simpleSEM){
     if(DD == 'n_effectGR'){
+      formGR  <- NULL
       formGR <<- 'GR ~ det_Clim  + Pop_mean + Trait_mean'
     }
     if(DD == 'n_effectD'){
@@ -82,49 +83,58 @@ fit_mod <- function(biol_data, ID,
       stop("If simpleSEM = TRUE, 'DD' argument must be \"n_effectGR\" or \"none\"")
     }
     if(DD == 'none'){
+      formGR <-  NULL
       formGR <<- 'GR ~ det_Clim + Trait_mean'
     }
   } else {
   if(Trait){
 
     if(DD == 'n_effectGR'){
+      formGR <- formDemRate <- NULL
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean + Trait_mean'
       formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
     }
     if(DD == 'n_effectD'){
+      formGR <- formDemRate <- NULL
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Trait_mean'
       formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
     }
     if(DD == 'n_effectDGR'){
+      formGR <- formDemRate <- NULL
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean + Trait_mean'
       formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
     }
     if(DD == 'none'){
+      formGR <- formDemRate <- NULL
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Trait_mean'
       formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
     }
 
   } else {
     if(DD == 'n_effectGR'){
+      formGR <- formDemRate <- NULL
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
       formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
     }
     if(DD == 'n_effectD'){
+      formGR <- formDemRate <- NULL
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean'
       formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
     }
     if(DD == 'n_effectDGR'){
+      formGR <- formDemRate <- NULL
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean + Pop_mean'
       formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean + Pop_mean'
     }
     if(DD == 'none'){
+      formGR <- formDemRate <- NULL
       formGR <<- 'GR ~ det_Clim + Demog_rate_mean'
       formDemRate <<- 'Demog_rate_mean ~ det_Clim + Trait_mean'
     }
 
   }
   }
-
+  formTrait  <- NULL
   formTrait <<- 'Trait_mean ~ det_Clim'
 
   if (weight) {
