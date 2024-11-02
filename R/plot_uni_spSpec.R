@@ -60,7 +60,7 @@ plot_uni_spSpec <- function(data_allEstim,
                          rep(mean(data_allEstim[, 'Pvalue'], na.rm = TRUE), lOut)),
                          ncol = 2, byrow = FALSE)
 
-  Pred_data <- as.data.frame(predict(mod_mv, newmods = Pred_data,  addx=TRUE))
+  Pred_data <- as.data.frame(stats::predict(mod_mv, newmods = Pred_data,  addx=TRUE))
 
   for(i in 1:length(names(Pred_data))){
     if(length(strsplit(names(Pred_data)[i], split = 'X.')[[1]]) == 1){
@@ -97,6 +97,7 @@ plot_uni_spSpec <- function(data_allEstim,
     lt = 1} else {lt = 2}
   Hemisphere <- Est_MinSD <- Est_PlSD <- NULL
   if(byHemisphere){
+    Estimate <- NULL
     pl_CZ <- ggplot2::ggplot(data_allEstim, ggplot2::aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 5]],
                                        y = Estimate, colour = Hemisphere)) +
       ggplot2::geom_point(alpha = 0.4) + ggplot2::theme_bw() +
@@ -106,11 +107,12 @@ plot_uni_spSpec <- function(data_allEstim,
       ggplot2::geom_ribbon(data = Pred_data, ggplot2::aes(ymin = Est_MinSD, ymax = Est_PlSD,
                                         x = Pred_data[, names(Pred_data)[length(names(Pred_data))- 5]]),
                   alpha=.2, col ='black') +
-      scale_color_manual(values = c('deepskyblue2', 'goldenrod2')) +
+      ggplot2::scale_color_manual(values = c('deepskyblue2', 'goldenrod2')) +
       ggplot2::theme(legend.position = 'bottom',
             panel.grid.major = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank()) + ggplot2::ylim(miny, maxy)
   } else {
+    Estimate <- NULL
   pl_CZ <- ggplot2::ggplot(data_allEstim, ggplot2::aes(x = data_allEstim[, names(Pred_data)[length(names(Pred_data))- 4]],
                                      y = Estimate)) +
     ggplot2::geom_point(alpha = 0.4) + ggplot2::theme_bw() +

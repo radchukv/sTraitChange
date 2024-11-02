@@ -123,7 +123,7 @@ plot_hist_points <- function(data_allEstim,
               legend.direction = 'vertical',
               panel.border = ggplot2::element_rect(fill = NA, color = 'grey',
                                           size = 0.1, linetype = 3))  +  ## , panel.border = element_blank()
-        ggplot2::geom_errorbar(data = subset(Ef_sizesEstim, Trait_Categ == Trait_categ),
+        ggplot2::geom_errorbar(data =Ef_sub,
                       width=.1,
                       ggplot2::aes(xmin = EfS_Low, xmax = EfS_Upper, colour = Col, y = 5), lwd = 0.5) +
         ggplot2::geom_point(data = Ef_sub,
@@ -148,6 +148,7 @@ plot_hist_points <- function(data_allEstim,
                            col = c('red4', 'royalblue1'))
     }
   } else {
+    hue <- NULL
     data_sub <- data_allEstim %>%
       dplyr::filter(.data$TraitDem == Traitdem)
     Ef_sub <- Ef_sizesEstim %>%
