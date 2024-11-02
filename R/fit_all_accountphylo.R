@@ -100,8 +100,8 @@ fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
                                                'GR<-Trait_mean'))
   colnames(meta_Cov$meta_res[[1]])[1] <- 'Variable'
   ef_all <- rbind(meta_other$meta_res[[1]], meta_Cov$meta_res[[1]]) %>%
-    dplyr::mutate(Trait_Categ = .data$Trait_categ,
-                  Clim = .data$Clim, phylo = .data$ind)
+    dplyr::mutate(Trait_Categ = Trait_categ,
+                  Clim = Clim, phylo = ind)
   return(ef_all)
 }
 
