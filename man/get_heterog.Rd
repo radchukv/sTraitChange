@@ -50,7 +50,7 @@ subs_merge <- droplevels(Coefs_phenClim \%>\%
         Trait, Demog_rate_Categ,
         Demog_rate, Count,
         Nyears, WinDur, deltaAIC,
-        .keep_all = T) \%>\%
+        .keep_all = TRUE) \%>\%
         subset(., select = c(ID, Study_Authors,
         Country, Continent,
         Longitude, Latitude, Taxon,
