@@ -24,7 +24,7 @@
 #' @examples
 #' # fit SEM
 #' mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
-#'                 out_SEM = 'output_SEM_all',
+#'                 out_SEM = 'output_forSEM',
 #'                 DD = 'n_effectGR', weight = TRUE,
 #'                 correlation = TRUE,
 #'                 standardize = TRUE,
@@ -62,9 +62,16 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
 
   # exploratory plots
-  grDevices::pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
-             data_GR$Species[1], '_', data_GR$Location[1],
-             '_', data_GR$Trait[1], '_relations.pdf'))
+  pathfull <- system.file(package ='sTraitChange')
+  message(paste(pathfull))
+  path <- paste0(pathfull,
+                 '/', out_SEM, '/', data_GR$ID[1], '_',
+                 data_GR$Species[1], '_', data_GR$Location[1],
+                 '_', data_GR$Trait[1], '_relations.pdf')
+  message(paste(path))
+
+
+  grDevices::pdf(path)
   dat_sub <- data_GR %>%
     dplyr::select(.data$Clim, .data$det_Clim, .data$Year,
                   .data$Trait_mean, .data$Demog_rate_mean,
@@ -89,9 +96,17 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                     GR = scale(.data$GR)) %>%
       dplyr::mutate(dplyr::across(tidyselect::where(is.array), as.numeric))
 
-    grDevices::pdf(paste0('./', out_SEM, '/', data_GR$ID[1], '_',
-               data_GR$Species[1], '_', data_GR$Location[1],
-               '_', data_GR$Trait[1], '_z_score_relations.pdf'))
+
+
+    pathfull <- system.file(package ='sTraitChange')
+    message(paste(pathfull))
+    path <- paste0(pathfull,
+                   '/', out_SEM, '/', data_GR$ID[1], '_',
+                   data_GR$Species[1], '_', data_GR$Location[1],
+                   '_', data_GR$Trait[1], '_z_score_relations.pdf')
+    message(paste(path))
+
+    grDevices::pdf(path)
     dat_sub <- data_GR %>%
       dplyr::select(.data$Clim, .data$det_Clim, .data$Year,
                     .data$Trait_mean, .data$Demog_rate_mean,
@@ -124,10 +139,13 @@ fit_SEM <- function(biol_data, ID, out_SEM,
   SEM_results$Tr <- Trait
 
   # write output
+  path <- paste0(pathfull,
+                 '/', out_SEM, '/', SEM_results$ID[1], '_',
+                 SEM_results$Species[1], '_', SEM_results$Location[1],
+                 '_', SEM_results$Trait[1], '_',
+                 SEM_results$Demog_rate[1], '_ResultsSEM',  '.RDS')
+  message(paste(path))
   saveRDS(object = SEM_results,
-          file = paste0('./', out_SEM, '/', SEM_results$ID[1], '_',
-                        SEM_results$Species[1], '_', SEM_results$Location[1],
-                        '_', SEM_results$Trait[1], '_',
-                        SEM_results$Demog_rate[1], '_ResultsSEM',  '.RDS'))
+          file = path)
   return(SEM_results)
 }
