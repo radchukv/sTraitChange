@@ -49,13 +49,6 @@
 #'                 'South Atlantic Ocean',
 #'                 'South Georgia', 'Svalbard',
 #'                 'Taiwan', 'USA', 'Venezuela')))
-#' t_anal <- analyse_climwin(ID = 1, biol_data = biol_eu,
-#'                           out_clim = 'output_climwin_temp',
-#'                           out_for_SEM = 'output_forSEM_temp',
-#'                           randwin = FALSE, metric = 'AIC',
-#'                           MinDur = 1, MaxDur = 12,
-#'                           oneGrid = FALSE, explanYear = TRUE,
-#'                           endWindow = 12, RefMon = NA)
 
 analyse_climwin <- function(ID, biol_data,
                             out_clim = 'output_climwin_temp',
@@ -68,31 +61,31 @@ analyse_climwin <- function(ID, biol_data,
 
   subs <- droplevels(biol_data[biol_data$ID == ID, ])
   if (randwin) {
-    dat <- readRDS(paste0('./', out_clim, '/', subs$ID[1], '_',
-                          subs$Species[1], '_OneG_', oneGrid,
-                          '_Rand',  '.RDS'))
+    dat <- readRDS(paste0(out_clim, '/', subs$ID[1], '_',
+                                                subs$Species[1], '_OneG_', oneGrid,
+                                                '_Rand',  '.RDS'))
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
     biol_data_noNA <- biol %>%
-      dplyr::filter(.data, !is.na(.data$Trait_mean) & !is.na(.data$Trait_SE))
+      dplyr::filter(!is.na(.data$Trait_mean) & !is.na(.data$Trait_SE))
     randwin_out <- dat$randwin_output[[1]]
     data_climwin <- climwin_out$Dataset
     data_climwin$WindowDur <- data_climwin$WindowOpen - data_climwin$WindowClose
     climdata <- dat$clim_data[[1]]
   } else {
-    dat <- readRDS(paste0('./', out_clim, '/', subs$ID[1], '_',
+    dat <- readRDS(paste0(out_clim, '/', subs$ID[1], '_',
                           subs$Species[1], '_OneG_', oneGrid,
                           '.RDS'))
     climwin_out <- dat$climwin_output[[1]]
     biol <- dat$biol_data[[1]]
     biol_data_noNA <- biol %>%
-      dplyr::filter(.data, !is.na(.data$Trait_mean) & !is.na(.data$Trait_SE))
+      dplyr::filter(!is.na(.data$Trait_mean) & !is.na(.data$Trait_SE))
     data_climwin <- climwin_out$Dataset
     data_climwin$WindowDur <- data_climwin$WindowOpen - data_climwin$WindowClose
     climdata <- dat$clim_data[[1]]
   }
 
-  grDevices::pdf(paste0('./', out_clim, '/', subs$ID[1], '_',
+  grDevices::pdf(paste0(out_clim, '/', subs$ID[1], '_',
              subs$Species[1], '_OneG_', oneGrid, '_climwin.pdf'))
   graphics::par(mfrow = c(2,2))
   print(climwin::plotdelta(climwin_out$Dataset))
@@ -152,7 +145,7 @@ analyse_climwin <- function(ID, biol_data,
                             data_res = list(dat_out))
       # save these data for SEM
       saveRDS(object = res,
-              file = paste0('./', out_for_SEM, '/', biol$ID[1], '_',
+              file = paste0(out_for_SEM, '/', biol$ID[1], '_',
                             biol$Species[1], '_OneG_', oneGrid,
                             '_ForSEM',  '.RDS'))
       return(res)
