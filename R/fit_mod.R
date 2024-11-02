@@ -28,6 +28,7 @@
 #' @param simpleSEM Logical (TRUE/FALSE) specifying that the simple SEM
 #' structure will be fitted in which climate effect on GR is only mediated
 #' by trait, demographic rates are not considered. Defaults to FALSE.
+#' @param ... Additional parameters for the function \code{\link{fit_mod}}
 #'
 #' @export
 #' @importFrom magrittr "%>%"
@@ -70,7 +71,6 @@ fit_mod <- function(biol_data, ID,
 
 
   # formulas
-  formGR <- formDemRate <- formTrait <- NULL
   if(simpleSEM){
     if(DD == 'n_effectGR'){
       formGR <<- 'GR ~ det_Clim  + Pop_mean + Trait_mean'
