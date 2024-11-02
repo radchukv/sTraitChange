@@ -57,13 +57,9 @@ prep_SEM_input <- function(prep_subset_climwin,
 
     ## check whether the file exists
     fileName <- paste0('./', out_for_SEM, '/', subs$ID[1], '_',
-                       subs$Species[1], '_', subs$Location[1],
-                       '_', subs$Trait[1],
-                       '_OneGrid_', oneGrid,
-                       '_explYear_', explanYear,
-                       '_EndWindow_', endWindow,
-                       '_RefMon_', RefMon, '_ForSEM',  '.RDS')
-
+                       subs$Species[1],
+                       '_OneG_', oneGrid,
+                       '_ForSEM',  '.RDS')
     if(file.exists(fileName)){
       test_fSEM <- readRDS(fileName)
 
@@ -74,18 +70,18 @@ prep_SEM_input <- function(prep_subset_climwin,
 
       all_ID <- all_ID[all_ID != j]
       for(i in all_ID){
-        sub_NY <- biol_NY %>%
-          droplevels(dplyr::filter(.data, .data$ID == i))
+        sub_NY <- droplevels(biol_NY %>%
+          dplyr::filter(.data$ID == i))
         ## first check whether it is a study that has all the NAs (for SE we have some studies like that)
 
         if (sum(is.na(sub_NY$Trait_SE)) != nrow(sub_NY)){
         sub_NY_noNA <- sub_NY %>%
-          dplyr::filter(.data, !is.na(.data$Trait_mean) & !is.na(.data$Trait_SE)) %>%
-          dplyr::mutate(.data, NYears = dplyr::n())
+          dplyr::filter(!is.na(.data$Trait_mean) & !is.na(.data$Trait_SE)) %>%
+          dplyr::mutate(NYears = dplyr::n())
         }else{
           sub_NY_noNA <- sub_NY %>%
-            dplyr::filter(.data, !is.na(.data$Trait_mean)) %>%
-            dplyr::mutate(.data, NYears = dplyr::n())
+            dplyr::filter(!is.na(.data$Trait_mean)) %>%
+            dplyr::mutate(NYears = dplyr::n())
         }
 
          # cat('ID (i) checked is', i, '\n')
