@@ -114,6 +114,7 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
     cort <- stats::cor.test(ES_dat$`Estimate/Ind_GR<-det_Clim`, ES_dat$`Estimate/GR<-det_Clim`)
     corel <- broom::tidy(cort)
 
+    `SError/Ind_GR<-det_Clim` <- NULL
     mod_ML <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,
                                   V = `SError/Ind_GR<-det_Clim`^2,
                                   random = list(~ 1|Species, ~1|ID, ~1|Location),
@@ -126,10 +127,11 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                                         length.out = 10))
 
     rib_dat %<>%
-      dplyr::mutate(ymax = mod_ML$ci.ub[2] * x,
-                    ymin = mod_ML$ci.lb[2] * x,
+      dplyr::mutate(ymax = mod_ML$ci.ub[2] * .data$x,
+                    ymin = mod_ML$ci.lb[2] * .data$x,
                     `Estimate/GR<-det_Clim` = 0)
 
+    `Estimate/Ind_GR<-det_Clim` <- `Estimate/GR<-det_Clim` <- REL <- Estimate <- ltype <- NULL
     Rel_CZG_CG <- data.frame(slope = mod_ML$beta["`Estimate/Ind_GR<-det_Clim`", 1],
                              intercept = 0,
                              ltype = ifelse(mod_ML$pval[2] <= 0.1, '1', '2'))

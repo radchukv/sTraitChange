@@ -154,11 +154,11 @@ plot_concept <- function(Trait_categ = 'Phenological',
                                         length.out = 10)))
 
     dat_rib %<>%
-      dplyr::mutate(ymax = GlobES_dat$EfS_Upper * x,
-                    ymin = GlobES_dat$EfS_Low * x,
+      dplyr::mutate(ymax = GlobES_dat$EfS_Upper * .data$x,
+                    ymin = GlobES_dat$EfS_Low * .data$x,
                     Trait_mean = 0, GR = 0)
 
-
+  x <- ymin <- ymax <- Estimate <- ltype <- NULL
     pl <- ggplot2::ggplot(raw_dat,
                           ggplot2::aes(x = .data[[xvar_raw]], y = .data[[yvar_raw]])) +
       ggplot2::lims(x = c(min(dat_rib$x), max(dat_rib$x)),
