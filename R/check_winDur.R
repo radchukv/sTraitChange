@@ -75,6 +75,7 @@ check_winDur <- function(climwin_out, clim,
               'and the deltaAICc is satisfactory: ', round(data_climwin$deltaAICc[i], 2),  '\n')
       SelMod <- data_climwin[i, ]
 ## still is prone to bugs given the hard-coded options... e.g. cinterval
+      W <- NULL
       single_sel_win <- climwin::singlewin(xvar = list(Temp = clim$Temp),
                                            cdate = clim$Date,
                                            bdate = biol_data$Date,
