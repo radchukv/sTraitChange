@@ -4,3 +4,4 @@
 ^plots$
 ^output_fSEM_temp$
 ^tables
+^README\.Rmd$
