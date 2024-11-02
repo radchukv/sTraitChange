@@ -38,7 +38,7 @@
 #'                                         mod_mv = mod_CZ_PhenT_AbsLat,
 #'                                        lOut = 10, xLab = 'Absolute latitude',
 #'                                        yLab = 'CZ estimate',
-#'                                        pdf_basename = './plots/PlotCZ_PhenT_byAbsLat',
+#'                                        pdf_basename = 'plots/PlotCZ_PhenT_byAbsLat',
 #'                                        byHemisphere = FALSE,
 #'                                        miny = min(dataPaths_phen$Estimate) - 0.1,
 #'                                        maxy = max(dataPaths_phen$Estimate) + 0.1)
@@ -128,7 +128,11 @@ plot_uni_spSpec <- function(data_allEstim,
     ggplot2::ylim(miny, maxy)
 }
   if (!is.null(pdf_basename)) {
-    grDevices::pdf(file = paste0(pdf_basename, '.pdf'))
+    pathfull <- system.file(package ='sTraitChange')
+    #message(paste(pathfull))
+    path <- paste0(pathfull,
+                   '/', pdf_basename, '.pdf')
+    grDevices::pdf(file = path)
   }
   print(pl_CZ)
   grDevices::dev.off()
