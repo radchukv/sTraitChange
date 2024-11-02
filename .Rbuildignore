@@ -3,8 +3,4 @@
 ^data-raw$
 ^plots$
 ^output_fSEM_temp$
-^output_all$
-^output_climwin_temp$
-^output_SEM_all$
 ^tables
-./inst/extdata/tg_ens_mean_0.1deg_reg_v18.0e.nc
