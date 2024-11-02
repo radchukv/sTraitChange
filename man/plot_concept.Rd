@@ -67,7 +67,7 @@ across-study effect sizes estimated with meta-analytical models
 allYrs_T <- do.call('rbind', lapply(X = unique(dataSEM$ID), FUN = function(x){
 subs <- droplevels(dataSEM[dataSEM$ID == x, ])
 full_NA <- data.frame(Year = seq(min(subs$Year), max(subs$Year), by = 1), ID = x)}))
- consec_yrs_T <- merge(allYrs_T, dataSEM, by = c('ID','Year'), all= T)
+ consec_yrs_T <- merge(allYrs_T, dataSEM, by = c('ID','Year'), all= TRUE)
  # calculate GR
  temp_GR <- consec_yrs_T \%>\%
  dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) \%>\%
@@ -84,8 +84,8 @@ full_NA <- data.frame(Year = seq(min(subs$Year), max(subs$Year), by = 1), ID = x
  # scale the variables as for the meta-analyses
  temp_std <- temp_GRRes \%>\%
  dplyr::group_by(ID) \%>\%
- dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean, na.rm = T),
-               Demog_rate_SE = Demog_rate_SE /sd(Demog_rate_mean, na.rm = T),
+ dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean, na.rm = TRUE),
+               Demog_rate_SE = Demog_rate_SE /sd(Demog_rate_mean, na.rm = TRUE),
                det_Clim = as.numeric(scale(`.resid`)),
                Trait_mean = scale(Trait_mean),
                Demog_rate_mean = scale(Demog_rate_mean),
