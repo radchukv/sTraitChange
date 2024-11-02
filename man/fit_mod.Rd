@@ -63,7 +63,7 @@ requested model structure for the specified study ID
  # prepare the data to fit the model to one study only
  subs <- droplevels(dataSEM[dataSEM$ID == 7, ])
  full_NA <- data.frame(Year = seq(min(subs$Year), max(subs$Year), by = 1))
- consec_yrs <- merge(full_NA, subs, by = 'Year', all= T)
+ consec_yrs <- merge(full_NA, subs, by = 'Year', all= TRUE)
 
  data_GR <- consec_yrs \%>\%
  dplyr::mutate(., Pop_mean_lag = c(Pop_mean[-1], NA)) \%>\%
