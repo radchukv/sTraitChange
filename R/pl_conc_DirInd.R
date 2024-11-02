@@ -95,13 +95,11 @@
 #' PhenT_CZGvsCG <- pl_conc_DirInd(Trait_categ = 'Phenological',
 #'                       GlobES_dat = globES_T,
 #'                       ES_dat = wide_tempES_all,
-#'                       ClEfSpecific = FALSE,
 #'                       xlab = 'Phenology-mediated effect <br> of temperature on G (CZ)',
 #'                       ylab = 'Direct effect of temperature on G (CG)')$plot
 pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                            GlobES_dat,
                            ES_dat,
-                           ClEfSpecific = TRUE,
                            ylab = 'Direct effect of climate on GR (CG)',
                            xlab = 'Trait-mediated effect of climate on G (CZG)'){
 
@@ -112,94 +110,6 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
   GlobES_dat %<>%
     dplyr::mutate(ltype = dplyr::case_when(pval_Covar <= 0.1 ~ '1',
                                            TRUE ~ '2'))
-  if(ClEfSpecific){
-  corel <- ES_dat %>%
-    tidyr::nest(data = -SignClEffect) %>%
-    dplyr::mutate(
-      cort = purrr::map(data, ~ stats::cor.test(.x$`Estimate/Ind_GR<-det_Clim`,
-                                         .x$`Estimate/GR<-det_Clim`)),
-      out = purrr::map(cort, broom::tidy)) %>%
-    tidyr::unnest(out)
-
-  negEf <- ES_dat %>%
-    dplyr::filter(.data$SignClEffect == 'Negative')
-  mod_ML_neg <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,
-                                V = `SError/Ind_GR<-det_Clim`^2,
-                                random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                data = negEf,
-                                method = 'ML')
-  posEf <- ES_dat %>%
-    dplyr::filter(.data$SignClEffect == 'Nonnegative')
-  mod_ML_pos <- metafor::rma.mv(`Estimate/GR<-det_Clim` ~ `Estimate/Ind_GR<-det_Clim`,
-                                V = `SError/Ind_GR<-det_Clim`^2,
-                                random = list(~ 1|Species, ~1|ID, ~1|Location),
-                                data = posEf,
-                                method = 'ML')
-
-  ## data frame to add the slope estimated with the mixed-effects model -
-  ## at the moment not used to not overcrowd the plto
-  rib_dat <- data.frame(x = c(rep(seq(min(ES_dat$`Estimate/Ind_GR<-det_Clim`),
-                                      max(ES_dat$`Estimate/Ind_GR<-det_Clim`),
-                                      length.out = 10), 2)),
-                        SignClEffect = rep(unique(ES_dat$SignClEffect), each = 10))
-
-  rib_dat %<>%
-    dplyr::mutate(ymax = c(mod_ML_neg$ci.ub[2] * x[.data$SignClEffect == 'Negative'],
-                           mod_ML_pos$ci.ub[2] * x[.data$SignClEffect == 'Nonnegative']),
-                  ymin = c(mod_ML_neg$ci.lb[2] * x[.data$SignClEffect == 'Negative'],
-                           mod_ML_pos$ci.lb[2] * x[.data$SignClEffect == 'Nonnegative']),
-                  `Estimate/GR<-det_Clim` = 0)
-
-  Rel_CZG_CG <- data.frame(slope = c(mod_ML_neg$beta["`Estimate/Ind_GR<-det_Clim`", 1],
-                                     mod_ML_pos$beta["`Estimate/Ind_GR<-det_Clim`", 1]),
-                           SignClEffect = c('Negative', 'Nonnegative'), intercept = 0,
-                           ltype = c(ifelse(mod_ML_neg$pval[2] <= 0.1, '1', '2'),
-                                     ifelse(mod_ML_pos$pval[2] <= 0.1, '1', '2')))
-
-  pl_CZGvsCG <- ggplot2::ggplot(ES_dat,
-                                ggplot2::aes(x = `Estimate/Ind_GR<-det_Clim`,
-                                             y = `Estimate/GR<-det_Clim`,
-                                             col = SignClEffect)) +
-    ggplot2::geom_point() +
-    ggplot2::geom_hline(data = subset(GlobES_dat, REL == 'CG'),
-                        ggplot2::aes(yintercept = Estimate,
-                                     col = SignClEffect,
-                                     lty = ltype)) +
-    ggplot2::geom_vline(data = subset(GlobES_dat, REL == 'CZG'),
-                        ggplot2::aes(xintercept = Estimate,
-                                     col = SignClEffect,
-                                     lty = ltype)) +
-    # ggplot2::geom_abline(data = Rel_CZG_CG,
-    #                           ggplot2::aes(slope = slope,
-    #                                    intercept = intercept,
-    #                                    col = SignClEffect,
-    #                                    lty = ltype)) +
-    # ggplot2::geom_ribbon(data = rib_dat,
-    #             ggplot2::aes(x = x, ymin= ymin, ymax = ymax, fill = SignClEffect),
-    #             alpha = 0.3) +
-    ggplot2::xlab('Trait-mediated effect of climate on GR (CZG)') +
-    ggplot2::ylab('Direct effect of climate on GR (CG)') +
-    ggplot2::theme_bw() +
-    ggplot2::theme(legend.position = 'none',
-                       strip.background = ggplot2::element_blank(),
-                       panel.grid.minor = ggplot2::element_blank(),
-                       strip.text = ggplot2::element_text(size  =12),
-                       panel.grid.major = ggplot2::element_blank()) +
-    ggplot2::scale_color_manual(values = c('Negative' = 'darkorange',
-                                  'Nonnegative' = 'darkgreen')) +
-    ggplot2::scale_linetype_manual(values = c('1' = 1,
-                                     '2' = 2),
-                          labels = c('1' = 'p <= 0.1',
-                                     '2' = 'p > 0.1')) +
-    #ggplot2::geom_abline(intercept = 0, slope = -1, col = 'black') +
-    ggplot2::guides(col = ggplot2::guide_legend(title = 'Climate effect'),
-           lty = ggplot2::guide_legend(title = 'Significance'))
-
-  fin_pl <- ggExtra::ggMarginal(pl_CZGvsCG, type="density",
-                                groupFill = TRUE, groupColour = TRUE)
-  return(list(plot = fin_pl, corTest = corel, GLMM_neg = mod_ML_neg,
-              GLMM_pos = mod_ML_pos))
-  } else {
 
     cort <- stats::cor.test(ES_dat$`Estimate/Ind_GR<-det_Clim`, ES_dat$`Estimate/GR<-det_Clim`)
     corel <- broom::tidy(cort)
@@ -263,6 +173,5 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
     fin_pl <- ggExtra::ggMarginal(pl_CZGvsCG, type="density",
                                   fill = 'black', col = 'black')
     return(list(plot = fin_pl, corTest = corel, GLMM = mod_ML))
-  }
 
 }

@@ -22,8 +22,6 @@
 #' @param slope_ES Character specifying the name of the relation to be used to plot
 #' from the ES_dat.
 #' @param ylab Character specifying the label for the y axis.
-#' @param ClEfSpecific Boolean indicating whether the meta-analyses were fitted separately for
-#' studies with positive and negative effect of climate on traits.
 #' @param miny Numeric specifying the minimum limit for the y axis.
 #' @param maxy Numeric specifying the maximum limit for the y axis.
 #'
@@ -130,7 +128,6 @@
 #'                         slope_ES = 'Estimate/Trait_mean<-det_Clim',
 #'                         ylab = 'Phenology, Z',
 #'                         xlab = 'Temperature, C',
-#'                         ClEfSpecific = FALSE,
 #'                         miny = -4, maxy = 4)
 plot_concept <- function(Trait_categ = 'Phenological',
                          raw_dat,
@@ -141,7 +138,6 @@ plot_concept <- function(Trait_categ = 'Phenological',
                          yvar_raw = 'Trait_mean',
                          slope_ES = 'Estimate/Trait_mean<-det_Clim',
                          ylab = 'Trait', xlab = 'Climate',
-                         ClEfSpecific = TRUE,
                          miny = -6, maxy = 6){
   raw_dat <- raw_dat %>%
     dplyr::filter(.data$Trait_Categ == Trait_categ)
@@ -153,52 +149,6 @@ plot_concept <- function(Trait_categ = 'Phenological',
   ES_dat <- ES_dat %>%
     dplyr::filter(.data$Trait_Categ == Trait_categ)
 
-  if(ClEfSpecific){
-  dat_rib <- data.frame(x = c(rep(seq(min(raw_dat$det_Clim),
-                                      max(raw_dat$det_Clim),
-                                      length.out = 10), 2)),
-                        SignClEffect = rep(unique(GlobES_dat$SignClEffect),
-                                           each = 10))
-
-  dat_rib %<>%
-    dplyr::mutate(ymax = c(GlobES_dat$EfS_Upper[GlobES_dat$SignClEffect == 'Negative'] * x[SignClEffect == 'Negative'],
-                           GlobES_dat$EfS_Upper[GlobES_dat$SignClEffect == 'Nonnegative'] * x[SignClEffect == 'Nonnegative']),
-                  ymin = c(GlobES_dat$EfS_Low[GlobES_dat$SignClEffect == 'Negative'] * x[SignClEffect == 'Negative'],
-                           GlobES_dat$EfS_Low[GlobES_dat$SignClEffect == 'Nonnegative'] * x[SignClEffect == 'Nonnegative']),
-                  Trait_mean = 0, GR = 0)
-
-
-  pl <- ggplot2::ggplot(raw_dat, ggplot2::aes(x = .data[[xvar_raw]],
-                            y = .data[[yvar_raw]])) +
-    ggplot2::lims(x = c(min(dat_rib$x), max(dat_rib$x)),
-         y =  c(miny, maxy)) +
-    ggplot2::geom_blank() +
-    ggplot2::geom_abline(data = ES_dat,
-                         ggplot2::aes(intercept = 0,
-                                      slope = .data[[slope_ES]]), col = 'lightgrey') +
-    ggplot2::geom_abline(data = GlobES_dat,
-                         ggplot2::aes(intercept = 0, slope = Estimate,
-                                       col = SignClEffect, lty = ltype), lwd = 1) +
-    ggplot2::geom_ribbon(data = dat_rib,
-                         ggplot2::aes(x = x, ymin= ymin, ymax = ymax,
-                                    fill = SignClEffect), alpha = 0.3) +
-    ggplot2::scale_color_manual(values = c('Negative' = 'darkorange',
-                                  'Nonnegative' = 'darkgreen')) +
-    ggplot2::scale_linetype_manual(values = c('1' = 1,
-                                     '2' = 2),
-                          labels = c('1' = 'p <= 0.1',
-                                     '2' = 'p > 0.1')) +
-    ggplot2::theme_bw() +
-    ggplot2::ylab(ylab) + ggplot2::xlab(xlab) +
-    ggplot2::theme(legend.position = 'bottom',
-          panel.grid.major = ggplot2::element_blank(),
-          panel.grid.minor = ggplot2::element_blank(),
-          axis.title.x = ggtext::element_markdown(),
-          axis.title.y = ggtext::element_markdown()) +
-    ggplot2::guides(col = ggplot2::guide_legend(title = 'Climate effect'),
-           fill = ggplot2::guide_legend(title = 'Climate effect'),
-           lty = ggplot2::guide_legend(title = 'Significance'))
-  } else {
     dat_rib <- data.frame(x = (seq(min(raw_dat$det_Clim),
                                         max(raw_dat$det_Clim),
                                         length.out = 10)))
@@ -241,6 +191,5 @@ plot_concept <- function(Trait_categ = 'Phenological',
             axis.title.x = ggtext::element_markdown(),
             axis.title.y = ggtext::element_markdown()) +
       ggplot2::guides(lty = ggplot2::guide_legend(title = 'Significance'))
-  }
   return(pl)
 }
