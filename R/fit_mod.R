@@ -191,7 +191,7 @@ fit_mod <- function(biol_data, ID,
   } else {  ## no autocorrelation
 
     if(simpleSEM) {
-
+  weights_Trait <- NULL
       models_list <- piecewiseSEM::psem(
         stats::lm(stats::as.formula(formGR),
                   data = dat, ...),
@@ -201,6 +201,7 @@ fit_mod <- function(biol_data, ID,
         data = dat)
 
     } else {
+      weights_DemRate <- NULL
       models_list <- piecewiseSEM::psem(
         stats::lm(stats::as.formula(formGR),
                   data = dat, ...),

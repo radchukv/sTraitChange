@@ -103,9 +103,9 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
     dplyr::rename(SError = .data$Std.Error)
 
   met_wide <- forTrans %>%
-    tidyr::gather(variable, value, -(Relation:ID)) %>%
-    tidyr::unite(temp, Relation, variable, sep = '/') %>%
-    tidyr::spread(temp, value)
+    tidyr::gather("variable", "value", -(Relation:ID)) %>%
+    tidyr::unite("temp", "Relation", "variable", sep = '/') %>%
+    tidyr::spread("temp", "value")
 
   ## these should be called only if the Type_EfS is one of the
   ## indirect or total paths, to save time
@@ -116,9 +116,9 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   }
 
   trans_allEfS <- met_wide %>%
-    tidyr::gather(key, value, -c(Species:ID)) %>%
-    tidyr::separate(key, into = c('Relation', 'Metric'), sep = "/") %>%
-    tidyr::spread(., Metric, value)
+    tidyr::gather("key", "value", -c(Species:ID)) %>%
+    tidyr::separate("key", into = c('Relation', 'Metric'), sep = "/") %>%
+    tidyr::spread("Metric", "value")
 
 
   subs_merge <- droplevels(data_MA %>%
@@ -128,18 +128,16 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                              .data$Trait, .data$Demog_rate_Categ,
                                              .data$Demog_rate, .data$Count,
                                              .data$Nyears, .data$WinDur, .data$deltaAIC,
-                                             .keep_all = T) %>%
-                             subset(.,
-                                    select = c(ID, Study_Authors,
-                                               Country, Continent,
-                                               Longitude, Latitude, Taxon,
-                                               BirdType, Trait_Categ, Trait,
-                                               Demog_rate_Categ, Demog_rate,
-                                               Count, Nyears, WinDur,
-                                               deltaAIC, Pvalue, WeathQ,
-                                               Ref.day, Ref.month, WindowClose,
-                                               Trait_ageClass,
-                                               GenLength_y_IUCN)))
+                                             .keep_all = TRUE) %>%
+                             dplyr::select(.data$ID, .data$Study_Authors,
+                                               .data$Country, .data$Continent,
+                                               .data$Longitude, .data$Latitude, .data$Taxon,
+                                               .data$BirdType, .data$Trait_Categ, .data$Trait,
+                                               .data$Demog_rate_Categ, .data$Demog_rate,
+                                               .data$Count, .data$Nyears, .data$WinDur,
+                                               .data$deltaAIC, .data$Pvalue, .data$WeathQ,
+                                               .data$Ref.day, .data$Ref.month, .data$WindowClose,
+                                               .data$Trait_ageClass, .data$GenLength_y_IUCN))
 
 
   tot <- merge(trans_allEfS, subs_merge, by = c('ID'))
