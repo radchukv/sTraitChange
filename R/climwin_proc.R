@@ -204,7 +204,7 @@ climwin_proc <- function(biol_data, clim_data,
 
   ## have to exclude the rows with missing biological data before running the slidingwin
   biol_data_noNA <- biol_data %>%
-    dplyr::filter(.data, !is.na(.data$Trait_mean) & !is.na(.data$Trait_SE)) %>%
+    dplyr::filter(!is.na(.data$Trait_mean) & !is.na(.data$Trait_SE)) %>%
     # create weights here, otherwise slidingwin does not see them
     dplyr::mutate(W = 1/ .data$Trait_SE^2)
   formBase <- NULL
@@ -216,6 +216,7 @@ climwin_proc <- function(biol_data, clim_data,
   }
 
   ptstart <- proc.time()
+  W <- NULL
   climwin_output <- climwin::slidingwin(xvar = list(Temp = Clim$Temp),
                                         cdate = Clim$Date,
                                         bdate = biol_data_noNA$Date,
@@ -238,7 +239,7 @@ climwin_proc <- function(biol_data, clim_data,
 
 
   if(randwin){
-
+    W <- NULL
     ptstart <- proc.time()
     randwin_output <- climwin::randwin(repeats = repeats,
                                        xvar = list(Temp = Clim$Temp),
