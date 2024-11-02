@@ -28,5 +28,6 @@ d <- data.frame(id = LETTERS[1:5], test = 1:5,
                 p = c('<0.001', '0.002', '0.260', '<0.001', '0.987'), test = 1:5)
 dir.create('tables')
 save_xlsx(table = d, table_name = './tables/test1')
+unlink('tables', recursive=TRUE)
 
 }

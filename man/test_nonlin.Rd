@@ -49,7 +49,7 @@ allYrs_T <- do.call('rbind', lapply(X = unique(dataSEM$ID),
                    full_NA <- data.frame(Year = seq(min(subs$Year),
                    max(subs$Year), by = 1), ID = x)}))
 consec_yrs_T <- merge(allYrs_T, dataSEM, by = c('ID','Year'),
-all= T)
+all= TRUE)
 phen_temp <- subset(consec_yrs_T, Trait_Categ == 'Phenological')
 # calculate GR
 temp_GR_phen <- phen_temp \%>\%
@@ -65,9 +65,9 @@ purrr::map2(.x = ., .y = split(temp_GR_phen, f= temp_GR_phen$ID),
 dplyr::bind_rows()
 temp_std_phen <- temp_GRRes_phen \%>\%
 dplyr::group_by(ID) \%>\%
-dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean, na.rm = T),
+dplyr::mutate(Trait_SE = Trait_SE / sd(Trait_mean, na.rm = TRUE),
               Demog_rate_SE = Demog_rate_SE /sd(Demog_rate_mean,
-              na.rm = T),
+              na.rm = TRUE),
               det_Clim = as.numeric(scale(`.resid`)),
               Trait_mean = scale(Trait_mean),
               Demog_rate_mean = scale(Demog_rate_mean),
