@@ -15,9 +15,60 @@ above-mentioned paper. Therefore, the package will only be updated if
 necessary to keep compatibility with other packages, so that the code
 represented here works well.
 
-## Installation
+## System requirements
 
-You can install the development version of sTraitChange from
+### Hardware requirements
+
+The `sTraitChange` package requires only a standard computer with enough
+RAM to support the operations defined by a user. We recommend a computer
+with following specs: - RAM: 16+ GB  
+- CPU: 4+ cores.
+
+### Software requirements
+
+This package is supported for macOS and Windows operating systems. The
+development version of `sTraitChange` was tested on:  
+- macOS: Sequioa 15.0.1  
+- Windows:
+
+## Installation guide
+
+The package depends on the following packages, that must be installed
+prior to installing the `sTraitChange`:
+
+``` r
+install.packages(c('climwin', 'dplyr', 'tibble', 'ggplot2', 'magrittr', 'metafor', 'broom', 'piecewiseSEM', 'purrr', 'spaMM', 'tidyr', 'tidyselect', 'ape', 'sp', 'lubridate', 'openxlsx', 'ggnewscale', 'psych', 'ggtext', 'raster', 'ggExtra', 'data.table'))
+```
+
+The versions of these packages with which the package `sTraitChange` was
+tested, are:
+
+``` r
+"ape 5.8"
+"broom 1.0.7"
+"climwin 1.2.3"
+"data.table 1.16.2"
+"dplyr 1.1.4"
+"ggExtra 0.10.1"
+"ggnewscale 0.5.0"
+"ggplot2 3.5.1"
+"ggtext 0.1.2"
+"lubridate 1.9.3"
+"magrittr 2.0.3"
+"metafor 4.6.0"
+"openxlsx 4.2.7.1"
+"piecewiseSEM 2.3.0.1"
+"psych 2.4.6.26"
+"purrr 1.0.2"
+"raster 3.6.30"
+"sp 2.1.4"
+"spaMM 4.5.0"
+"tibble 3.2.1"
+"tidyr 1.3.1"
+"tidyselect 1.2.1"
+```
+
+You can install the development version of `sTraitChange` from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -25,7 +76,10 @@ You can install the development version of sTraitChange from
 devtools::install_github("radchukv/sTraitChange")
 ```
 
-## Usage
+This should take approximately XX seconds on the computer with the
+recommended specs.
+
+## Demo
 
 To access the documentation on a specific function, type ‘?’ and a
 function name, for example:
@@ -104,6 +158,18 @@ test_noCovar <- fit_meta_phylo(data_MA = Coefs_phenClim,
                                simpleSEM = TRUE,
                                A = phyloMat)
 ```
+
+## Instructions for use
+
+The applications of all the functions is demonstrated in detail in the
+GitHub repo
+[sTraitChange_Analyses](https://github.com/radchukv/sTraitChange_Analyses)
+that implements the full workflow required to reproduce the results
+presented in Radchuk et al. (submitted).  
+Please check the help of the required functions and the repository
+[sTraitChange_Analyses](https://github.com/radchukv/sTraitChange_Analyses)
+for a specific type of the analyses you would like to apply on your
+data.
 
 ## Support
 
