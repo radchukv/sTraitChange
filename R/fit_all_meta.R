@@ -120,7 +120,12 @@ fit_all_meta <- function(data_MA,
   stat_meta$names <- unlist(rel_realized)
 
   names(stat_meta$data) <- unlist(rel_realized)
+
+  if (requireNamespace("data.table", quietly = TRUE)) {
   meta_res <- data.table::rbindlist(stat_meta$data)
+  } else {
+    message("to run fit_all_meta(), you first must run install.packages('data.table')!")
+  }
   if(is.null(COV)){
     if(! is.null(Cov_fact)){
       num_lev <- length(unique(meta_res$Levels_Covar))

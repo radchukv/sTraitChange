@@ -159,6 +159,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
                     Trait_mean = 0, GR = 0)
 
   x <- ymin <- ymax <- Estimate <- ltype <- NULL
+  if (requireNamespace("ggtext", quietly = TRUE)) {
     pl <- ggplot2::ggplot(raw_dat,
                           ggplot2::aes(x = .data[[xvar_raw]], y = .data[[yvar_raw]])) +
       ggplot2::lims(x = c(min(dat_rib$x), max(dat_rib$x)),
@@ -191,5 +192,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
             axis.title.x = ggtext::element_markdown(),
             axis.title.y = ggtext::element_markdown()) +
       ggplot2::guides(lty = ggplot2::guide_legend(title = 'Significance'))
+  } else {
+    message("to be able to produce this plot, you first must run install.packages('ggtext')!")
+  }
   return(pl)
 }

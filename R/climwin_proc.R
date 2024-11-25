@@ -64,7 +64,7 @@ climwin_proc <- function(biol_data, clim_data,
                          explanYear = TRUE,
                          startWindow = 0, endWindow = 52,
                          RefMon = NA, weatherVar = NA){
-
+  if (requireNamespace("sp", quietly = TRUE)) {
   biol_data <- droplevels(biol_data[biol_data$ID == ID, ])
   # add Date to biol data (for slidingwin)
   biol_data$Date <- as.Date(paste('01', '06', biol_data$Year,
@@ -80,7 +80,11 @@ climwin_proc <- function(biol_data, clim_data,
   location_spatial <-  sp::SpatialPointsDataFrame(coords = biol_data[1, c('Longitude', 'Latitude')],
                                                   data = data.frame(ID = biol_data$ID[1]),
                                                   proj4string = sp::CRS(as.character('+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0')))
+  } else {
+    message("to be able to run sliding window analyses, you must first run install.packages('sp') !")
+  }
 
+  if (requireNamespace("raster", quietly = TRUE)) {
   ##  for a visual check
   if (plot_check){
     if(! is.data.frame(clim_data)){
@@ -90,9 +94,11 @@ climwin_proc <- function(biol_data, clim_data,
       raster::plot(location_spatial)
     }
   }
+  } else {message("to be able to run sliding window analyses, you must first run install.packages('raster') !")}
 
   ####                          Extract temperature data                  ####
   # Determine date data for each layer of the raster (allows us to sort by each year).
+  if (requireNamespace("lubridate", quietly = TRUE)) {
   if(is.data.frame(clim_data) ){
     ## if weather comes from a single station
     Clim <- data.frame(Date = seq(as.Date(paste('01', '01', min(biol_data$Year) - 2, sep = '/'), format = '%d/%m/%Y'),
@@ -125,6 +131,7 @@ climwin_proc <- function(biol_data, clim_data,
 
     ptstart <- proc.time()
 
+    if (requireNamespace("raster", quietly = TRUE)) {
     ## using a single grid for Temp extraction
     if (oneGrid){
       Clim$Temp <- ifelse(is.na(Clim$Temp),
@@ -143,6 +150,9 @@ climwin_proc <- function(biol_data, clim_data,
                                                                       Clim$Date)]], FiveCell), na.rm = T),
                           NA)
     }
+    } else {
+      message("to be able to run sliding window analyses, you must first run install.packages('raster') !")
+    }
 
     ptfinish <- proc.time() - ptstart
     cat('When extracting weather data from the raster the time elapsed is ',
@@ -152,6 +162,7 @@ climwin_proc <- function(biol_data, clim_data,
         sep = '')
 
   }
+
 
 
   # Check that data extracted properly!!
@@ -290,6 +301,9 @@ climwin_proc <- function(biol_data, clim_data,
             file = paste0('./', out_clim, '/', biol_data$ID[1], '_',
                           biol_data$Species[1], '_OneG_', oneGrid,
                           '.RDS'))
+  }
+  } else {
+    message("to be able to run sliding window analyses, you must first run install.packages('lubridate') !")
   }
   return(clim_out)
 }

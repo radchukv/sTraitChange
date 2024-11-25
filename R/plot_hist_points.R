@@ -155,7 +155,7 @@ plot_hist_points <- function(data_allEstim,
       dplyr::filter(.data$TraitDem == Traitdem)
     tab_subs <- tabC %>%
       dplyr::filter(.data$TraitDem == Traitdem)
-
+ if(requireNamespace('ggnewscale', quietly = TRUE)){
     ggplot2::ggplot() + ggplot2::geom_blank(data =data_sub,
                                             ggplot2::aes(x = Estimate)) +
       ggplot2::geom_rect(data = annot,
@@ -210,5 +210,8 @@ plot_hist_points <- function(data_allEstim,
       ggplot2::geom_text(data = tab_subs,
                          ggplot2::aes(x = x, y = y, label = Count),
                          col = c('red4', 'royalblue1'))
+ } else {
+   message("to be able to produce this plot, you first must run install.packages('ggnewscale')!")
+ }
   }
 }

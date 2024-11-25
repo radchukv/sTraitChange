@@ -136,6 +136,7 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
                              intercept = 0,
                              ltype = ifelse(mod_ML$pval[2] <= 0.1, '1', '2'))
 
+    if (requireNamespace("ggtext", quietly = TRUE)) {
     pl_CZGvsCG <- ggplot2::ggplot(ES_dat,
                                   ggplot2::aes(x = `Estimate/Ind_GR<-det_Clim`,
                                                y = `Estimate/GR<-det_Clim`)) +
@@ -168,12 +169,16 @@ pl_conc_DirInd <- function(Trait_categ = 'Phenological',
       ggplot2::scale_linetype_manual(values = c('1' = 1,
                                        '2' = 2),
                             labels = c('1' = 'p <= 0.1',
-                                       '2' = 'p > 0.1')) #+
-      #ggtext::geom_abline(intercept = 0, slope = -1, col = 'black') +
-      #ggtext::guides(lty = guide_legend(title = 'Significance'))
-
+                                       '2' = 'p > 0.1'))
+    } else {
+      message("to be able to produce this plot, you first must run install.packages('ggtext')!")
+    }
+    if(requireNamespace('ggExtra', quietly = TRUE)){
     fin_pl <- ggExtra::ggMarginal(pl_CZGvsCG, type="density",
                                   fill = 'black', col = 'black')
+    } else {
+      message("to be able to produce this plot, you first must run install.packages('ggExtra')!")
+    }
     return(list(plot = fin_pl, corTest = corel, GLMM = mod_ML))
 
 }

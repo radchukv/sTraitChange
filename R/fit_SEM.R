@@ -70,7 +70,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                  '_', data_GR$Trait[1], '_relations.pdf')
   #message(paste(path))
 
-
+  if (requireNamespace("psych", quietly = TRUE)) {
   grDevices::pdf(path)
   dat_sub <- data_GR %>%
     dplyr::select(.data$Clim, .data$det_Clim, .data$Year,
@@ -82,7 +82,9 @@ fit_SEM <- function(biol_data, ID, out_SEM,
   graphics::mtext(paste0('Trait is ', unique(dat_sub$Trait_Categ_det)), side = 1,
         line = 4)
   grDevices::dev.off()
-
+  } else {
+    message("to be able to produce a pdf with the raw data, you must first run install.packages('psych')!")
+  }
 
 
   if(standardize){
@@ -106,6 +108,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                    '_', data_GR$Trait[1], '_z_score_relations.pdf')
     message(paste(path))
 
+    if (requireNamespace("psych", quietly = TRUE)) {
     grDevices::pdf(path)
     dat_sub <- data_GR %>%
       dplyr::select(.data$Clim, .data$det_Clim, .data$Year,
@@ -117,6 +120,10 @@ fit_SEM <- function(biol_data, ID, out_SEM,
     graphics::mtext(paste0('Trait is ', unique(dat_sub$Trait_Categ_det)), side = 1,
           line = 4)
     grDevices::dev.off()
+    } else {
+      message("to be able to produce a pdf with the raw data, you must first run install.packages('psych')!")
+    }
+
   }
 
   ## now call a function fitting a model (depending on the options:
