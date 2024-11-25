@@ -27,8 +27,8 @@ The package was conceived to perform analyses presented in the above-mentioned p
 
 ### Hardware requirements
 
-The `sTraitChange` package requires only a standard computer with enough RAM to support the operations defined by a user. We recommend a computer with following specs: 
-- RAM: 16+ GB   
+The `sTraitChange` package requires only a standard computer with enough RAM to support the operations defined by a user. We recommend a computer with following specs:   
+- RAM: 16+ GB     
 - CPU: 4+ cores.   
 
 ### Software requirements

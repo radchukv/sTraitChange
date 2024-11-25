@@ -21,7 +21,8 @@ represented here works well.
 
 The `sTraitChange` package requires only a standard computer with enough
 RAM to support the operations defined by a user. We recommend a computer
-with following specs: - RAM: 16+ GB  
+with following specs:  
+- RAM: 16+ GB  
 - CPU: 4+ cores.
 
 ### Software requirements
