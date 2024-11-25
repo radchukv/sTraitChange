@@ -77,8 +77,8 @@ You can install the development version of `sTraitChange` from
 devtools::install_github("radchukv/sTraitChange")
 ```
 
-This should take approximately XX seconds on the computer with the
-recommended specs.
+This should take about 20 seconds on the computer with the recommended
+specs.
 
 ## Demo
 
