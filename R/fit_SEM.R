@@ -152,7 +152,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
                  SEM_results$Species[1], '_', SEM_results$Location[1],
                  '_', SEM_results$Trait[1], '_',
                  SEM_results$Demog_rate[1], '_ResultsSEM',  '.RDS')
-  message(paste(path))
+  # message(paste(path))
   saveRDS(object = SEM_results,
           file = path)
   return(SEM_results)
