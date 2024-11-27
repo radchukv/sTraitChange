@@ -30,7 +30,7 @@ of the model: Cstat value, R2 values or obtained path coefficients
 fitted_SEMs <- lapply(unique(dataSEM$ID)[- which(unique(dataSEM$ID) \%in\%
                   c(3, 221, 550))],
 FUN = function(x){fit_SEM(biol_data = dataSEM, ID = x,
-                  out_SEM = 'output_SEM_all',
+                  out_SEM = NULL,
                   DD = 'n_effectGR',
                   weight = TRUE,
                   correlation = TRUE,

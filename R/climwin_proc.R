@@ -72,8 +72,9 @@
 #'                           clim_data = meanT, ID = 1,
 #'                           randwin = FALSE, seednum = 1302,
 #'                           repeats = 30, plot_check = FALSE,
-#'                           out_clim = tempdir(), # attention: for this example we write the data to
-#'                                                # a temporary directory, to check its location type tempdir()
+#'                           out_clim = tempdir(), # attention: for this example we
+#'                                      # write the data to a temporary directory,
+#'                                      # to check its location type tempdir()
 #'                           cinterval = 'month',
 #'                           stat = 'mean',
 #'                           startWindow = 0, endWindow = 12,
