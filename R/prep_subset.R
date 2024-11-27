@@ -19,7 +19,7 @@
 #' a subset of biological data to be used in climwin analyses.
 #'
 #' @examples
-#' biol_noSea <- prep_subset(data = data, Seabird = FALSE)
+#' biol_noSea <- prep_subset(data = data_biol, Seabird = FALSE)
 
 prep_subset <- function(data, Seabird = FALSE){
 

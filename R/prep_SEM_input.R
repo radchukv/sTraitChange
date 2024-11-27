@@ -30,15 +30,17 @@
 #' the study species, location, coordinates) are also included.
 #'
 #' @examples
-#' biol_noSea <- prep_subset(data = data, Seabird = FALSE)
+#' biol_noSea <- prep_subset(data = data_biol, Seabird = FALSE)
 #' temp_SEM_1 <- prep_SEM_input(prep_subset_climwin = biol_noSea,
-#' out_for_SEM ='output_forSEM_temp',
-#' oneGrid = FALSE,
-#' explanYear = TRUE,
-#' endWindow = 104,
-#' RefMon = NA,
-#' selIDs = 1)
-#'
+#'                             out_for_SEM = tempdir(), # attention: for this example we
+#'                                                      # write the data to a temporary directory,
+#'                                                      # to check its location type tempdir()
+#'                             oneGrid = FALSE,
+#'                             explanYear = TRUE,
+#'                             endWindow = 104,
+#'                             RefMon = NA,
+#'                             selIDs = 1)
+#' message('Temporary directory is located at', tempdir())
 prep_SEM_input <- function(prep_subset_climwin,
                            out_for_SEM,
                            oneGrid = FALSE,
@@ -56,7 +58,7 @@ prep_SEM_input <- function(prep_subset_climwin,
     subs <- droplevels(biol_NY[biol_NY$ID == j, ])
 
     ## check whether the file exists
-    fileName <- paste0('./', out_for_SEM, '/', subs$ID[1], '_',
+    fileName <- paste0(out_for_SEM, '/', subs$ID[1], '_',
                        subs$Species[1],
                        '_OneG_', oneGrid,
                        '_ForSEM',  '.RDS')

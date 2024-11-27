@@ -26,5 +26,5 @@ according to the requirements, i.e. whether the subset should be
 for sea birds or not
 }
 \examples{
-biol_noSea <- prep_subset(data = data, Seabird = FALSE)
+biol_noSea <- prep_subset(data = data_biol, Seabird = FALSE)
 }
