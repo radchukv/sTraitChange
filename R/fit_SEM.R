@@ -23,6 +23,10 @@
 #'
 #' @examples
 #' # fit SEM
+#' # for this example we will be saving the output plots in the tempdir folder
+#' # let's check its path and content before we run the example
+#' message('Temporary directory is located at', tempdir())
+#' message('Contents of the temporary directory', list.files(tempdir))
 #' mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
 #'                 out_SEM = tempdir(), # attention: for this example we write the data to
 #'                                      # a temporary directory, to check its location type tempdir()
@@ -31,7 +35,8 @@
 #'                 standardize = TRUE,
 #'                 Trait = FALSE,
 #'                 simpleSEM = TRUE)
-#' message('Temporary directory is located at', tempdir())
+#' message('Contents of the temporary directory after running fit_SEM()',
+#' list.files(tempdir))
 #'
 fit_SEM <- function(biol_data, ID, out_SEM,
                     DD = 'none',
