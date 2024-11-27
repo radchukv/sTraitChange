@@ -13,7 +13,7 @@ climwin_proc(
   repeats = 200,
   plot_check = FALSE,
   cinterval = "week",
-  out_clim = "output_climwin_temp",
+  out_clim = NULL,
   stat = "mean",
   oneGrid = TRUE,
   explanYear = TRUE,
@@ -91,4 +91,32 @@ and population size.
 specified traits and climate data and returns the best
 identified window together with results of randomisation
 tests (if asked for)
+}
+\examples{
+# ATTENTION: DO NOT RUN! takes long time
+\dontrun{
+biol_noSea <- prep_subset(data = data_biol, Seabird = FALSE)
+# keep only EU countries
+biol_eu <- droplevels(subset(biol_noSea$subdata[[1]],
+! Country \%in\% c('Antarctica', 'Australia',
+                'Canada', 'Falkland Islands',
+                'Greenland', 'Mexico',
+                'New Zealand', 'South Africa',
+                'South Atlantic Ocean',
+                'South Georgia', 'Svalbard',
+                'Taiwan', 'USA', 'Venezuela')))
+meanT <- raster::stack(x = system.file("extdata",
+"tg_ens_mean_0.1deg_reg_v18.0e.nc", package="sTraitChange"))
+test_rand <- climwin_proc(biol_data = biol_eu,
+                          clim_data = meanT, ID = 1,
+                          randwin = FALSE, seednum = 1302,
+                          repeats = 30, plot_check = FALSE,
+                          out_clim = tempdir(), # attention: for this example we write the data to
+                                               # a temporary directory, to check its location type tempdir()
+                          cinterval = 'month',
+                          stat = 'mean',
+                          startWindow = 0, endWindow = 12,
+                          oneGrid = FALSE, explanYear = TRUE,
+                          RefMon = NA, weatherVar = NA)}
+message('Temporary directory is located at', tempdir())
 }

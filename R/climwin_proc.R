@@ -53,13 +53,39 @@
 #' "biol_data" - a data frame with traits, demographic rates
 #' and population size.
 #'
-
+#' @examples
+#' # ATTENTION: DO NOT RUN! takes long time
+#' \dontrun{
+#' biol_noSea <- prep_subset(data = data_biol, Seabird = FALSE)
+#' # keep only EU countries
+#' biol_eu <- droplevels(subset(biol_noSea$subdata[[1]],
+#' ! Country %in% c('Antarctica', 'Australia',
+#'                 'Canada', 'Falkland Islands',
+#'                 'Greenland', 'Mexico',
+#'                 'New Zealand', 'South Africa',
+#'                 'South Atlantic Ocean',
+#'                 'South Georgia', 'Svalbard',
+#'                 'Taiwan', 'USA', 'Venezuela')))
+#' meanT <- raster::stack(x = system.file("extdata",
+#' "tg_ens_mean_0.1deg_reg_v18.0e.nc", package="sTraitChange"))
+#' test_rand <- climwin_proc(biol_data = biol_eu,
+#'                           clim_data = meanT, ID = 1,
+#'                           randwin = FALSE, seednum = 1302,
+#'                           repeats = 30, plot_check = FALSE,
+#'                           out_clim = tempdir(), # attention: for this example we write the data to
+#'                                                # a temporary directory, to check its location type tempdir()
+#'                           cinterval = 'month',
+#'                           stat = 'mean',
+#'                           startWindow = 0, endWindow = 12,
+#'                           oneGrid = FALSE, explanYear = TRUE,
+#'                           RefMon = NA, weatherVar = NA)}
+#' message('Temporary directory is located at', tempdir())
 climwin_proc <- function(biol_data, clim_data,
                          ID, randwin = FALSE,
                          seednum = 1302, repeats = 200,
                          plot_check = FALSE,
                          cinterval = 'week',
-                         out_clim = 'output_climwin_temp',
+                         out_clim = NULL,
                          stat = 'mean', oneGrid = TRUE,
                          explanYear = TRUE,
                          startWindow = 0, endWindow = 52,
@@ -69,13 +95,6 @@ climwin_proc <- function(biol_data, clim_data,
   # add Date to biol data (for slidingwin)
   biol_data$Date <- as.Date(paste('01', '06', biol_data$Year,
                                   sep = '/'), format = '%d/%m/%Y')
-
-  ## imputing mean of the previous and next values for the mean of the traits, and
-  ## median of all the values for the SE of the traits
-  ## !!!! checking with no imputation for now   !!!!
-  # biol_data <- impute_ma(data = biol_data, column = 'Trait_mean')
-  # biol_data <- impute_median(data = biol_data, column = 'Trait_SE')
-  # biol_data <- biol_data[! is.na(biol_data$Trait_mean), ] -  former approach, excluding NAs
 
   location_spatial <-  sp::SpatialPointsDataFrame(coords = biol_data[1, c('Longitude', 'Latitude')],
                                                   data = data.frame(ID = biol_data$ID[1]),
@@ -173,7 +192,7 @@ climwin_proc <- function(biol_data, clim_data,
   # NOW THAT WE HAVE CLIMATE AND BIOLOGICAL DATA WE CAN RUN CLIMWIN!!
   set.seed(seednum)
 
-  # biol_data$W <- 1 / biol_data$Trait_SE^2
+
   # get the refday for each species - the latest observed date (across years)
   # for phenological traits or the latest record made for morphological traits
   if (! is.na(RefMon)){
@@ -284,7 +303,7 @@ climwin_proc <- function(biol_data, clim_data,
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
-            file = paste0('./', out_clim, '/', biol_data$ID[1], '_',
+            file = paste0(out_clim, '/', biol_data$ID[1], '_',
                           biol_data$Species[1], '_OneG_', oneGrid,
                           '_Rand',  '.RDS'))
 
@@ -298,7 +317,7 @@ climwin_proc <- function(biol_data, clim_data,
                                clim_data = list(Clim),
                                biol_data = list(biol_data))
     saveRDS(object = clim_out,
-            file = paste0('./', out_clim, '/', biol_data$ID[1], '_',
+            file = paste0(out_clim, '/', biol_data$ID[1], '_',
                           biol_data$Species[1], '_OneG_', oneGrid,
                           '.RDS'))
   }
