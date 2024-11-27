@@ -12,7 +12,7 @@ Description: Runs climate window analyses to detect the best
     climate to population growth (via traits). 
     And, lastly, performs meta-analysis on the extracted 
     path coefficients.
-License: AGPL (>= 3)
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Depends:
