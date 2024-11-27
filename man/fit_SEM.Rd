@@ -83,6 +83,6 @@ mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
                 Trait = FALSE,
                 simpleSEM = TRUE)
 message('Contents of the temporary directory after running fit_SEM()',
-list.files(tempdir))
+list.files(tempdir()))
 
 }

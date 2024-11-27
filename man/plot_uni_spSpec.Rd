@@ -72,6 +72,6 @@ plot_CZ_PhenT_AbsLat <- plot_uni_spSpec(data_allEstim = dataPaths_phen,
                                        maxy = max(dataPaths_phen$Estimate) + 0.1)
 message('Temporary directory is located at', tempdir())
 message('Contents of the temporary directory after running fit_SEM()',
-list.files(tempdir))
+list.files(tempdir()))
 
 }

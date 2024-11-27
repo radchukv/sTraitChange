@@ -47,7 +47,7 @@
 #'                                        maxy = max(dataPaths_phen$Estimate) + 0.1)
 #' message('Temporary directory is located at', tempdir())
 #' message('Contents of the temporary directory after running fit_SEM()',
-#' list.files(tempdir))
+#' list.files(tempdir()))
 #'
 plot_uni_spSpec <- function(data_allEstim,
                             mod_mv,
