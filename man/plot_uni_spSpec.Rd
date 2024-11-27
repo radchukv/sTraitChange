@@ -63,9 +63,15 @@ plot_CZ_PhenT_AbsLat <- plot_uni_spSpec(data_allEstim = dataPaths_phen,
                                         mod_mv = mod_CZ_PhenT_AbsLat,
                                        lOut = 10, xLab = 'Absolute latitude',
                                        yLab = 'CZ estimate',
-                                       pdf_basename = 'plots/PlotCZ_PhenT_byAbsLat',
+                                       pdf_basename = paste0(tempdir(), '/PlotCZ_PhenT_byAbsLat'),
+                                       # attention: for this example we
+                                       # write the data to a temporary directory,
+                                       # to check its location type tempdir()
                                        byHemisphere = FALSE,
                                        miny = min(dataPaths_phen$Estimate) - 0.1,
                                        maxy = max(dataPaths_phen$Estimate) + 0.1)
+message('Temporary directory is located at', tempdir())
+message('Contents of the temporary directory after running fit_SEM()',
+list.files(tempdir))
 
 }
