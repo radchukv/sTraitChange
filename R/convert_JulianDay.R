@@ -14,7 +14,7 @@
 #' not in Julian Days converted to Julian Days.
 #'
 #' @examples
-#' out_biol <- convert_JulianDay(biol_data = data)
+#' out_biol <- convert_JulianDay(biol_data = data_biol)
 #'
 convert_JulianDay <- function(biol_data){
   if (any(levels(biol_data$Trait_Categ) %in% c('Phenological'))){

@@ -84,7 +84,7 @@ with climate window analysis (function \code{\link{climwin_proc}})
 for the specified study ID
 }
 \examples{
-biol_noSea <- prep_subset(data = data, Seabird = FALSE)
+biol_noSea <- prep_subset(data = data_biol, Seabird = FALSE)
 # keep only EU countries
 biol_eu <- droplevels(subset(biol_noSea$subdata[[1]],
 ! Country \%in\% c('Antarctica', 'Australia',
