@@ -71,11 +71,13 @@ the results to be used in meta-analysis
 \examples{
 # fit SEM
 mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
-                out_SEM = 'output_forSEM',
+                out_SEM = tempdir(), # attention: for this example we write the data to
+                                     # a temporary directory, to check its location type tempdir()
                 DD = 'n_effectGR', weight = TRUE,
                 correlation = TRUE,
                 standardize = TRUE,
                 Trait = FALSE,
                 simpleSEM = TRUE)
+message('Temporary directory is located at', tempdir())
 
 }

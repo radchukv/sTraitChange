@@ -24,12 +24,14 @@
 #' @examples
 #' # fit SEM
 #' mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
-#'                 out_SEM = 'output_forSEM',
+#'                 out_SEM = tempdir(), # attention: for this example we write the data to
+#'                                      # a temporary directory, to check its location type tempdir()
 #'                 DD = 'n_effectGR', weight = TRUE,
 #'                 correlation = TRUE,
 #'                 standardize = TRUE,
 #'                 Trait = FALSE,
 #'                 simpleSEM = TRUE)
+#' message('Temporary directory is located at', tempdir())
 #'
 fit_SEM <- function(biol_data, ID, out_SEM,
                     DD = 'none',
@@ -62,13 +64,13 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
 
   # exploratory plots
-  pathfull <- system.file(package ='sTraitChange')
-  #message(paste(pathfull))
-  path <- paste0(pathfull,
-                 '/', out_SEM, '/', data_GR$ID[1], '_',
+  # pathfull <- system.file(package ='sTraitChange')
+  message(paste(out_SEM))
+  # message(paste(pathfull))
+  path <- paste0(out_SEM, '/', data_GR$ID[1], '_',
                  data_GR$Species[1], '_', data_GR$Location[1],
                  '_', data_GR$Trait[1], '_relations.pdf')
-  #message(paste(path))
+  message(paste(path))
 
   if (requireNamespace("psych", quietly = TRUE)) {
   grDevices::pdf(path)
@@ -100,14 +102,15 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
 
 
-    pathfull <- system.file(package ='sTraitChange')
+    # pathfull <- system.file(package ='sTraitChange')
     # message(paste(pathfull)) -> still a problem if then using this for a different location, once
     # the package is installed
-    path <- paste0(pathfull,
-                   '/', out_SEM, '/', data_GR$ID[1], '_',
+
+    message(paste(out_SEM))
+    path <- paste0(out_SEM, '/', data_GR$ID[1], '_',
                    data_GR$Species[1], '_', data_GR$Location[1],
                    '_', data_GR$Trait[1], '_z_score_relations.pdf')
-    # message(paste(path))
+    message(paste(path))
 
     if (requireNamespace("psych", quietly = TRUE)) {
     grDevices::pdf(path)
@@ -147,12 +150,11 @@ fit_SEM <- function(biol_data, ID, out_SEM,
   SEM_results$Tr <- Trait
 
   # write output
-  path <- paste0(pathfull,
-                 '/', out_SEM, '/', SEM_results$ID[1], '_',
+  path <- paste0(out_SEM, '/', SEM_results$ID[1], '_',
                  SEM_results$Species[1], '_', SEM_results$Location[1],
                  '_', SEM_results$Trait[1], '_',
                  SEM_results$Demog_rate[1], '_ResultsSEM',  '.RDS')
-  # message(paste(path))
+  message(paste(path))
   saveRDS(object = SEM_results,
           file = path)
   return(SEM_results)
