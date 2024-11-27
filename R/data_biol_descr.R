@@ -1,4 +1,4 @@
-#' @title data
+#' @title data_biol
 #' @description subset of raw time series data containing the
 #' metadata for each study (e.g. authors, location, species)
 #' and for each year the population mean value for the trait
@@ -59,4 +59,4 @@
 #'   \item{\code{Closed}}{factor Specifies whether the extraction
 #'   of the data from the publication was finished}
 #'}
-"data"
+"data_biol"
