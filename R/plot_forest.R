@@ -120,7 +120,7 @@ plot_forest <- function(data_ES,
   ## prepare dataframe with global effect sizes
   data_globES_prep <- data_globES %>%
     dplyr::rename(lwr = .data$EfS_Low, upr = .data$EfS_Upper) %>%
-    dplyr::mutate(y = c(1:.data$miny_glob))
+    dplyr::mutate(y = c(1:miny_glob))
 
   if(! is.null(Cov_fact)){
     data_globES_prep <- data_globES_prep %>%
