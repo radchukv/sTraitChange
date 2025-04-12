@@ -156,7 +156,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
  # message(paste(path))
   saveRDS(object = SEM_results,
           file = path)
-  out <- tibble:tibble(SEM_results = list(SEM_results),
+  out <- tibble::tibble(SEM_results = list(SEM_results),
                        partR2 = list(SEM_mod$partR2[[1]]))
   return(out)
 }
