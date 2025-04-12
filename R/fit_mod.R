@@ -161,7 +161,7 @@ fit_mod <- function(biol_data, ID,
 
     dat <<- dat  ## for autocorrelation, otherwise gls does not wok within psem
     if (simpleSEM){
-
+      partR2 <- partitionR2(data = dat)
       script <- paste0("models_list <- piecewiseSEM::psem(nlme::gls(",
                        formGR, ", correlation = nlme::corAR1(form = ~ Year | ID),
                      method = 'REML', data = dat),
@@ -214,5 +214,5 @@ fit_mod <- function(biol_data, ID,
         data = dat)
     }
   }
-  return(models_list)
+  return(tibble::tibble(models_list = list(models_list), partR2 = list(partR2)))
 }

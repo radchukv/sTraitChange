@@ -141,7 +141,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
 
 
   ## then get output from the results of fitting the function
-  SEM_results <- get_res_SEM(SEM_mod)
+  SEM_results <- get_res_SEM(SEM_mod$models_list[[1]])
 
   SEM_results$DD <- DD
   SEM_results$weights <- weight
@@ -156,5 +156,7 @@ fit_SEM <- function(biol_data, ID, out_SEM,
  # message(paste(path))
   saveRDS(object = SEM_results,
           file = path)
-  return(SEM_results)
+  out <- tibble:tibble(SEM_results = list(SEM_results),
+                       partR2 = list(SEM_mod$partR2[[1]]))
+  return(out)
 }
