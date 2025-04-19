@@ -37,11 +37,29 @@ mod_noClim <- nlme::gls(GR ~ Pop_mean + Trait_mean,
 mod_noTrait <- nlme::gls(GR ~ Pop_mean + det_Clim,
                         correlation = nlme::corAR1(form = ~ Year | ID),
                         method = 'REML', data = dat)
-PopsizeR2 <- R2_lik(mod_full, mod_noPop)
-ClimateR2 <- R2_lik(mod_full, mod_noClim)
-TraitR2 <- R2_lik(mod_full, mod_noTrait)
-FullR2 <- R2_lik(mod_full, mod_null)  # 0.1 explained in total, of which 0.45
-dat_r2 <- data.frame(PopsizeR2 = PopsizeR2, ClimateR2 = ClimateR2,
-                     TraitR2 = TraitR2, FullR2 = FullR2)
+PopsizeR2_lik <- R2_lik(mod_full, mod_noPop)
+ClimateR2_lik <- R2_lik(mod_full, mod_noClim)
+TraitR2_lik <- R2_lik(mod_full, mod_noTrait)
+FullR2_lik <- R2_lik(mod_full, mod_null)
+PopsizeR2_pred <- R2_pred(mod_full, mod_noPop)
+ClimateR2_pred <- R2_pred(mod_full, mod_noClim)
+TraitR2_pred <- R2_pred(mod_full, mod_noTrait)
+FullR2_pred <- R2_pred(mod_full, mod_null)
+PopsizeR2_resid <- R2_resid(mod_full, mod_noPop)
+ClimateR2_resid <- R2_resid(mod_full, mod_noClim)
+TraitR2_resid <- R2_resid(mod_full, mod_noTrait)
+FullR2_resid <- R2_resid(mod_full, mod_null)
+dat_r2 <- data.frame(PopsizeR2_lik = PopsizeR2_lik,
+                     ClimateR2_lik = ClimateR2_lik,
+                     TraitR2_lik = TraitR2_lik,
+                     FullR2_lik = FullR2_lik,
+                     PopsizeR2_pred = PopsizeR2_pred,
+                     ClimateR2_pred = ClimateR2_pred,
+                     TraitR2_pred = TraitR2_pred,
+                     FullR2_pred = FullR2_pred,
+                     PopsizeR2_resid = PopsizeR2_resid,
+                     ClimateR2_resid = ClimateR2_resid,
+                     TraitR2_resid = TraitR2_resid,
+                     FullR2_resid = FullR2_resid)
 return(dat_r2)
 }
