@@ -44,22 +44,22 @@ FullR2_lik <- R2_lik(mod_full, mod_null)
 PopsizeR2_pred <- R2_pred(mod_full, mod_noPop)
 ClimateR2_pred <- R2_pred(mod_full, mod_noClim)
 TraitR2_pred <- R2_pred(mod_full, mod_noTrait)
-FullR2_pred <- R2_pred(mod_full, mod_null)
-PopsizeR2_resid <- R2_resid(mod_full, mod_noPop)
-ClimateR2_resid <- R2_resid(mod_full, mod_noClim)
-TraitR2_resid <- R2_resid(mod_full, mod_noTrait)
-FullR2_resid <- R2_resid(mod_full, mod_null)
+# FullR2_pred <- R2_pred(mod_full, mod_null) ## this one does not work, check details
+#PopsizeR2_resid <- R2_resid(mod_full, mod_noPop)
+#ClimateR2_resid <- R2_resid(mod_full, mod_noClim)
+#TraitR2_resid <- R2_resid(mod_full, mod_noTrait)
+#FullR2_resid <- R2_resid(mod_full, mod_null)
 dat_r2 <- data.frame(PopsizeR2_lik = PopsizeR2_lik,
                      ClimateR2_lik = ClimateR2_lik,
                      TraitR2_lik = TraitR2_lik,
                      FullR2_lik = FullR2_lik,
                      PopsizeR2_pred = PopsizeR2_pred,
                      ClimateR2_pred = ClimateR2_pred,
-                     TraitR2_pred = TraitR2_pred,
-                     FullR2_pred = FullR2_pred,
-                     PopsizeR2_resid = PopsizeR2_resid,
-                     ClimateR2_resid = ClimateR2_resid,
-                     TraitR2_resid = TraitR2_resid,
-                     FullR2_resid = FullR2_resid)
+                     TraitR2_pred = TraitR2_pred) #,
+                     #FullR2_pred = FullR2_pred,
+                     #PopsizeR2_resid = PopsizeR2_resid,
+                     #ClimateR2_resid = ClimateR2_resid,
+                     #TraitR2_resid = TraitR2_resid,
+                     #FullR2_resid = FullR2_resid)
 return(dat_r2)
 }
