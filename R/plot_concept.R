@@ -164,7 +164,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
   x <- ymin <- ymax <- Estimate <- ltype <- NULL
   if (requireNamespace("ggtext", quietly = TRUE)) {
     pl <- ggplot2::ggplot(raw_dat,
-                          ggplot2::aes(x = .data[[xvar_raw]], y = .data[[yvar_raw]]), col = .data[[col_var]]) +
+                          ggplot2::aes(x = .data[[xvar_raw]], y = .data[[yvar_raw]],
+                                       col = .data[[col_var]])) +
       ggplot2::lims(x = c(min(dat_rib$x), max(dat_rib$x)),
            y =  c(miny, maxy)) +
       ggplot2::geom_blank() +
@@ -178,6 +179,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
       ggplot2::geom_abline(data = GlobES_dat,
                            ggplot2::aes(intercept = 0, slope = Estimate,
                       lty = ltype), col = 'black', lwd = 1) +
+      ggplot::scale_colour_brewer(palette = 'Dark2') +
       # scale_color_manual(values = c('Negative' = 'darkorange',
       #                               'Nonnegative' = 'darkgreen')) +
       ggplot2::scale_linetype_manual(values = c('1' = 1,
@@ -187,7 +189,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
       ggplot2::theme_bw() +
       ggplot2::ylab(ylab) + ggplot2::xlab(xlab) +
       ggplot2::theme(# legend.position = 'bottom',
-            legend.position = 'none',  ## 22.06: to not interfere with other legends in the composite plot
+            legend.position = 'bottom',  ## 22.06: to not interfere with other legends in the composite plot
             panel.grid.major = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank(),
             axis.title = ggplot2::element_text(size = 25),
