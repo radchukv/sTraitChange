@@ -159,7 +159,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
     dat_rib %<>%
       dplyr::mutate(ymax = GlobES_dat$EfS_Upper * .data$x,
                     ymin = GlobES_dat$EfS_Low * .data$x,
-                    Trait_mean = 0, GR = 0)
+                    Trait_mean = 0, GR = 0, Taxon = 'Bird')
 
   x <- ymin <- ymax <- Estimate <- ltype <- NULL
   if (requireNamespace("ggtext", quietly = TRUE)) {
@@ -170,11 +170,12 @@ plot_concept <- function(Trait_categ = 'Phenological',
            y =  c(miny, maxy)) +
       ggplot2::geom_blank() +
       ggplot2::geom_abline(data = ES_dat,
-                           ggplot2::aes(intercept = 0, slope = .data[[slope_ES]])) +
+                           ggplot2::aes(intercept = 0, slope = .data[[slope_ES]],
+                                        col = .data[[col_var]])) +
                   # col = 'grey') +
       ggplot2::geom_ribbon(data = dat_rib,
                            ggplot2::aes(x = x, ymin= ymin, ymax = ymax),
-                  fill = 'black',
+                  fill = 'black', col = 'black',
                   alpha = 0.55) +
       ggplot2::geom_abline(data = GlobES_dat,
                            ggplot2::aes(intercept = 0, slope = Estimate,
