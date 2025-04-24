@@ -24,6 +24,8 @@
 #' @param ylab Character specifying the label for the y axis.
 #' @param miny Numeric specifying the minimum limit for the y axis.
 #' @param maxy Numeric specifying the maximum limit for the y axis.
+#' @param col_var Character specifying what variable from the raw dataset (raw_dat)
+#' is used to colour the lines.
 #'
 #' @inheritParams fit_all_meta
 #' @inheritParams plot_forest
@@ -138,7 +140,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
                          yvar_raw = 'Trait_mean',
                          slope_ES = 'Estimate/Trait_mean<-det_Clim',
                          ylab = 'Trait', xlab = 'Climate',
-                         miny = -6, maxy = 6){
+                         miny = -6, maxy = 6,
+                         col_var = NULL){
   raw_dat <- raw_dat %>%
     dplyr::filter(.data$Trait_Categ == Trait_categ)
   GlobES_dat <- GlobES_dat[GlobES_dat$REL == path &
@@ -161,7 +164,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
   x <- ymin <- ymax <- Estimate <- ltype <- NULL
   if (requireNamespace("ggtext", quietly = TRUE)) {
     pl <- ggplot2::ggplot(raw_dat,
-                          ggplot2::aes(x = .data[[xvar_raw]], y = .data[[yvar_raw]])) +
+                          ggplot2::aes(x = .data[[xvar_raw]], y = .data[[yvar_raw]]), col = .data[[col_var]]) +
       ggplot2::lims(x = c(min(dat_rib$x), max(dat_rib$x)),
            y =  c(miny, maxy)) +
       ggplot2::geom_blank() +
