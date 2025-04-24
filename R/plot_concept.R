@@ -179,7 +179,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
       ggplot2::geom_abline(data = GlobES_dat,
                            ggplot2::aes(intercept = 0, slope = Estimate,
                       lty = ltype), col = 'black', lwd = 1) +
-      ggplot::scale_colour_brewer(palette = 'Dark2') +
+      ggplot2::scale_colour_brewer(palette = 'Dark2') +
       # scale_color_manual(values = c('Negative' = 'darkorange',
       #                               'Nonnegative' = 'darkgreen')) +
       ggplot2::scale_linetype_manual(values = c('1' = 1,
