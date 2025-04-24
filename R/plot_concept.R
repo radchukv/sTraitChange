@@ -165,13 +165,13 @@ plot_concept <- function(Trait_categ = 'Phenological',
   if (requireNamespace("ggtext", quietly = TRUE)) {
     pl <- ggplot2::ggplot(raw_dat,
                           ggplot2::aes(x = .data[[xvar_raw]], y = .data[[yvar_raw]],
-                                       col = .data[[col_var]])) +
+                                       col = .data[[col_var]]), alpha = 0.7) +
       ggplot2::lims(x = c(min(dat_rib$x), max(dat_rib$x)),
            y =  c(miny, maxy)) +
       ggplot2::geom_blank() +
       ggplot2::geom_abline(data = ES_dat,
                            ggplot2::aes(intercept = 0, slope = .data[[slope_ES]],
-                                        col = .data[[col_var]])) +
+                                        col = .data[[col_var]]), alpha = 0.7) +
                   # col = 'grey') +
       ggplot2::geom_ribbon(data = dat_rib,
                            ggplot2::aes(x = x, ymin= ymin, ymax = ymax),
