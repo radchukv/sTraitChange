@@ -200,7 +200,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
             legend.title = element_text(size = 20),
             legend.text = element_text(size = 20),
             legend.key.width=unit(1.5,"cm")) +
-      ggplot2::guides(lty = 'none')
+      ggplot2::guides(lty = 'none') +
+      guide_legend(override.aes = list(linewidth = 2))
   } else {
     message("to be able to produce this plot, you first must run install.packages('ggtext')!")
   }
