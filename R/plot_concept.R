@@ -26,6 +26,7 @@
 #' @param maxy Numeric specifying the maximum limit for the y axis.
 #' @param col_var Character specifying what variable from the raw dataset (raw_dat)
 #' is used to colour the lines.
+#' @param lwd_leg Numeric specifying the line width in the legend.
 #'
 #' @inheritParams fit_all_meta
 #' @inheritParams plot_forest
@@ -141,7 +142,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
                          slope_ES = 'Estimate/Trait_mean<-det_Clim',
                          ylab = 'Trait', xlab = 'Climate',
                          miny = -6, maxy = 6,
-                         col_var = NULL){
+                         col_var = NULL,
+                         lwd_leg = 2){
   raw_dat <- raw_dat %>%
     dplyr::filter(.data$Trait_Categ == Trait_categ)
   GlobES_dat <- GlobES_dat[GlobES_dat$REL == path &
@@ -200,7 +202,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
             legend.title = element_text(size = 20),
             legend.text = element_text(size = 20),
             legend.key.width=unit(1.5,"cm")) +
-      ggplot2::guides(lty = 'none',color = guide_legend(override.aes = list(size = 2)))
+      ggplot2::guides(lty = 'none',color = guide_legend(override.aes = list(size = lwd_leg)))
   } else {
     message("to be able to produce this plot, you first must run install.packages('ggtext')!")
   }
