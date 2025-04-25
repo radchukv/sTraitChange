@@ -81,9 +81,9 @@ plot_hist_points <- function(data_allEstim,
                                          color = Col), size = 1.5, stroke = 1.4) +
         ggplot2::facet_grid(rows = ggplot2::vars(REL_Clim)) +
         ggplot2::scale_colour_manual(values = c("Signif, temperature" = "brown4",
-                                     "Non-signif, temperature" = "red1",
+                                     "Non-signif, temperature" = "darkorange2",
                                      "Signif, precipitation" = "darkgreen",
-                                     "Non-signif, precipitation" = "springgreen2")) +
+                                     "Non-signif, precipitation" = "green2")) +
         ggplot2::scale_shape_manual(values = c(16, 22)) +
         ggplot2::guides(color = ggplot2::guide_legend(ncol= 2, title = 'Overall effect size'),  ## ncol = 1 for ppt, where the legend is better on the right
              fill = ggplot2::guide_legend(ncol= 1, title = 'All effect sizes',
@@ -130,9 +130,9 @@ plot_hist_points <- function(data_allEstim,
                    ggplot2::aes(y = 5, x = Estimate, shape = Climatic_var, color = Col), size = 1.5, stroke = 1.4) +
         ggplot2::facet_grid(rows = ggplot2::vars(REL_Clim)) +
         ggplot2::scale_colour_manual(values = c("Signif, temperature" = "brown4",
-                                       "Non-signif, temperature" = "red1",
+                                       "Non-signif, temperature" = "darkorange2",
                                        "Signif, precipitation" = "darkgreen",
-                                       "Non-signif, precipitation" = "springgreen2")) +
+                                       "Non-signif, precipitation" = "green2")) +
         ggplot2::scale_shape_manual(values = c(16, 22)) +
         ggplot2::guides(color = ggplot2::guide_legend(ncol= 2, title = 'Overall effect size'),  ## ncol = 1 for ppt, where the legend is better on the right
                fill = ggplot2::guide_legend(ncol= 1, title = 'All effect sizes',
@@ -192,9 +192,9 @@ plot_hist_points <- function(data_allEstim,
                                                       shape = Climatic_var, color = Col), size = 1.5, stroke = 1.4) +
       ggplot2::facet_grid(rows = ggplot2::vars(REL_Clim)) +
       ggplot2::scale_colour_manual(values = c("Signif, temperature" = "brown4",
-                                     "Non-signif, temperature" = "red1",
+                                     "Non-signif, temperature" = "darkorange2",
                                      "Signif, precipitation" = "darkgreen",
-                                     "Non-signif, precipitation" = "springgreen2")) +
+                                     "Non-signif, precipitation" = "green2")) +
       ggplot2::scale_shape_manual(values = c(16, 15)) +
       ggplot2::guides(color = ggplot2::guide_legend(ncol= 2,
                                                     title = 'Overall effect size'),  ## ncol = 1 for ppt, where the legend is better on the right
