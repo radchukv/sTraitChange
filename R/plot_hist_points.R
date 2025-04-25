@@ -84,7 +84,7 @@ plot_hist_points <- function(data_allEstim,
                                      "Non-signif, temperature" = "tomato1",
                                      "Signif, precipitation" = "royalblue1",
                                      "Non-signif, precipitation" = "deepskyblue2")) +
-        ggplot2::scale_shape_manual(values = c(16, 15)) +
+        ggplot2::scale_shape_manual(values = c(16, 22)) +
         ggplot2::guides(color = ggplot2::guide_legend(ncol= 2, title = 'Overall effect size'),  ## ncol = 1 for ppt, where the legend is better on the right
              fill = ggplot2::guide_legend(ncol= 1, title = 'All effect sizes',
                                  override.aes = list(shape = c(NA, NA))),
@@ -106,8 +106,8 @@ plot_hist_points <- function(data_allEstim,
       ggplot2::ggplot() + ggplot2::geom_histogram(data = data_sub,
                                                   ggplot2::aes(x = Estimate, fill = Climatic_var),
                                                   alpha = 0.5, bins = 50) +
-        ggplot2::scale_fill_manual(values = c('Temperature' = 'lightsalmon1',
-                                     'Precipitation' = 'lightblue1')) +
+        ggplot2::scale_fill_manual(values = c('Temperature' = "#FDCDAC",
+                                     'Precipitation' = "#B3E2CD")) +
         ggplot2::geom_vline(xintercept = 0, linetype = 'dashed', color = 'black', lwd = 0.9) +
         ggplot2::theme_bw() +
         ggplot2::theme(strip.background = ggplot2::element_blank(),
@@ -129,11 +129,11 @@ plot_hist_points <- function(data_allEstim,
         ggplot2::geom_point(data = Ef_sub,
                    ggplot2::aes(y = 5, x = Estimate, shape = Climatic_var, color = Col), size = 1.5) +
         ggplot2::facet_grid(rows = ggplot2::vars(REL_Clim)) +
-        ggplot2::scale_colour_manual(values = c("Signif, temperature" = "red4",
-                                       "Non-signif, temperature" = "tomato1",
-                                       "Signif, precipitation" = "royalblue1",
-                                       "Non-signif, precipitation" = "deepskyblue2")) +
-        ggplot2::scale_shape_manual(values = c(16, 15)) +
+        ggplot2::scale_colour_manual(values = c("Signif, temperature" = "#D95F02",
+                                       "Non-signif, temperature" = "#FC8D62",
+                                       "Signif, precipitation" = "#1B9E77",
+                                       "Non-signif, precipitation" = "#66C2A5")) +
+        ggplot2::scale_shape_manual(values = c(16, 22)) +
         ggplot2::guides(color = ggplot2::guide_legend(ncol= 2, title = 'Overall effect size'),  ## ncol = 1 for ppt, where the legend is better on the right
                fill = ggplot2::guide_legend(ncol= 1, title = 'All effect sizes',
                                    override.aes = list(shape = c(NA, NA))),
