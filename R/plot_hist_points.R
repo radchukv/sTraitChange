@@ -83,7 +83,7 @@ plot_hist_points <- function(data_allEstim,
         ggplot2::scale_colour_manual(values = c("Signif, temperature" = "brown4",
                                      "Non-signif, temperature" = "#D95F02",
                                      "Signif, precipitation" = "darkgreen",
-                                     "Non-signif, precipitation" = "#66C2A5")) +
+                                     "Non-signif, precipitation" = "#1B9E77")) +
         ggplot2::scale_shape_manual(values = c(16, 22)) +
         ggplot2::guides(color = ggplot2::guide_legend(ncol= 2, title = 'Overall effect size'),  ## ncol = 1 for ppt, where the legend is better on the right
              fill = ggplot2::guide_legend(ncol= 1, title = 'All effect sizes',
@@ -132,7 +132,7 @@ plot_hist_points <- function(data_allEstim,
         ggplot2::scale_colour_manual(values = c("Signif, temperature" = "brown4",
                                        "Non-signif, temperature" = "#D95F02",
                                        "Signif, precipitation" = "darkgreen",
-                                       "Non-signif, precipitation" = "#66C2A5")) +
+                                       "Non-signif, precipitation" = "#1B9E77")) +
         ggplot2::scale_shape_manual(values = c(16, 22)) +
         ggplot2::guides(color = ggplot2::guide_legend(ncol= 2, title = 'Overall effect size'),  ## ncol = 1 for ppt, where the legend is better on the right
                fill = ggplot2::guide_legend(ncol= 1, title = 'All effect sizes',
@@ -194,7 +194,7 @@ plot_hist_points <- function(data_allEstim,
       ggplot2::scale_colour_manual(values = c("Signif, temperature" = "brown4",
                                      "Non-signif, temperature" = "#D95F02",
                                      "Signif, precipitation" = "darkgreen",
-                                     "Non-signif, precipitation" = "#66C2A5")) +
+                                     "Non-signif, precipitation" = "#1B9E77")) +
       ggplot2::scale_shape_manual(values = c(16, 15)) +
       ggplot2::guides(color = ggplot2::guide_legend(ncol= 2,
                                                     title = 'Overall effect size'),  ## ncol = 1 for ppt, where the legend is better on the right
