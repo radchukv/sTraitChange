@@ -173,8 +173,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
       ggplot2::geom_blank() +
       ggplot2::geom_abline(data = ES_dat,
                            ggplot2::aes(intercept = 0, slope = .data[[slope_ES]],
-                                        col = .data[[col_var]]), alpha = 0.7) +
-                  # col = 'grey') +
+                                        col = .data[[col_var]]), #alpha = 0.7,
+                   col = 'grey') +
       ggplot2::geom_ribbon(data = dat_rib,
                            ggplot2::aes(x = x, ymin= ymin, ymax = ymax),
                   fill = 'black', col = 'black',
@@ -182,7 +182,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
       ggplot2::geom_abline(data = GlobES_dat,
                            ggplot2::aes(intercept = 0, slope = Estimate,
                       lty = ltype), col = 'black', lwd = 1) +
-      ggplot2::scale_colour_brewer(palette = 'Dark2') +
+      #ggplot2::scale_colour_brewer(palette = 'Dark2') +
       # scale_color_manual(values = c('Negative' = 'darkorange',
       #                               'Nonnegative' = 'darkgreen')) +
       ggplot2::scale_linetype_manual(values = c('1' = 1,
@@ -202,7 +202,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
             legend.title = element_text(size = 20),
             legend.text = element_text(size = 15),
             legend.key.width=unit(1,"cm")) +
-      ggplot2::guides(lty = 'none',color = guide_legend(override.aes = list(lwd = lwd_leg)))
+      ggplot2::guides(lty = 'none') #,color = guide_legend(override.aes = list(lwd = lwd_leg)))
   } else {
     message("to be able to produce this plot, you first must run install.packages('ggtext')!")
   }
