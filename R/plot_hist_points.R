@@ -78,11 +78,11 @@ plot_hist_points <- function(data_allEstim,
                                  y = 5), lwd = 0.5) +
         ggplot2::geom_point(data = Ef_sub,
                             ggplot2::aes(y = 5, x = Estimate, shape = Climatic_var,
-                                         color = Col), size = 1.5) +
+                                         color = Col), size = 1.5, stroke = 2) +
         ggplot2::facet_grid(rows = ggplot2::vars(REL_Clim)) +
-        ggplot2::scale_colour_manual(values = c("Signif, temperature" = "#D95F02",
+        ggplot2::scale_colour_manual(values = c("Signif, temperature" = "brown4",
                                      "Non-signif, temperature" = "#FC8D62",
-                                     "Signif, precipitation" = "#1B9E77",
+                                     "Signif, precipitation" = "darkgreen",
                                      "Non-signif, precipitation" = "#66C2A5")) +
         ggplot2::scale_shape_manual(values = c(16, 22)) +
         ggplot2::guides(color = ggplot2::guide_legend(ncol= 2, title = 'Overall effect size'),  ## ncol = 1 for ppt, where the legend is better on the right
@@ -95,7 +95,7 @@ plot_hist_points <- function(data_allEstim,
         ggplot2::labs(x = 'Effect size', y = '') + ggplot2::ggtitle(Traitdem) +
         ggplot2::geom_text(data = tab_subs,
                            ggplot2::aes(x = x, y = y, label = Count),
-                           col = c("#D95F02", "#1B9E77"))
+                           col = c("brown4", "darkgreen"))
     } else {
       data_sub <- data_allEstim %>%
         dplyr::filter(.data$Trait_Categ == Trait_categ)
@@ -127,11 +127,11 @@ plot_hist_points <- function(data_allEstim,
                       width=.1,
                       ggplot2::aes(xmin = EfS_Low, xmax = EfS_Upper, colour = Col, y = 5), lwd = 0.5) +
         ggplot2::geom_point(data = Ef_sub,
-                   ggplot2::aes(y = 5, x = Estimate, shape = Climatic_var, color = Col), size = 1.5) +
+                   ggplot2::aes(y = 5, x = Estimate, shape = Climatic_var, color = Col), size = 1.5, stroke = 2) +
         ggplot2::facet_grid(rows = ggplot2::vars(REL_Clim)) +
-        ggplot2::scale_colour_manual(values = c("Signif, temperature" = "#D95F02",
+        ggplot2::scale_colour_manual(values = c("Signif, temperature" = "brown4",
                                        "Non-signif, temperature" = "#FC8D62",
-                                       "Signif, precipitation" = "#1B9E77",
+                                       "Signif, precipitation" = "darkgreen",
                                        "Non-signif, precipitation" = "#66C2A5")) +
         ggplot2::scale_shape_manual(values = c(16, 22)) +
         ggplot2::guides(color = ggplot2::guide_legend(ncol= 2, title = 'Overall effect size'),  ## ncol = 1 for ppt, where the legend is better on the right
@@ -145,7 +145,7 @@ plot_hist_points <- function(data_allEstim,
         ggplot2::labs(x = 'Effect size', y = '') + ggplot2::ggtitle(Trait_categ) +
         ggplot2::geom_text(data = tab_subs,
                            ggplot2::aes(x = x, y = y, label = Count),
-                           col = c("#D95F02", "#1B9E77"))
+                           col = c("brown4", "darkgreen"))
     }
   } else {
     hue <- NULL
@@ -189,11 +189,11 @@ plot_hist_points <- function(data_allEstim,
                     ggplot2::aes(xmin = EfS_Low, xmax = EfS_Upper,
                                  colour = Col, y = 5), lwd = 0.5) +
       ggplot2::geom_point(data = Ef_sub, ggplot2::aes(y = 5, x = Estimate,
-                                                      shape = Climatic_var, color = Col), size = 1.5) +
+                                                      shape = Climatic_var, color = Col), size = 1.5, stroke = 2) +
       ggplot2::facet_grid(rows = ggplot2::vars(REL_Clim)) +
-      ggplot2::scale_colour_manual(values = c("Signif, temperature" = "#D95F02",
+      ggplot2::scale_colour_manual(values = c("Signif, temperature" = "brown4",
                                      "Non-signif, temperature" = "#FC8D62",
-                                     "Signif, precipitation" = "#1B9E77",
+                                     "Signif, precipitation" = "darkgreen",
                                      "Non-signif, precipitation" = "#66C2A5")) +
       ggplot2::scale_shape_manual(values = c(16, 15)) +
       ggplot2::guides(color = ggplot2::guide_legend(ncol= 2,
@@ -209,7 +209,7 @@ plot_hist_points <- function(data_allEstim,
       ggplot2::labs(x = 'Effect size', y = '') + ggplot2::ggtitle(Traitdem) +
       ggplot2::geom_text(data = tab_subs,
                          ggplot2::aes(x = x, y = y, label = Count),
-                         col = c("#D95F02", "#1B9E77"))
+                         col = c("brown4", "darkgreen"))
  } else {
    message("to be able to produce this plot, you first must run install.packages('ggnewscale')!")
  }
