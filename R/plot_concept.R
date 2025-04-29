@@ -201,7 +201,8 @@ plot_concept <- function(Trait_categ = 'Phenological',
             axis.title.y = ggtext::element_markdown(),
             legend.title = element_text(size = 20),
             legend.text = element_text(size = 15),
-            legend.key.width=unit(1,"cm")) +
+            legend.key.width=unit(1,"cm"),
+            plot.margin = margin(5.5,3,5.5,9.5, "pt")) +
       ggplot2::guides(lty = 'none') #,color = guide_legend(override.aes = list(lwd = lwd_leg)))
   } else {
     message("to be able to produce this plot, you first must run install.packages('ggtext')!")
