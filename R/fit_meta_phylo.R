@@ -349,13 +349,15 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                 data_EfS = list(subs_data),
                                 heter_mod = list(het_mod),
                                 ML_mod = list(tt.error.sel.ML),
-                                REML_mod = list(tt.error.sel.REML))
+                                REML_mod = list(tt.error.sel.REML),
+                                phylo_mod_ML = list(tt.error.phylo.ML))
     } else {
       out_tib <- tibble::tibble(data = list(out_dat),
                                 data_EfS = list(subs_data),
                                 heter_mod = list(het_mod),
                                 ML_mod = list(tt.error.sel.ML),
-                                REML_mod = list(tt.error.sel.REML))
+                                REML_mod = list(tt.error.sel.REML),
+                                phylo_mod_ML = list(tt.error.phylo.ML))
     }
   }
 
