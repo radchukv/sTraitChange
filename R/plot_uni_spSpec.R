@@ -99,8 +99,8 @@ plot_uni_spSpec <- function(data_allEstim,
   }
 
 
-  if(stats::coef(summary(mod_mv))$pval[2] < 0.05){  ## still hard-coded, decision on the line type
-    lt = 1} else {lt = 2}
+  #if(stats::coef(summary(mod_mv))$pval[2] < 0.05){  ## still hard-coded, decision on the line type
+    lt = 1 #} else {lt = 2}
   Hemisphere <- Est_MinSD <- Est_PlSD <- NULL
   if(byHemisphere){
     Estimate <- NULL
