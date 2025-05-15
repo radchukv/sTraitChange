@@ -166,15 +166,14 @@ plot_concept <- function(Trait_categ = 'Phenological',
   x <- ymin <- ymax <- Estimate <- ltype <- NULL
   if (requireNamespace("ggtext", quietly = TRUE)) {
     pl <- ggplot2::ggplot(raw_dat,
-                          ggplot2::aes(x = .data[[xvar_raw]], y = .data[[yvar_raw]],
-                                       col = .data[[col_var]]), alpha = 0.7) +
+                          ggplot2::aes(x = .data[[xvar_raw]], y = .data[[yvar_raw]]),
+                          alpha = 0.7) +
       ggplot2::lims(x = c(min(dat_rib$x), max(dat_rib$x)),
            y =  c(miny, maxy)) +
       ggplot2::geom_blank() +
       ggplot2::geom_abline(data = ES_dat,
-                           ggplot2::aes(intercept = 0, slope = .data[[slope_ES]],
-                                        col = .data[[col_var]]), alpha = 0.7) +
-                   #, col = 'grey') +
+                           ggplot2::aes(intercept = 0, slope = .data[[slope_ES]]),
+                           alpha = 0.7, col = 'grey') +
       ggplot2::geom_ribbon(data = dat_rib,
                            ggplot2::aes(x = x, ymin= ymin, ymax = ymax),
                   fill = 'black', col = 'black',
@@ -183,15 +182,13 @@ plot_concept <- function(Trait_categ = 'Phenological',
                            ggplot2::aes(intercept = 0, slope = Estimate,
                       lty = ltype), col = 'black', lwd = 1) +
       ggplot2::scale_colour_brewer(palette = 'Dark2') +
-      # scale_color_manual(values = c('Negative' = 'darkorange',
-      #                               'Nonnegative' = 'darkgreen')) +
       ggplot2::scale_linetype_manual(values = c('1' = 1,
                                        '2' = 2),
                             labels = c('1' = 'p <= 0.1',
                                        '2' = 'p > 0.1')) +
       ggplot2::theme_bw() +
       ggplot2::ylab(ylab) + ggplot2::xlab(xlab) +
-      ggplot2::theme(# legend.position = 'bottom',
+      ggplot2::theme(
             legend.position = 'bottom',  ## 22.06: to not interfere with other legends in the composite plot
             panel.grid.major = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank(),
@@ -203,7 +200,7 @@ plot_concept <- function(Trait_categ = 'Phenological',
             legend.text = element_text(size = 15),
             legend.key.width=unit(1,"cm"),
             plot.margin = margin(5.5,3,5.5,25, "pt")) +
-      ggplot2::guides(lty = 'none') #,color = guide_legend(override.aes = list(lwd = lwd_leg)))
+      ggplot2::guides(lty = 'none')
   } else {
     message("to be able to produce this plot, you first must run install.packages('ggtext')!")
   }
