@@ -99,7 +99,8 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
   forTrans <- data_MA %>%
     dplyr::select(.data$Estimate,  .data$Std.Error,
                   .data$Relation, .data$Species,
-                  .data$Sp_phylo, .data$Location, .data$ID) %>%
+                  .data$Sp_phylo, .data$Location,
+                  .data$ID) %>%
     dplyr::rename(SError = .data$Std.Error)
 
   Relation <- ID <- Species <- NULL
@@ -138,7 +139,8 @@ fit_meta_phylo <- function(data_MA, Type_EfS = 'Trait_mean<-det_Clim',
                                                .data$Count, .data$Nyears, .data$WinDur,
                                                .data$deltaAIC, .data$Pvalue, .data$WeathQ,
                                                .data$Ref.day, .data$Ref.month, .data$WindowClose,
-                                               .data$Trait_ageClass, .data$GenLength_y_IUCN))
+                                               .data$Trait_ageClass, .data$GenLength_y_IUCN,
+                                           .data$TraitType))
 
 
   tot <- merge(trans_allEfS, subs_merge, by = c('ID'))
