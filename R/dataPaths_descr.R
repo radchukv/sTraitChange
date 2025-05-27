@@ -1,8 +1,9 @@
 #' @title dataPaths
 #' @description subset of the data on which SEM analyses were run,
 #' and path coefficients estimated
-#' #' @format A data frame with 60 rows and 37 variables:
+#' #' @format A data frame with 840 rows and 39 variables:
 #' \describe{
+#'   \item{\code{Species}}{factor Latin species name}
 #'   \item{\code{Response}}{factor Name of the variable used
 #'   as a response in the SEM}
 #'   \item{\code{Predictor}}{factor Name of the variable used
@@ -17,7 +18,6 @@
 #'   run on standardised data}
 #'   \item{\code{ID}}{integer Study ID}
 #'   \item{\code{Study_Authors}}{factor Authors of the study}
-#'   \item{\code{Species}}{factor Latin species name}
 #'   \item{\code{Location}}{factor Location of the study}
 #'   \item{\code{Country}}{factor Country}
 #'   \item{\code{Continent}}{factor Continent}
@@ -57,15 +57,20 @@
 #'   included as a covariate in the SEM}
 #'   \item{\code{corr}}{logical Specifies whether autocorrelation
 #'   was included in SEM}
-#'   \item{\code{AIC}}{list AIC outputs for the fitted SEM}
+#'   \item{\code{AIC.AIC}}{AIC output for the fitted SEM}
+#'   \item{\code{AIC.AICc}}{AICc output for the fitted SEM}
 #'   \item{\code{Trait_ageClass}}{factor Specifies for which age
 #'     class trait measurements are taken}
+#'   \item{\code{Trait_ageClass}}{factor Specifies
+#'   the age class for which the trait was measured}
 #'   \item{\code{WeathQ}}{factor Specifies
 #'   whether climate was extracted from the location or
 #'   from a nearby fastland (see Methods for details)}
 #'   \item{\code{Relation}}{factor Specifies for which relation
 #'   the path coefficient was estimated with the SEM}
 #'   \item{\code{GenLength_y_IUCN}}{double Generation time in years}
+#'   \item{\code{TraitTyoe}}{factor Specifies the detailed category for
+#'   the phenotypic trait}
 #'}
 "dataPaths"
 
