@@ -191,10 +191,10 @@ plot_concept <- function(Trait_categ = 'Phenological',
             axis.text = ggplot2::element_text(size = 15),
             axis.title.x = ggtext::element_markdown(),
             axis.title.y = ggtext::element_markdown(),
-            legend.title = element_text(size = 20),
-            legend.text = element_text(size = 15),
-            legend.key.width=unit(1,"cm"),
-            plot.margin = margin(5.5,3,5.5,25, "pt")) +
+            legend.title = ggplot2::element_text(size = 20),
+            legend.text = ggplot2::element_text(size = 15),
+            legend.key.width = ggplot2::unit(1,"cm"),
+            plot.margin = ggplot2::margin(5.5,3,5.5,25, "pt")) +
       ggplot2::guides(lty = 'none')
   } else {
     message("to be able to produce this plot, you first must run install.packages('ggtext')!")
