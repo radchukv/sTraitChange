@@ -4,7 +4,7 @@
 \alias{partitionR2}
 \title{Partition R2 in the full model}
 \usage{
-partitionR2(data = dat)
+partitionR2(data)
 }
 \arguments{
 \item{data}{Data frame for a single study that contains all the

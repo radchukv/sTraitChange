@@ -34,23 +34,23 @@
 #' # partition the variation
 #' partR2_study7 <- partitionR2(data = dat)
 #'
-partitionR2 <- function(data = dat){
+partitionR2 <- function(data){
 # fit full model
 mod_full <- nlme::gls(GR ~ det_Clim + Trait_mean + Pop_mean,
                       correlation = nlme::corAR1(form = ~ Year),
-          method = 'ML', data = dat)
+          method = 'ML', data = data)
 # fit each submodel without the one fixed-effect covariate in turn
 mod_noPop <- nlme::gls(GR ~ det_Clim + Trait_mean,
                        correlation = nlme::corAR1(form = ~ Year),
-                       method = 'ML', data = dat)
+                       method = 'ML', data = data)
 mod_null <- nlme::gls(GR ~ 1,
-                      method = 'ML', data = dat)
+                      method = 'ML', data = data)
 mod_noClim <- nlme::gls(GR ~ Pop_mean + Trait_mean,
                         correlation = nlme::corAR1(form = ~ Year),
-                        method = 'ML', data = dat)
+                        method = 'ML', data = data)
 mod_noTrait <- nlme::gls(GR ~ Pop_mean + det_Clim,
                         correlation = nlme::corAR1(form = ~ Year),
-                        method = 'ML', data = dat)
+                        method = 'ML', data = data)
 PopsizeR2_lik <- rr2::R2_lik(mod_full, mod_noPop)
 ClimateR2_lik <- rr2::R2_lik(mod_full, mod_noClim)
 TraitR2_lik <- rr2::R2_lik(mod_full, mod_noTrait)
