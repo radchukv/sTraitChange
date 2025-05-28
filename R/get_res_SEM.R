@@ -37,7 +37,7 @@
 #'                 Trait = TRUE,
 #'                 simpleSEM = TRUE)
 #'  # extract results
-#' res_SEM <- get_res_SEM(test)
+#' res_SEM <- get_res_SEM(test$models_list[[1]])
 
 get_res_SEM <- function(mod_obj){
 

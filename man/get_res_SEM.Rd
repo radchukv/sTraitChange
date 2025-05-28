@@ -42,5 +42,5 @@ test <- fit_mod(biol_data = data_GR, ID = 7,
                 Trait = TRUE,
                 simpleSEM = TRUE)
  # extract results
-res_SEM <- get_res_SEM(test)
+res_SEM <- get_res_SEM(test$models_list[[1]])
 }
