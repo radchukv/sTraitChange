@@ -36,7 +36,7 @@
 #' @return A list of length two, of which one is the fitted object
 #'  of class psem (see \code{\link[piecewiseSEM]{psem}} for more details)
 #'  and the second one is a data frame with the results on variance
-#'  partitioning (see \code{\link[partitionR2]}).
+#'  partitioning.
 #'
 #' @examples
 #'

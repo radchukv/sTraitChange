@@ -54,7 +54,7 @@ by trait, demographic rates are not considered. Defaults to FALSE.}
 A list of length two, of which one is the fitted object
  of class psem (see \code{\link[piecewiseSEM]{psem}} for more details)
  and the second one is a data frame with the results on variance
- partitioning (see \code{\link[partitionR2]}).
+ partitioning.
 }
 \description{
 \code{fit_mod} fits structural equation model with

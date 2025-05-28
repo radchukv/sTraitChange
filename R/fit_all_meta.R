@@ -45,6 +45,24 @@
 #'
 #' @examples
 #' # fit the models for: Trait_mean<-det_Clim', 'Ind_GR<-det_Clim', 'Tot_GR<-det_Clim'
+#' # rename the spp to have same names as in the phylogeny (nomenclature differs for some spp)
+#' dataPaths <- dataPaths %>%
+#'   dplyr::mutate(Sp_phylo = dplyr::case_when(
+#'   Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
+#'   Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
+#'   Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',
+#'   Species == 'Thalassarche melanophris' ~ 'Thalassarche melanophrys',
+#'   Species == 'Ichthyaetus audouinii' ~ 'Larus audouinii',
+#'   Species == 'Stercorarius maccormicki' ~ 'Catharacta maccormicki',
+#'   TRUE ~ Species))
+#'
+#' # add underscore - same format as in phylogeny
+#' dataPaths$Species <- unlist(lapply(1:nrow(dataPaths), FUN = function(x){
+#' binary <- strsplit(as.character(dataPaths$Sp_phylo[x]), " ")
+#' Underscore <- paste(binary[[1]][1], binary[[1]][2], sep = "_")
+#' }))
+#'
+#' dataPaths$Sp_phylo <- dataPaths$Species
 #' meta_Phen_Cov <- fit_all_meta(data_MA = dataPaths,
 #'                               Demog_rate = NULL,
 #'                               Trait_categ = 'Phenological',

@@ -54,6 +54,25 @@
 #' # prepare dataset, select only studies with phenological traits
 #' Coefs_phenClim <- subset(dataPaths, Relation == 'Trait_mean<-det_Clim' &
 #' Trait_Categ == 'Phenological')
+#'
+#' # prepare the dataset, rename species to have the same names between
+#' # the phylogeny and the dataset
+#' Coefs_phenClim <- Coefs_phenClim %>%
+#'   dplyr::mutate(Sp_phylo = dplyr::case_when(
+#'   Species == 'Cyanistes caeruleus' ~ 'Parus caeruleus',
+#'   Species == 'Thalasseus sandvicensis' ~ 'Sterna sandvicensis',
+#'   Species == 'Setophaga caerulescens' ~ 'Dendroica caerulescens',
+#'   Species == 'Thalassarche melanophris' ~ 'Thalassarche melanophrys',
+#'   Species == 'Ichthyaetus audouinii' ~ 'Larus audouinii',
+#'   Species == 'Stercorarius maccormicki' ~ 'Catharacta maccormicki',
+#'   TRUE ~ Species))
+#'
+#' Coefs_phenClim$Species <- unlist(lapply(1:nrow(Coefs_phenClim), FUN = function(x){
+#'   binary <- strsplit(as.character(Coefs_phenClim$Sp_phylo[x]), " ")
+#'   Underscore <- paste(binary[[1]][1], binary[[1]][2], sep = "_")
+#'   }))
+#'   Coefs_phenClim$Sp_phylo <- Coefs_phenClim$Species
+#'
 #' test_noCovar <- fit_meta_phylo(data_MA = Coefs_phenClim,
 #'                               Type_EfS = 'Trait_mean<-det_Clim',
 #'                               Cov_fact = NULL, COV = NULL,
