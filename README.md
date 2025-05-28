@@ -8,7 +8,8 @@
 
 The goal of sTraitChange is to provide the functions needed to reproduce
 the analyses for the manuscript ‘Changes in phenology mediate vertebrate
-population responses to climate globally’ by Radchuk et al. (submitted).
+population responses to temperature globally’ by Radchuk et
+al. (submitted).
 
 The package was conceived to perform analyses presented in the
 above-mentioned paper. Therefore, the package will only be updated if
@@ -38,7 +39,7 @@ The package depends on the following packages, that must be installed
 prior to installing the `sTraitChange`:
 
 ``` r
-install.packages(c('climwin', 'dplyr', 'tibble', 'ggplot2', 'magrittr', 'metafor', 'broom', 'piecewiseSEM', 'purrr', 'spaMM', 'tidyr', 'tidyselect', 'ape', 'sp', 'lubridate', 'openxlsx', 'ggnewscale', 'psych', 'ggtext', 'raster', 'ggExtra', 'data.table'))
+install.packages(c('climwin', 'dplyr', 'tibble', 'ggplot2', 'magrittr', 'metafor', 'broom', 'piecewiseSEM', 'purrr', 'spaMM', 'tidyr', 'tidyselect', 'ape', 'sp', 'lubridate', 'openxlsx', 'ggnewscale', 'psych', 'ggtext', 'raster', 'ggExtra', 'data.table', 'rr2'))
 ```
 
 The versions of these packages with which the package `sTraitChange` was
@@ -115,12 +116,18 @@ dataset:
 
 ``` r
 mod_SEM <- fit_SEM(biol_data = dataSEM, ID = 1,
-                   out_SEM = 'output_forSEM',
+                   out_SEM = tempdir(), 
+                   # attention: for this example we write the data to a temporary directory, to check its location type tempdir()
                    DD = 'n_effectGR', weight = TRUE,
                    correlation = TRUE,
                    standardize = TRUE,
                    Trait = FALSE,
                    simpleSEM = TRUE)
+# check tempdir()
+list.files(tempdir())
+#> [1] "1_Parus major_Askainen_LayingDate_NumberFledglings_ResultsSEM.RDS"
+#> [2] "1_Parus major_Askainen_LayingDate_relations.pdf"                  
+#> [3] "1_Parus major_Askainen_LayingDate_z_score_relations.pdf"
 ```
 
 And another example of how a meta-analysis that allows to account for
