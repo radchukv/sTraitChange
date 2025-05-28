@@ -33,7 +33,8 @@ Imports:
    rlang,
    tidyselect,
    methods,
-   rr2
+   rr2,
+   nlme
 Suggests: 
    ape,
    sp,
