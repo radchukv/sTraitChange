@@ -81,6 +81,7 @@ fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
                                 simpleSEM = TRUE,
                                 A = Mat_sub,
                                 all_Relations = c('Trait_mean<-det_Clim',
+                                                  'GR<-det_Clim',
                                                   'Ind_GR<-det_Clim',
                                                   'Tot_GR<-det_Clim'))
   # fitting meta-analysis for all other relations
@@ -96,7 +97,7 @@ fit_all_acountphylo <- function(data_MA, vtree_folder, ind,
                              colr = c('black'),
                              DD = 'n_effectGR',
                              simpleSEM = TRUE,
-                             all_Relations = c('GR<-det_Clim', 'GR<-Pop_mean',
+                             all_Relations = c('GR<-Pop_mean',
                                                'GR<-Trait_mean'))
   colnames(meta_Cov$meta_res[[1]])[1] <- 'Variable'
   ef_all <- rbind(meta_other$meta_res[[1]], meta_Cov$meta_res[[1]]) %>%
