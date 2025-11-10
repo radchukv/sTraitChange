@@ -141,5 +141,5 @@ plot_uni_spSpec <- function(data_allEstim,
   print(pl_CZ)
   grDevices::dev.off()
 
-  return(list(Pred_data, pl_CZ))
+  return(pl_CZ)
 }
