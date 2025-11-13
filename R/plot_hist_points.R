@@ -69,10 +69,10 @@ plot_hist_points <- function(data_allEstim,
             panel.grid.minor = ggplot2::element_blank(),
             axis.text.y = ggplot2::element_blank(),
             axis.ticks.y = ggplot2::element_blank(),
-            plot.margin = ggplot2::margin(c(0.2, 0.2, 1.5, 1.5), unit = 'line'),
+            plot.margin = ggplot2::margin(t = 0.2, r = 0.2, b = 1.5, l= 1.5, unit = 'line'),
             legend.direction = 'vertical',
             panel.border = ggplot2::element_rect(fill = NA, color = 'grey',
-                                        size = 0.1, linetype = 3))  +  ## , panel.border = element_blank()
+                                                 linewidth = 0.1, linetype = 3))  +  ## , panel.border = element_blank()
         ggplot2::geom_errorbar(data = Ef_sub, width=.1,
                     ggplot2::aes(xmin = EfS_Low, xmax = EfS_Upper, colour = Col,
                                  y = 5), lwd = 0.5) +
@@ -119,10 +119,10 @@ plot_hist_points <- function(data_allEstim,
               panel.grid.minor = ggplot2::element_blank(),
               axis.text.y = ggplot2::element_blank(),
               axis.ticks.y = ggplot2::element_blank(),
-              plot.margin = ggplot2::margin(c(0.2, 0.2, 1.5, 1.5), unit = 'line'),
+              plot.margin = ggplot2::margin(t = 0.2, r = 0.2, b = 1.5, l= 1.5, unit = 'line'),
               legend.direction = 'vertical',
               panel.border = ggplot2::element_rect(fill = NA, color = 'grey',
-                                          size = 0.1, linetype = 3))  +  ## , panel.border = element_blank()
+                                                   linewidth = 0.1, linetype = 3))  +  ## , panel.border = element_blank()
         ggplot2::geom_errorbar(data =Ef_sub,
                       width=.1,
                       ggplot2::aes(xmin = EfS_Low, xmax = EfS_Upper, colour = Col, y = 5), lwd = 0.5) +
@@ -180,10 +180,10 @@ plot_hist_points <- function(data_allEstim,
             panel.grid.minor = ggplot2::element_blank(),
             axis.text.y = ggplot2::element_blank(),
             axis.ticks.y = ggplot2::element_blank(),
-            plot.margin = ggplot2::margin(c(0.2, 0.2, 1.5, 1.5), unit = 'line'),
+            plot.margin = ggplot2::margin(t = 0.2, r = 0.2, b = 1.5, l= 1.5, unit = 'line'),
             legend.direction = 'vertical',
             panel.border = ggplot2::element_rect(fill = NA, color = 'grey',
-                                        size = 0.1, linetype = 3))  +  ## , panel.border = element_blank()
+                                                 linewidth = 0.1, linetype = 3))  +  ## , panel.border = element_blank()
       ggplot2::geom_errorbar(data = Ef_sub,
                     width=.1,
                     ggplot2::aes(xmin = EfS_Low, xmax = EfS_Upper,
