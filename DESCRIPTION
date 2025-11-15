@@ -1,7 +1,7 @@
 Package: sTraitChange
 Type: Package
 Title: Assesses the effect of climate on population dynamics mediated by traits
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: person('Viktoriia', 'Radchuk',  
     email = 'radchuk.victoria@gmail.com', 
     role = c('aut', 'cre'),
