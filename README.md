@@ -4,12 +4,13 @@
 # sTraitChange
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 The goal of sTraitChange is to provide the functions needed to reproduce
 the analyses for the manuscript ‘Changes in phenology mediate vertebrate
-population responses to temperature globally’ by Radchuk et
-al. (submitted).
+population responses to temperature globally’ by Radchuk et al. *Nature
+Communications*.
 
 The package was conceived to perform analyses presented in the
 above-mentioned paper. Therefore, the package will only be updated if
